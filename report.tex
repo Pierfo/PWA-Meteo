@@ -1,0 +1,113 @@
+\documentclass[a4paper, 12pt, twoside, openright]{book}
+\usepackage[italian]{babel}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\usepackage{setspace}
+
+%------------------------------ colors
+\usepackage[usenames,dvipsnames,table]{xcolor} % use colors on table and more
+\definecolor{333}{RGB}{51, 51, 51} % define custom color
+%------------------------------ source code
+\usepackage{listings}
+\lstset{
+  basicstyle=\footnotesize\sffamily,
+  commentstyle=\itshape\color{gray},
+  captionpos=b,
+  frame=shadowbox,
+  language=HTML,
+  rulesepcolor=\color{333},
+  tabsize=2
+}
+%------------------------------ define Abstract environment, missing in the 'book' class
+\newenvironment{abstract}{\cleardoublepage \null \vfill \begin{center}\bfseries\abstractname \end{center}}{\vfill\null}
+\addto\captionsenglish{\renewcommand*\abstractname{Sommario}} % change Abstract title
+%------------------------------ active url
+\usepackage{url}
+\renewcommand{\UrlFont}{\color{black}\small\ttfamily}
+\usepackage[colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black]{hyperref} % active ref
+%------------------------------ macros
+\newcommand{\sectionname}{Section} % define Section ref
+\newcommand{\subsectionname}{Sub-section} % define Sub-section ref
+\renewcommand*\arraystretch{1.4} % tables padding
+
+
+\begin{document}
+\frontmatter
+\begin{titlepage}
+	%immagini di intestazione
+	\begin{flushleft}
+		
+		\begin{minipage}[b][1,8 cm][c]{0.3\columnwidth}
+			\textsf{{\color{Sepia}{DIPARTIMENTO\\DI INGEGNERIA\\DELL'INFORMAZIONE}}}
+		\end{minipage}
+	\end{flushleft}
+	
+	%titoli vari
+	\vfill
+	\begin{center}
+		\begin{large}
+			DIPARTIMENTO DI INGEGNERIA DELL'INFORMAZIONE
+			\\~\\
+			CORSO DI LAUREA IN INGEGNERIA INFORMATICA
+			\\~\\~\\
+			TITOLO
+		\end{large}
+	\end{center}
+\end{titlepage}
+\cleardoublepage % make left page blank
+
+\begingroup %------------------------------ CONTENTS
+  \makeatletter
+  \let\ps@plain\ps@empty
+  \makeatother
+  \tableofcontents
+  \clearpage
+\endgroup
+
+
+\begin{abstract} %------------------------------ ABSTRACT
+\markboth{}{} % remove header
+\thispagestyle{empty}
+\end{abstract}
+
+
+\mainmatter\doublespace 
+
+\chapter*{Introduzione} %------------------------------ INTRODUCTION
+\thispagestyle{empty}
+
+\chapter{Strumenti Web utilizzati nelle PWA}
+Questa sezione copre tecnologie web usate nelle Web App che non sono vincolate a uno specifico framework di sviluppo web: di esse si fornirà una descrizione delle relative funzionalità e di una loro possibile implementazione in JavaScript.\\ %<---IL PULSANT EAPPLICATION POTREBBE ESSERE NASCOSTO
+Alcuni screenshot di questa sezione sono stati catturati dai Developer Tools (DevTools) del browser: per visualizzarli su PC è sufficiente premere F12 (valido per Firefox e per qualunque browser Chromium-based come Google Chrome o Microsoft Edge). In particolare, le immagini fanno riferimento ai DevTools di Google Chrome.
+\section{Cookies} %<-----------MANCA INTRODUZIONE, CAPIENZA MASSIMA DEI COOKIE E IMMAGINI
+\subsection{implementazione}
+I Cookie hanno un'interfaccia molto primitiva: non sono definite, infatti, delle funzioni per l'aggiunta, rimozione o la modifica di Cookie. L'unico modo per inserire, modificare, leggere ed eliminare Cookie è mediante l'attributo \texttt{document.cookie}\cite{MDN_Web_docs:cookies}.\\
+Per inserire un nuovo Cookie basta assegnare una nuova stringa a \linebreak\texttt{document.cookie}\cite{MDN_Web_docs:cookies}: tale stringa dovrà presentarsi nel formato \linebreak\texttt{"name=value; optionalField1=optionalValue1; optionalField2=\linebreak optionalValue2;..."}\cite{MDN_Web_docs:cookies}. La coppia \texttt{"name=value"} deve essere specificata, altrimenti l'inserimento fallirà silenziosamente, tutte le coppie successive sono invece opzionali. I campi opzionali sono i seguenti:
+\begin{itemize}
+\item\texttt{"expires="}: definisce la data di scadenza del Cookie come stringa UTC; per esprimere una data in tale formato è possibile usare il metodo \texttt{toUTCString()} della classe \texttt{Date} definita in JavaScript\cite{MDN_Web_docs:cookies}. Se non sono specificati né \texttt{expires} né \texttt{max-age} allora il Cookie scadrà al termine della sessione\cite{MDN_Web_docs:cookies}.
+\item\texttt{"max-age="}: specifica la durata del Cookie in secondi\cite{MDN_Web_docs:cookies}.
+\item\texttt{"secure"}: indica che il Cookie deve essere trasmesso solo attraverso un protocollo sicuro\cite{MDN_Web_docs:cookies}.
+\item\texttt{"partitioned"}: indica che il Cookie deve essere memorizzato in memoria partizionata\cite{MDN_Web_docs:cookies}. Si Supponga di accedere a un sito \texttt{A} che carica contenuti da un sito di terze parti. Al momento del caricamento quest'ultimo imposta un Cookie sul dispositivo dell'utente. Si supponga ora di spostarsi a un sito \texttt{B}, che carica anch'esso contenuti dallo stesso sito di prima. Se il Cookie non è partizionato, allora il sito di terze parti sarà in grado di accedere al Cookie definito precedentemente, difatti, in questo caso, la chiave del Cookie è definita solo dal suo host. Se, invece, il Cookie è partizionato, allora il sito di terze parti non sarà in grado di accedere al Cookie definito durante la navigazione in \texttt{A} in quanto, in questo caso, la sua chiave è definita dalla coppia host + sito in cui è caricato il contenuto\cite{MDN_Web_docs:CHIPS}. Un partitioned Cookie permette di garantire maggiore sicurezza, dato che impedisce il tracciamento \textit{cross-site} dell'utente\cite{MDN_Web_docs:CHIPS}.
+\item\texttt{"domain="}: specifica il dominio a cui il Cookie sarà inviato; se non inserito allora assume un valore di default che coincide con l'host del documento. Si ha inoltre che il Cookie è visibile ai sottodomini solo quando questo parametro è esplicitato\cite{MDN_Web_docs:cookies}.
+\item\texttt{"samesite="}: definisce quando inviare il Cookie al server\cite{MDN_Web_docs:cookies}. Esso può assumere valore \texttt{lax} se il Cookie può essere inviato solo in occasione di \textit{same-site requests} e \textit{top-level navigation requests}\footnote{cioè una navigazione a un altro sito che porta alla modifica del contenuto della barra degli indirizzi\cite{Stack_overflow:samesite}}\cite{MDN_Web_docs:cookies} (in questo secondo caso, però, il Cookie può essere inviato solo attraverso \textit{safe requests}, come \texttt{GET} o \texttt{HEAD} ma non \texttt{POST}\cite{Stack_overflow:samesite}), \texttt{strict} se si vuole impedire l'invio del Cookie attraverso cross-site requests \cite{MDN_Web_docs:cookies}, \texttt{none} se non si applica alcun vincolo\cite{MDN_Web_docs:cookies} (in quest'ultimo caso è però richiesto che sia esplicitato il parametro \texttt{secure}\cite{MDN_Web_docs:HTTP_cookies}).
+\item\texttt{"path="}: specifica il percorso in cui il Cookie è visibile; il Cookie sarà visibile nella cartella specificata e in tutte le subdirectory. Se non inserito allora assume il valore di default \texttt{"/"} (la root directory). Il Cookie potrà essere inviato solo dalle parti del sito contenute nel path\cite{MDN_Web_docs:HTTP_cookies}.
+\end{itemize}
+In DevTools è possibile mostrare una visuale dettagliata di tutti i Cookie installati, con anche la possibilità di eliminare quelli indesiderati: per browser Chromium-based basta cliccare su "Application" e poi "Cookies" nel menù a sinistra, per Firefox invece "Archiviazione" e poi "Cookie".\\
+Una volta inserito un Cookie esso non può essere modificato direttamente; è possibile solo sostituire questo con un altro: per farlo basta assegnare a \texttt{document.cookie} un nuovo Cookie con lo stesso nome di quello da sovrascrivere\cite{W3Schools:cookies}.\\
+Per quanto riguarda l'eliminazione dei Cookie, l'unica strategia disponibile è quella di sovrascrivere il Cookie con un altro avente scadenza già passata\cite{W3Schools:cookies}.\\
+L'attributo \texttt{document.cookie} può anche essere acceduto in lettura: in tal caso si ottiene una lista delle sole coppie nome-valore di tutti i Cookie salvati in quel momento\cite{MDN_Web_docs:cookies}. Per visualizzare tutti gli altri parametri è necessario farlo da DevTools.
+\backmatter
+
+\begingroup %------------------------------ BIBLIOGRAPHY
+  \makeatletter
+  \let\ps@plain\ps@empty
+  \makeatother
+  \bibliography{report}
+  \addcontentsline{toc}{chapter}{Bibliografia}
+  \bibliographystyle{ieeetr} % sort in order of appearance
+\endgroup
+\end{document} 
