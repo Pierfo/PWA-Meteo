@@ -1,0 +1,26 @@
+\begin{thebibliography}{1}
+
+\bibitem{Wiki:cookies}
+``{C}ookie.'' \url{https://it.wikipedia.org/wiki/Cookie}.
+
+\bibitem{MDN_Web_docs:cookies}
+``{D}ocument: cookie property.''
+  \url{https://developer.mozilla.org/en-US/docs/Web/API/Document/cookie}.
+
+\bibitem{MDN_Web_docs:CHIPS}
+``{C}ookies {H}aving {i}ndependent {P}artitioned {S}tate ({CHIPS}).''
+  \url{https://developer.mozilla.org/en-US/docs/Web/Privacy/Guides/Privacy_sandbox/Partitioned_cookies}.
+
+\bibitem{MDN_Web_docs:HTTP_cookies}
+``{Using HTTP cookies}.''
+  \url{https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies}.
+
+\bibitem{Stack_overflow:samesite}
+{Prima} risposta al thread \textit{{"What is the difference between
+  SameSite="Lax" and SameSite="Strict""}} di {Stack Overflow}
+  \url{https://stackoverflow.com/questions/59990864/what-is-the-difference-between-samesite-lax-and-samesite-strict}.
+
+\bibitem{W3Schools:cookies}
+``Javascript cookies.'' \url{https://www.w3schools.com/js/js_cookies.asp}.
+
+\end{thebibliography}
