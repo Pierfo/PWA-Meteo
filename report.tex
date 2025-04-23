@@ -81,6 +81,7 @@
 \thispagestyle{empty}
 
 \chapter{Strumenti Web utilizzati nelle PWA}
+%SERVONO ESEMPI?
 Questa sezione copre le tecnologie web usate nelle Web App che non sono vincolate a uno specifico framework di sviluppo: di esse si fornirà una descrizione delle relative funzionalità e di una loro possibile implementazione in JavaScript.\\
 Alcuni screenshot di questa sezione sono stati catturati dai Developer Tools (DevTools) del browser: per visualizzarli su PC è sufficiente premere F12 (valido per Firefox e per qualunque browser Chromium-based come Google Chrome o Microsoft Edge). Le immagini fanno in particolare riferimento ai DevTools di Google Chrome.
 
@@ -119,18 +120,22 @@ L'esempio in \figurename~\ref{example_cookie:code_snippet} costruisce un Cookie 
 Per quanto riguarda l'eliminazione dei Cookie, l'unica strategia disponibile è quella di sovrascrivere il Cookie con un altro avente scadenza già passata \cite{W3Schools:cookies}.\\
 L'attributo \texttt{document.cookie} può anche essere acceduto in lettura: in tal caso si ottiene una lista delle sole coppie nome-valore di tutti i Cookie salvati in quel momento \cite{MDN_Web_docs:cookies}. Tutti gli altri parametri possono essere visualizzati solo da DevTools.
 
-\section{localStorage e sessionStorage} %<-----PARLO ANCHE DEL CODE SNIPPET PER VERIFICARE LA DISPONIBILITÀ?
-\texttt{\textit{localStorage}} e \texttt{\textit{sessionStorage}} sono entrambi oggetti di tipo \texttt{Storage}: in quanto tali, essi permettono di salvare dati in memoria locale come coppie chiave-valore (entrambe stringhe) \cite{MDN_Web_docs:storage_API}.\\
-I due oggetti differscono per visibilità e durata: \texttt{localStorage} serve a contenere dati permanenti (cioè che rimangono in memoria indefinitamente, salvo esplicita rimozione da parte dell'utente o del programmatore) e condivisi fra le varie schede, per cui schede distinte del medesimo browser connesse allo stesso sito condividono lo stesso \texttt{localStorage} (modifiche apportate da una pagina sono visibili anche nell'altra pagina). D'altro canto \texttt{sessionStorage} è progettato per contenere dati relativi alla singola sessione di navigazione: pertanto esso non è condiviso fra schede e viene rimosso automaticamente alla chiusura della pagina (è però in grado di sopravvivere ad aggiornamenti della pagina stessa).\\
+\section{Local Storage e Session Storage} %<-----MANCANO ESEMPI
+\texttt{\textit{localStorage}} e \texttt{\textit{sessionStorage}} sono entrambi oggetti di tipo \texttt{Storage}: in quanto tali, essi permettono di salvare una ridotta quantità di dati in memoria locale sottoforma di coppie chiave-valore (entrambe stringhe) \cite{MDN_Web_docs:storage_API}.\\
+I due oggetti differscono per visibilità e durata: \texttt{localStorage} serve a contenere dati permanenti (cioè che rimangono in memoria indefinitamente, salvo esplicita rimozione da parte dell'utente o del programmatore) e condivisi fra le varie schede, per cui schede distinte del medesimo browser connesse allo stesso sito condividono lo stesso \texttt{localStorage} e, pertanto, modifiche apportate da una pagina sono visibili anche nell'altra pagina \cite{MDN_Web_docs:localStorage}. D'altro canto \texttt{sessionStorage} è progettato per contenere dati relativi alla singola sessione di navigazione: esso, quindi, non è condiviso fra schede e viene rimosso automaticamente alla chiusura della pagina (viene però conservato quando la pagina è ricaricata) \cite{MDN_Web_docs:sessionStorage}.\\
+DevTools fornisce la possibilità di visualizzare \texttt{localStorage} e \texttt{sessionStorage} di una pagina: per browser Chromium-based è sufficiente cliccare su "\texttt{Application}" e poi "\texttt{Local Storage}" o "\texttt{Session Storage}" mentre per Firefox si deve cliccare su "\texttt{Storage}", quindi "\texttt{Local Storage}" o "\texttt{Session Storage}".
 \subsection{implementazione}
 Dato che \texttt{localStorage} e \texttt{sessionStorage} sono entrambi istanze di \texttt{Storage}, essi condividono la stessa API, composta dai metodi
 \begin{itemize}
-\item\texttt{setItem(key, value)}, che inserisce una nuova coppia chiave-valore in \texttt{Storage}. Se la chiave è già presente allora sostituisce il precedente valore a essa associato con il nuovo. \texttt{key} e \texttt{value} devono essere entrambi stringhe.
-\item\texttt{getItem(key)}, che restituisce il valore associato a \texttt{key}.
-\item\texttt{removeItem(key)}, che rimuove la coppia con chiave \texttt{key}.
-\item\texttt{clear()}, che svuota l'intero \texttt{Storage}.
-\item\texttt{key(n)}, che restituisce il nome della \texttt{n}-esima chiave. 
+\item\texttt{setItem(key, value)}, che inserisce una nuova coppia chiave-valore in \texttt{Storage} se la chiave non è presente, altrimenti sostituisce il precedente valore a essa associato con il nuovo \cite{MDN_Web_docs:localStorage}.
+\item\texttt{getItem(key)}, che restituisce il valore associato a \texttt{key} \cite{MDN_Web_docs:localStorage}.
+\item\texttt{removeItem(key)}, che rimuove la coppia con chiave \texttt{key} \cite{MDN_Web_docs:localStorage}.
+\item\texttt{clear()}, che svuota l'intero \texttt{Storage} \cite{MDN_Web_docs:localStorage}.
+\item\texttt{key(n)}, che restituisce il nome della \texttt{n}-esima chiave \cite{MDN_Web_docs:localStorage}. 
 \end{itemize}
+È definito anche l'evento "\texttt{storage}" che viene lanciato quando il contenuto dello \texttt{Storage} subisce delle modifiche: questo evento può essere catturato da tutte le schede connesse allo \texttt{Storage} diverse dalla pagina che ha modificato il contenuto. Per ascoltare questo evento basta aggiungere un opportuno \texttt{event listener} all'oggetto \texttt{window} \cite{MDN_Web_docs:storage_API}.
+
+\section{IndexedDB}
 
 \backmatter
 
