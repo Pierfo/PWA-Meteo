@@ -121,7 +121,7 @@ Per quanto riguarda l'eliminazione dei Cookie, l'unica strategia disponibile è 
 L'attributo \texttt{document.cookie} può anche essere acceduto in lettura: in tal caso si ottiene una lista delle sole coppie nome-valore di tutti i Cookie salvati in quel momento \cite{MDN_Web_docs:cookies}. Tutti gli altri parametri possono essere visualizzati solo da DevTools.
 
 \section{Local Storage e Session Storage} %<-----MANCANO ESEMPI
-\texttt{\textit{localStorage}} e \texttt{\textit{sessionStorage}} sono entrambi oggetti di tipo \texttt{Storage}: in quanto tali, essi permettono di salvare una ridotta quantità di dati in memoria locale sottoforma di coppie chiave-valore (entrambe stringhe) \cite{MDN_Web_docs:storage_API}.\\
+\texttt{\textit{localStorage}} e \texttt{\textit{sessionStorage}} sono entrambi oggetti di tipo \texttt{Storage}: in quanto tali, essi permettono di salvare dati in memoria locale sottoforma di coppie chiave-valore (entrambe stringhe) \cite{MDN_Web_docs:storage_API}.\\
 I due oggetti differscono per visibilità e durata: \texttt{localStorage} serve a contenere dati permanenti (cioè che rimangono in memoria indefinitamente, salvo esplicita rimozione da parte dell'utente o del programmatore) e condivisi fra le varie schede, per cui schede distinte del medesimo browser connesse allo stesso sito condividono lo stesso \texttt{localStorage} e, pertanto, modifiche apportate da una pagina sono visibili anche nell'altra pagina \cite{MDN_Web_docs:localStorage}. D'altro canto \texttt{sessionStorage} è progettato per contenere dati relativi alla singola sessione di navigazione: esso, quindi, non è condiviso fra schede e viene rimosso automaticamente alla chiusura della pagina (viene però conservato quando la pagina è ricaricata) \cite{MDN_Web_docs:sessionStorage}.\\
 DevTools fornisce la possibilità di visualizzare \texttt{localStorage} e \texttt{sessionStorage} di una pagina: per browser Chromium-based è sufficiente cliccare su "\texttt{Application}" e poi "\texttt{Local Storage}" o "\texttt{Session Storage}" mentre per Firefox si deve cliccare su "\texttt{Storage}", quindi "\texttt{Local Storage}" o "\texttt{Session Storage}".
 \subsection{implementazione}
@@ -133,10 +133,13 @@ Dato che \texttt{localStorage} e \texttt{sessionStorage} sono entrambi istanze d
 \item\texttt{clear()}, che svuota l'intero \texttt{Storage} \cite{MDN_Web_docs:localStorage}.
 \item\texttt{key(n)}, che restituisce il nome della \texttt{n}-esima chiave \cite{MDN_Web_docs:localStorage}. 
 \end{itemize}
-È definito anche l'evento "\texttt{storage}" che viene lanciato quando il contenuto dello \texttt{Storage} subisce delle modifiche: questo evento può essere catturato da tutte le schede connesse allo \texttt{Storage} diverse dalla pagina che ha modificato il contenuto. Per ascoltare questo evento basta aggiungere un opportuno \texttt{event listener} all'oggetto \texttt{window} \cite{MDN_Web_docs:storage_API}.
+È definito anche l'evento "\texttt{storage}", che viene lanciato quando il contenuto dello \texttt{Storage} subisce delle modifiche: questo evento può essere catturato da tutte le schede connesse allo \texttt{Storage} diverse dalla pagina che ha modificato il contenuto. Per ascoltare questo evento basta aggiungere un opportuno \texttt{event listener} all'oggetto \texttt{window} \cite{MDN_Web_docs:storage_API}.\\
+\texttt{localStorage} e \texttt{sessionStorage} non sono disegnati per contenere una grande quantità di dati: un oggetto di tipo \texttt{Storage}, infatti, ha una capienza massima di 10MB. Se è necessario memorizzare grandi moli di dati bisogna ricorrere a \texttt{IndexedDB} \cite{MDN_Web_docs:IndexedDB_basic}.
 
-\section{IndexedDB}
-
+\section{IndexedDB} %<---NON È PROGETTATO PER SERVER-SIDE
+\textit{\texttt{IndexedDB}} (\textit{Indexed database}) è un'altra strategia con cui le Web App possono immagazzinare dati nel Browser dell'utente. \texttt{IndexedDB} implementa un \textit{Object Oriented Database Management System} (\textit{OODBMS}): in quanto tale, anch'esso memorizza coppie chiave-valore, tuttavia, a differenza di \texttt{localStorage} e \texttt{sessionStorage}, questi due possono essere un qualunque oggetto, non per forza stringhe.\\
+Mentre in un \textit{RDBMS} (\textit{Relational Database Management System}) i dati sono memorizzati come righe all'interno di una tabella, in un OODBMS essi sono salvati come oggetti all'interno di \textit{Object Store}: cisacun record all'interno di un Object Store sarà identificato da una \textit{chiave} univoca (come nei RDBMS), che può essere sfruttata per ottenere il riferiìmento all'oggetto stesso.\\
+Oltre che con le chiavi, gli Object Store possono essere interrogati anche attraverso indici: un \textit{indice} è un Object Store ausiliario che si riferisce a un altro Object Store, e che serve a effettuare ricerche all'interno di quest'ultimo.
 \backmatter
 
 \begingroup %------------------------------ BIBLIOGRAPHY
