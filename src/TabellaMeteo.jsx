@@ -32,6 +32,8 @@ function TabellaMeteo({city, invio}){
     
     useEffect(() => {
         console.log("ricarico tabella");
+        setErrore("");
+        setLetturaAPI(false);
         async function chiamataAPI(citta) {
             try {
                 // API per estrarre le coordinate dal nome della citta
@@ -43,8 +45,7 @@ function TabellaMeteo({city, invio}){
                 const data = await responsePos.json();
           
                 if (!(data && data.length > 0)) {
-                setErrore("Nessun risultato trovato per la città");
-                return null; // Nessun risultato trovato per la città
+                    setErrore("Nessun risultato trovato per la città");
                 }
                 const latitude = parseFloat(data[0].lat);
                 const longitude = parseFloat(data[0].lon);
@@ -61,7 +62,8 @@ function TabellaMeteo({city, invio}){
                 const response = await fetch(url + "?" + new URLSearchParams(params));
             
                 if (!response.ok) {
-                throw new Error(`Errore HTTP! Stato: ${response.status}`);
+                    throw new Error(`Errore HTTP! Stato: ${response.status}`);
+                    setErrore("errore api meteo");
                 }
             
                 const jsonData = await response.json();
@@ -119,6 +121,8 @@ function TabellaMeteo({city, invio}){
                 console.log("risposta API coordinate --> citta: ", city);
                 
             } catch (error) {
+                console.log("errore");
+                
                 console.error("Errore durante la chiamata API:", error);
                 setErrore(error);                
             }finally {
