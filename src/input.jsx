@@ -10,9 +10,9 @@ function Input2() {
     if (!send){
         return (
             <div>
-            <h1>inserisci la citta</h1>
+            <h1>inserisci la città</h1>
             <input name="inp" value={input} onChange={(event) => {setInput(event.target.value)}}/>
-            <button onClick={() =>  setSend(true)}></button>
+            <button onClick={() =>  setSend(true)}>Cerca</button>
         </div>
     );
     }
