@@ -5,8 +5,8 @@ function getWeatherDescription(weatherCode) {
       case 0: return "Cielo sereno";
       case 1: case 2: case 3: return "Nuvoloso";
       case 45: case 48: return "Nebbia";
-      case 51: case 53: case 55: return "Pioggerella";
-      case 56: case 57: return "Pioggerella gelida";
+      case 51: case 53: case 55: return "Piogerellina";
+      case 56: case 57: return "Piogerellina gelida";
       case 61: case 63: case 65: return "Pioggia";
       case 66: case 67: return "Pioggia gelida";
       case 71: case 73: case 75: return "Neve";
