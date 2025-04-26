@@ -3,9 +3,13 @@ import { useState, useEffect } from 'react';
 function getWeatherDescription(weatherCode) {
     switch (weatherCode) {
       case 0: return "Cielo sereno";
-      case 1: case 2: case 3: return "Nuvoloso";
-      case 45: case 48: return "Nebbia";
-      case 51: case 53: case 55: return "Pioggerella";
+      case 1: return "Cielo prevalentemente sereno";
+      case 2: return "Parzialmente nuvoloso"
+      case 3: return "Nuvoloso";
+      case 45: return "Nebbia";
+      case 48: return "Nebbia con brina";
+      case 51: return "Lievi rovesci";
+      case 53: case 55: return "Pioggerella";
       case 56: case 57: return "Pioggerella gelida";
       case 61: case 63: case 65: return "Pioggia";
       case 66: case 67: return "Pioggia gelida";
