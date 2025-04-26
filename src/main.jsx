@@ -1,6 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
+import './service-worker.js'
 import App from './App.jsx'
 import { useState } from 'react'
 import TestAPI from './testAPI.jsx'
@@ -19,5 +20,6 @@ createRoot(document.getElementById('root')).render(
     {/* <TabellaMeteo city={"Padova"}></TabellaMeteo> */}
     {/* <InputConBottone/> */}
     <Input2></Input2>
+    <script src="./service-worker.js"></script>
   </StrictMode>,
 )
