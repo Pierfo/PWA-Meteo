@@ -19,13 +19,15 @@ function getWeatherDescription(weatherCode) {
     }
   }
 
-function TabellaMeteo({city}){
+function TabellaMeteo({city, invio}){
+    
     const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto treu se la API ha finito di leggere
     const [datiMeteo , setDatiMeteo] = useState({}); // dati restituiti dalla API
     const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
-
-
+    
+    
     useEffect(() => {
+        console.log("ricarico tabella");
         async function chiamataAPI(citta) {
             try {
                 // API per estrarre le coordinate dal nome della citta
@@ -60,7 +62,9 @@ function TabellaMeteo({city}){
             
                 const jsonData = await response.json();
                 // console.log(jsonData);
-                setDatiMeteo(jsonData)                
+                setDatiMeteo(jsonData)  
+                console.log(jsonData);
+                              
                 /*
                 // API per il meteo da openmeteo
                 const params = {
@@ -97,6 +101,7 @@ function TabellaMeteo({city}){
                 console.log("codice precicpitazione API meteo", weatherData.hourly.weatherCode[  25]);
                 */
                 
+                
                 //API controllo citta da posiszione
                 //ottiene il nome della città usando Nominatim (geocoding inverso)
                 const nominatimApiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2`;
@@ -120,7 +125,7 @@ function TabellaMeteo({city}){
         }
 
         chiamataAPI(city);
-    }, []);// con [] il codice viene esseguito unasola vonta (anche se ri-renderizzato)
+    }, [invio]);// con [] il codice viene esseguito unasola vonta (anche se ri-renderizzato)
     
     
     if (errore != "") {
@@ -141,7 +146,7 @@ function TabellaMeteo({city}){
     // );
 
 
-    console.log(datiMeteo);
+    // console.log(datiMeteo);
 
 
 
