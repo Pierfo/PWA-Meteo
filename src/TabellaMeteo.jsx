@@ -9,7 +9,8 @@ function getWeatherDescription(weatherCode) {
       case 45: return "Nebbia";
       case 48: return "Nebbia con brina";
       case 51: return "Lievi rovesci";
-      case 53: case 55: return "Pioggerella";
+      case 53: return "Rovesci di media intensità"
+      case 55: return "Rovesci intensi";
       case 56: case 57: return "Pioggerella gelida";
       case 61: case 63: case 65: return "Pioggia";
       case 66: case 67: return "Pioggia gelida";
@@ -28,9 +29,10 @@ function TabellaMeteo({city, invio}){
     const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto treu se la API ha finito di leggere
     const [datiMeteo , setDatiMeteo] = useState({}); // dati restituiti dalla API
     const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
-    
-    
+
     useEffect(() => {
+        document.getElementById("inp").value = "";
+        
         console.log("ricarico tabella");
         setErrore("");
         setLetturaAPI(false);
@@ -154,8 +156,7 @@ function TabellaMeteo({city, invio}){
     // );
 
 
-    // console.log(datiMeteo);
-
+    console.log("FAX");
 
 
     return (
