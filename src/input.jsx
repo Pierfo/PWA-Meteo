@@ -26,10 +26,12 @@ function Input2() {
         <>
         <div>
             <h1>Inserisci la città</h1>
-            <input id="inp" placeholder="Cerca una città" autoFocus onFocus={() => "this.select()"}/>
-            {/* <button onClick={() =>  {setSend(true); setResend(!resend)}}>Cerca</button> */}
-            <button onClick={press}>Cerca</button>
-            {send && <TabellaMeteo city={document.getElementById("inp").value} invio={resend}/>}
+            <div id="search-wrap">
+                <input id="search-bar" placeholder="Cerca una città" autoFocus onFocus={() => "this.select()"}/>
+                {/* <button onClick={() =>  {setSend(true); setResend(!resend)}}>Cerca</button> */}
+                <button id="search-button" onClick={press}></button>
+            </div>
+            {send && <TabellaMeteo city={document.getElementById("search-bar").value} invio={resend}/>}
         </div>
         </>
     );

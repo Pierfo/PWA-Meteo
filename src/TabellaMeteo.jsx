@@ -32,7 +32,7 @@ function TabellaMeteo({city, invio}){
     const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
 
     useEffect(() => {
-        document.getElementById("inp").value = "";
+        document.getElementById("search-bar").value = "";
         
         console.log("ricarico tabella");
         setErrore("");
