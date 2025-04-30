@@ -1,0 +1,22 @@
+{
+  "name": "PWA-Meteo",
+  "short_name": "PWAM",
+  "lang": "en",
+  "start_url": "./",
+  "id": "m0",
+  "scope": "./",
+
+  "theme_color": "#2F4F4F",
+  "background_color": "#F5F5F5",
+  "display": "standalone",
+
+  "icons": [
+    {
+      "src": "/icons/icon_512x512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+
+}

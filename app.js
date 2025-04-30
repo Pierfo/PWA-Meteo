@@ -1,0 +1,1 @@
+navigator.serviceWorker.register("compatibility.js")
