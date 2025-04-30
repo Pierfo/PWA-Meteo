@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import {median} from 'mathjs';
+import {median, max, min} from 'mathjs';
 
 function getWeatherDescription(weatherCode) {
     switch (weatherCode) {
@@ -163,6 +163,7 @@ function TabellaMeteo({city, invio}){
     return (
         <>
         <h1>Preciptiazioni settimana: {getWeatherDescription(median(datiMeteo.hourly.weather_code))}</h1>
+        <h1>Temperature dalla settimana tra {min(datiMeteo.hourly.temperature_2m)} e {max(datiMeteo.hourly.temperature_2m)}</h1>
         <table>
           <thead>
             <tr>
