@@ -1,1 +1,3 @@
-navigator.serviceWorker.register("compatibility.js")
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register("compatibility.js");
+} 
