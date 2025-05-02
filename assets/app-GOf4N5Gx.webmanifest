@@ -2,7 +2,7 @@
   "name": "PWA-Meteo",
   "short_name": "PWAM",
   "lang": "en",
-  "start_url": "/index.html",
+  "start_url": "/PWA-Meteo/",
   "id": "m0",
 
   "theme_color": "#4169E1",
