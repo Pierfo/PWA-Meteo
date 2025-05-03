@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import {median, max, min} from 'mathjs';
 
+//Associa una descrizione a ciascun valore restituito dall'API, secondo la sua documentazione (in fondo alla pagina https://open-meteo.com/en/docs)
 function getWeatherDescription(weatherCode) {
     switch (weatherCode) {
       case 0: return "Cielo sereno";
@@ -12,15 +13,25 @@ function getWeatherDescription(weatherCode) {
       case 51: return "Lievi rovesci";
       case 53: return "Rovesci di media intensità"
       case 55: return "Rovesci intensi";
-      case 56: case 57: return "Pioggerella gelida";
-      case 61: case 63: case 65: return "Pioggia";
-      case 66: case 67: return "Pioggia gelida";
-      case 71: case 73: case 75: return "Neve";
-      case 77: return "Grani di neve";
-      case 80: case 81: case 82: return "Rovesci di pioggia";
-      case 85: case 86: return "Rovesci di neve";
+      case 56: return "Lievi rovesci di pioggia gelata";
+      case 57: return "Rovesci di pioggia gelata";
+      case 61: return "Pioggia lieve";
+      case 63: return "Pioggia";
+      case 65: return "Pioggia intensa";
+      case 66: return "Lieve pioggia gelata";
+      case 67: return "Pioggia gelata";
+      case 71: return "Lieve nevicata";
+      case 73: return "Nevicata"
+      case 75: return "Nevicata intensa";
+      case 77: return "Neve a granuli";
+      case 80: return "Lieve acquazzone";
+      case 81: return "Acquazzone";
+      case 82: return "Acquazzone intenso";
+      case 85: return "Lieve tempesta di neve";
+      case 86: return "Tempesta di neve";
       case 95: return "Temporale";
-      case 96: case 99: return "Temporale con grandine";
+      case 96: return "Temporale con lieve grandine";
+      case 99: return "Temporale con grandine";
       default: return "Informazioni meteo non disponibili";
     }
   }
@@ -30,19 +41,23 @@ function TabellaMeteo({city, invio}){
     const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto treu se la API ha finito di leggere
     const [datiMeteo , setDatiMeteo] = useState({}); // dati restituiti dalla API
     const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
+    const [searchResult, setSearchResult] = useState("");
 
     useEffect(() => {
+        //Svuota la barra di ricerca
         document.getElementById("search-bar").value = "";
         
         console.log("ricarico tabella");
         setErrore("");
         setLetturaAPI(false);
+
         async function chiamataAPI(citta) {
             try {
                 // API per estrarre le coordinate dal nome della citta
                 const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citta)}&format=jsonv2&limit=1`;
                 const responsePos = await fetch(apiUrl);
                 if (!responsePos.ok) {
+                    setErrore("Errore HTTP");
                     throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
                 }
                 const data = await responsePos.json();
@@ -65,8 +80,8 @@ function TabellaMeteo({city, invio}){
                 const response = await fetch(url + "?" + new URLSearchParams(params));
             
                 if (!response.ok) {
-                    throw new Error(`Errore HTTP! Stato: ${response.status}`);
                     setErrore("errore api meteo");
+                    throw new Error(`Errore HTTP! Stato: ${response.status}`);
                 }
             
                 const jsonData = await response.json();
@@ -118,36 +133,43 @@ function TabellaMeteo({city, invio}){
                 const nominatimData = await nominatimResponse.json();
                 
                 //estrai il nome della città (potrebbe variare a seconda della precisione)
-                const city = nominatimData.address.city || nominatimData.address.town || nominatimData.address.village || 'Località sconosciuta';
+                const result = nominatimData.address.city || nominatimData.address.town || nominatimData.address.village || 'Località sconosciuta';
                 
                 //stampa i risultati sulla console
-                console.log("risposta API coordinate --> citta: ", city);
-                
+                console.log("risposta API coordinate --> citta: ", result);
+
+                if(result === "Località sconosciuta") {
+                    setErrore("Città non trovata");
+                    throw new Error("Città non trovata");
+                }
+                else {
+                    //salva la città cercata in un Cookie della durata di 24 ore, così potrà ritrovare le informazioni meteo relative a 
+                    //tale città al prossimo accesso
+                    document.cookie = "last-searched=" + result + "; max-age=" + 24*3600 + ";"    
+                    setSearchResult(result);
+                }            
             } catch (error) {
                 console.log("errore");
                 
-                console.error("Errore durante la chiamata API:", error);
+                ("Errore durante la chiamata API:", error);
                 setErrore(error);                
             }finally {
                 setLetturaAPI(true);
             }
-            
-            
         }
 
         chiamataAPI(city);
-    }, [invio]);// con [] il codice viene esseguito unasola vonta (anche se ri-renderizzato)
-    
-    
+    }, [invio]);// con [] il codice viene eseguito una sola volta (anche se ri-renderizzato)
+
     if (errore != "") {
         return(
-            <h1>c'è stato un errore durante la chiamate API</h1>
+            <h1>{errore}</h1>
         ); 
     }
     
     if (!letturaAPI){
         return(
-            <h1>lettura dati API</h1>
+            <h1>Lettura dati API</h1>
         ); 
     }
     
@@ -157,19 +179,17 @@ function TabellaMeteo({city, invio}){
     // );
 
 
-    console.log("FAX");
-
-
     return (
         <>
-        <h1>Preciptiazioni settimana: {getWeatherDescription(median(datiMeteo.hourly.weather_code))}</h1>
+        <h1>Dati meteo per "{searchResult}"</h1>
+        <h1>Precipitazioni settimana: {getWeatherDescription(median(datiMeteo.hourly.weather_code))}</h1>
         <h1>Temperature dalla settimana tra {min(datiMeteo.hourly.temperature_2m)} e {max(datiMeteo.hourly.temperature_2m)}</h1>
         <table>
           <thead>
             <tr>
               <th>Ora (UTC)</th>
               <th>Temperatura (°C)</th>
-              <th>Precipitaizone</th>
+              <th>Precipitazione</th>
             </tr>
           </thead>
           <tbody>
