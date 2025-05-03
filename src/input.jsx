@@ -60,7 +60,7 @@ function Input2() {
         <div>
             <h1>Inserisci la città</h1>
             <div id="search-wrap">
-                <input type="text" id="search-bar" placeholder="Cerca una città" autoFocus onFocus={() => "this.select()"}/>
+                <input type="search" id="search-bar" placeholder="Cerca una città" autoFocus onFocus={() => "this.select()"}/>
                 <button id="search-button" onClick={() => document.dispatchEvent(searchEvent)}></button>
             </div>
             {send && <TabellaMeteo city={input} invio={resend}/>}
