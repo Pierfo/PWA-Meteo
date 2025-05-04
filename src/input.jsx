@@ -1,14 +1,25 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import TabellaMeteo from './TabellaMeteo.jsx'
+
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 function Input2() {
     const [send , setSend] = useState(false); //variabile per far comparire la tabella
     const [resend , setResend] = useState(false); //variabile per modificare la tabella
-    const [input, setInput] = useState(""); //variabile per modificare l'input
-    
-    //Evento che viene lanciato nel momento in cui si avvia una ricerca
-    const searchEvent = new Event("search");
+    const [dati, setDati] = useState(""); //variabile aggiornata ogni volta che cambia nella textfield
+    const [senddati, setSendDati] = useState(""); //variabile modificata solo all'invio utilizzata per evitare il ri-render dilla tabellameteo
+
+    //Invia all'API il nome della città
+    function press() {
+        console.log(dati);
+        setSendDati(dati);
+        setSend(true); 
+        setResend(!resend);       
+    }
 
     //Legge il nome dell'ultima città cercata salvato nel Cookie "last-searched", restituisce null se non trovato
     function getLastSearchedCity() {
@@ -31,44 +42,33 @@ function Input2() {
         return false;
     }
 
-    //Se è presente il Cookie e se l'utente ha appena cominciato a usare l'app allora carica l'ultima città cercata
-    if((getLastSearchedCity() != null) && isAtStartup()) {
-        press(getLastSearchedCity());       
-    }
-
-    //Invia all'API il nome della città "c"
-    function press(c) {
-        setSend(true); 
-        setResend(!resend); 
-        setInput(c);     
-    }
-
-    //Permettiamo all'utente di avviare la ricerca anche premendo il tasto invio
-    document.addEventListener("keydown", (key) => {
-        if(key.code === "Enter") {
-            document.dispatchEvent(searchEvent);
+    useEffect(() => {
+        //Se è presente il Cookie e se l'utente ha appena cominciato a usare l'app allora carica l'ultima città cercata
+        if((getLastSearchedCity() != null) && isAtStartup()) {            
+            setSendDati(getLastSearchedCity());
+            setSend(true); 
+            setResend(!resend);       
         }
-    })
+    }, []);
 
-    //Cosa eseguire in risposta a un evento "search"
-    document.addEventListener("search", () => {
-        press(document.getElementById("search-bar").value);
-    })    
+    //In react è preferibile aggiungere un listener per l'imput da tastiera in questo modo anziché con 
+    //addEventListener("keydown") in quanto la seconda soluzione causa l'aggiunta di un nuovo listener 
+    //a ogni render della pagina
+    const handleKeyDown = (event) => {
+        if (event.key === 'Enter') {
+            press();
+        }
+    };
 
     return (
         <>
-        <div>
-            <h1>Inserisci la città</h1>
-            <div id="search-wrap">
-                <input type="search" id="search-bar" placeholder="Cerca una città" autoFocus onFocus={() => "this.select()"}/>
-                <button id="search-button" onClick={() => document.dispatchEvent(searchEvent)}></button>
-            </div>
-            {send && <TabellaMeteo city={input} invio={resend}/>}
-        </div>
+            <Box sx={{display: 'flex', width: 900, height: 56, margin: '0 auto', justifyContent: 'center'}}>
+                <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />
+                <Button variant="outlined" onClick={press}>invio</Button>
+            </Box>
+            {send && <TabellaMeteo city={senddati} invio={resend}/>}
         </>
     );
 }
-
-
 
 export default Input2;
