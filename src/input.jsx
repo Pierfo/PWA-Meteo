@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import TabellaMeteo from './TabellaMeteo.jsx'
+import cities from "./cities_italy_1000.json";
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
@@ -12,7 +13,7 @@ function Input2() {
     const [resend , setResend] = useState(false); //variabile per modificare la tabella
     const [dati, setDati] = useState(""); //variabile aggiornata ogni volta che cambia nella textfield
     const [senddati, setSendDati] = useState(""); //variabile modificata solo all'invio utilizzata per evitare il ri-render dilla tabellameteo
-
+    const [citta, setCitta] = useState([]);
     //Invia all'API il nome della città
     function press() {
         console.log(dati);
@@ -23,11 +24,11 @@ function Input2() {
 
     //Legge il nome dell'ultima città cercata salvato nel Cookie "last-searched", restituisce null se non trovato
     function getLastSearchedCity() {
-        if(!document.cookie.includes("last-searched")) {
+        if(!document.cookie) {
             return null;
         }
 
-        let begin = document.cookie.indexOf('last-searched=') + 'last-searched='.length;
+        let begin = document.cookie.indexOf('=') + 1;
         return document.cookie.substring(begin);
     }
 
@@ -60,12 +61,32 @@ function Input2() {
         }
     };
 
+    useEffect(() => {
+        if (dati.length < 1) {
+          setCitta([]);
+          return;
+        }
+    
+        const results = cities.filter(city =>
+          city.toLowerCase().startsWith(dati.toLowerCase())
+        );
+    
+        setCitta(results.slice(0, 10)); // Mostra fino a 10 risultati
+      }, [dati]);
+
     return (
         <>
             <Box sx={{display: 'flex', width: 900, height: 56, margin: '0 auto', justifyContent: 'center'}}>
                 <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />
                 <Button variant="outlined" onClick={press}>invio</Button>
             </Box>
+            <ul className="border mt-2 rounded shadow bg-white">
+                {citta.map((city, index) => (
+                <li key={index} className="p-2 hover:bg-gray-100 cursor-pointer">
+                {city}
+                </li>
+                ))}
+            </ul>
             {send && <TabellaMeteo city={senddati} invio={resend}/>}
         </>
     );
