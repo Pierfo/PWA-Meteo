@@ -121,7 +121,7 @@ function TabellaMeteo({city, invio}){
         setResult(city2);
 
         if(city2 != "località sconosciuta") {
-            document.cookie = "last-searched=" + city2 + "; max-age=" + 24*3600 + ";"
+            document.cookie = "last-searched=" + city + "; max-age=" + 24*3600 + ";"
         }
             
       } catch (error) {
@@ -154,7 +154,7 @@ function TabellaMeteo({city, invio}){
 
   return (
     <>
-    <Typography variant="h6">Dati meteo relativi alla città {result}</Typography>
+    <Typography variant="h6">Dati meteo relativi alla città {city}</Typography>
     <Typography variant="h6">Precipitazioni settimana: {getWeatherDescription(median(datiMeteo.hourly.weather_code))}</Typography>
     <Typography variant="h6">Temperature dalla settimana tra {min(datiMeteo.hourly.temperature_2m)} e {max(datiMeteo.hourly.temperature_2m)}</Typography>
     <Box
