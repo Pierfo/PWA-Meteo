@@ -85,7 +85,7 @@
 Questa sezione copre le tecnologie web usate nelle Web App che non sono vincolate a uno specifico framework di sviluppo: di esse si fornirà una descrizione delle relative funzionalità e di una loro possibile implementazione in JavaScript.\\
 Alcuni screenshot di questa sezione sono stati catturati dai Developer Tools (DevTools) del browser: per visualizzarli su PC è sufficiente premere F12 (valido per Firefox e per qualunque browser Chromium-based come Google Chrome o Microsoft Edge). Le immagini fanno in particolare riferimento ai DevTools di Google Chrome.
 
-\section{Cookie} %<------MANCANO IMMAGINI
+\section{Cookie} 
 Un \textit{Cookie} è una stringa di testo che viene inviata dal server web al client, il quale avrà poi il compito di memorizzarla e reinviarla al server, senza modifiche, ogni volta che accede alla stessa porzione di uno stesso dominio web \cite{Wiki:cookies}.\\
 I Cookie hanno una dimensione ridotta: infatti, dato che il browser può dover inoltrare anche centinaia di Cookie durante la navigazione, delle dimensioni eccessive provocherebbero danni alle prestazioni. Essi sono inviati attraverso specifici header del protocollo \textit{HTTP}: nel caso di \textit{HTTP response} viene usato l'header \texttt{Set-Cookie} mentre per la \textit{HTTP request} si usa \texttt{Cookie} \cite{Wiki:cookies}. A un Cookie viene associata inoltre una data di scadenza, oltre la quale non viene considerato più valido \cite{Wiki:cookies}.\\
 I Cookie possono avere diversi scopi: possono coprire funzionalità necessarie al corretto funzionamento del sito (in tal caso si parla di \textit{cookie tecnici}), possono raccogliere dati in forma anonima a fini statistici (\textit{cookie statistici}) oppure possono tracciare la navigazione dell'utente, con lo scopo di costruire un profilo personalizzato del cliente utile a fornire annunci mirati (\textit{cookie pubblicitari}) \cite{Wiki:cookies}. Questi ultimi sono stati oggetto di diverse discussioni, in quanto un loro abuso potrebbe costituire una minaccia alla privacy degli utenti; per questo motivo il loro utilizzo è normato da svariate leggi in diversi stati: in Europa il \textit{GDPR} (\textit{General Data Protectioni Regulation}) ha stabilito che tutti i siti internet che fanno uso di Cookie pubblicitari di terze parti sono obbligati a comunicarlo all'utente all'inizio della sua navigazione nella pagina web \cite{Cookiebot}. Tale comunicazione deve essere effettuata attraverso un banner che ostacoli la visualizzazione della pagina: in esso devono essere elencati tutti i Cookie pubblicitari presenti nel sito, specificando anche chi elaborerà i dati raccolti e con quali finalità \cite{Cookiebot}; è inoltre obbligatorio fornire la possibilità di negare il consenso dei singoli Cookie, non è sufficiente permettere all'utente di negare/consentire tutti i Cookie in blocco \cite{Cookiebot}. Un Cookie non potrà essere attivato se non dopo il consenso esplicito da parte dell'utente, il quale sarà registrato in opportuna documantazione a testimoniare alle autorità che l'autorizzazione è stata concessa \cite{Cookiebot}. Il consenso a un Cookie deve essere fornito mediante un'azione non equivoca (come ad esempio cliccare sul pulsante "Acconsento"); azioni come continuare la navigazione sul sito non devono essere considerate come permesso per installare i Cookie \cite{Cookiebot}. Si deve inoltre fornire la possibilità di modificare le proprie scelte in un secondo momento. All'inizio della navigazione tutti i Cookie di terze parti e non strettamente necessari al corretto funzionamento del servizio devono essere preventivamente disattivati in attesa della scelta dell'utente. Una volta confermata la scelta il \textit{Cookie di consenso} si occuperà di attivare tutti i soli Cookie inserzionistici per il quale l'utente ha dato esplicito consenso \cite{Cookiebot}.\\
@@ -104,25 +104,26 @@ Per inserire un nuovo Cookie basta assegnare una nuova stringa a \linebreak\text
 \end{itemize}
 In DevTools è possibile mostrare una visuale dettagliata di tutti i Cookie installati, con anche la possibilità di eliminare quelli indesiderati: per browser Chromium-based basta cliccare su "\texttt{Application}" e poi "\texttt{Cookies}" nel menù a sinistra, per Firefox invece "\texttt{Storage}" e poi "\texttt{Cookies}".\\
 Una volta inserito un Cookie esso non può essere modificato direttamente; è possibile solo sostituire questo con un altro: per farlo basta assegnare a \texttt{document.cookie} un nuovo Cookie con lo stesso nome di quello da sovrascrivere \cite{W3Schools:cookies}.\\
-\begin{figure}[ht]
-  \centering
-  \includegraphics[width=15cm]{images/cookies/code_snippet.png}
-  \caption{Esempio di creazione di un Cookie}
-  \label{example_cookie:code_snippet}
-\end{figure}
-\begin{figure}[ht]
-  \centering
-  \includegraphics[height=7cm]{images/cookies/demonstration.png}
-  \caption{Il Cookie creato prima}
-  \label{example_cookie}
-\end{figure}
 Per quanto riguarda l'eliminazione dei Cookie, l'unica strategia disponibile è quella di sovrascrivere il Cookie con un altro avente scadenza già passata \cite{W3Schools:cookies}.\\
 L'attributo \texttt{document.cookie} può anche essere acceduto in lettura: in tal caso si ottiene una lista delle sole coppie nome-valore di tutti i Cookie salvati in quel momento \cite{MDN_Web_docs:cookies}. Tutti gli altri parametri possono essere visualizzati solo da DevTools.
 \subsubsection{Utilizzo nella PWA}
-Nell'app \texttt{PWA-Meteo} viene utilizzato il Cookie "\texttt{last-searched}" per salvare il nome dell'ultima città cercata, cosicché l'utente possa ottenere nuovamente le relative informazioni meteo al prossimo avvio dell'app stessa. Il Cookie ha una durata di 24 ore e il suo valore viene sovrascritto ogni volta che la chiamata all'API \texttt{Open-meteo} termina con successo. Va puntualizzato che in realtà sul Cookie viene scritto il risultato della ricerca e non l'esatta stringa fornita in input dall'utente, dunque potrebbero esserci delle incongruenze fra il valore salvato e la città effettivamente cercata.\\
-A ogni caricamento della pagina, la funzione \texttt{getLastSearchedCity()} si occupa di leggere il valore di \texttt{last-searched}.
+Nell'app \texttt{PWA-Meteo} viene utilizzato il Cookie "\texttt{last-searched}" per salvare il nome dell'ultima città cercata (\figurename~\ref{cookie:cookie}), cosicché l'utente possa ottenere nuovamente le relative informazioni meteo al prossimo avvio dell'app stessa. Il Cookie ha una durata di 24 ore e il suo valore viene sovrascritto ogni volta che la chiamata all'API \texttt{Open-meteo} termina con successo.\\
+A ogni caricamento della pagina, la funzione \texttt{getLastSearchedCity()} (\figurename~\ref{cookie:getLastSearchedCity}) si occupa di leggere il valore di \texttt{last-searched}.
 
-\section{Local Storage e Session Storage} %<-----MANCANO IMMAGINI
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=14cm]{images/cookies/cookie.png}
+  \caption{Code snippet per la creazione del Cookie \texttt{last-searched} (file: \texttt{/src/TabellaMeteo.jsx})}
+  \label{cookie:cookie}
+\end{figure}
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=14cm]{images/cookies/getLastSearchedCity.png}
+  \caption{Code snippet della funzione \texttt{getLastSearchedCity()} (file: \texttt{/src/input.jsx})}
+  \label{cookie:getLastSearchedCity}
+\end{figure}
+
+\section{Local Storage e Session Storage}
 \texttt{\textit{window.localStorage}} e \texttt{\textit{window.sessionStorage}} sono entrambi oggetti di tipo \texttt{Storage}: in quanto tali, essi permettono di salvare dati in memoria locale sottoforma di coppie chiave-valore (entrambe stringhe) \cite{MDN_Web_docs:storage_API}.\\
 I due oggetti differscono per visibilità e durata: \texttt{localStorage} serve a contenere dati permanenti (cioè che rimangono in memoria indefinitamente, salvo esplicita rimozione da parte dell'utente o del programmatore) e condivisi fra le varie schede, per cui schede distinte del medesimo browser connesse allo stesso sito condividono lo stesso \texttt{localStorage} e, pertanto, modifiche apportate da una pagina sono visibili anche nell'altra pagina \cite{MDN_Web_docs:localStorage}. D'altro canto \texttt{sessionStorage} è progettato per contenere dati relativi alla singola sessione di navigazione: esso, quindi, non è condiviso fra schede e viene rimosso automaticamente alla chiusura della pagina (viene però conservato quando la pagina è ricaricata) \cite{MDN_Web_docs:sessionStorage}.\\
 DevTools fornisce la possibilità di visualizzare \texttt{localStorage} e \texttt{sessionStorage} di una pagina: per browser Chromium-based è sufficiente cliccare su "\texttt{Application}" e poi "\texttt{Local Storage}" o "\texttt{Session Storage}" mentre per Firefox si deve cliccare su "\texttt{Storage}", quindi "\texttt{Local Storage}" o "\texttt{Session Storage}".
@@ -138,9 +139,14 @@ Dato che \texttt{localStorage} e \texttt{sessionStorage} sono entrambi istanze d
 È definito anche l'evento "\texttt{storage}", che viene lanciato quando il contenuto dello \texttt{Storage} subisce delle modifiche: questo evento può essere catturato da tutte le schede connesse allo \texttt{Storage} diverse dalla pagina che ha modificato il contenuto. Per ascoltare questo evento basta aggiungere un opportuno \texttt{event listener} all'oggetto \texttt{window} \cite{MDN_Web_docs:storage_API}.\\
 \texttt{localStorage} e \texttt{sessionStorage} non sono disegnati per contenere una grande quantità di dati: un oggetto di tipo \texttt{Storage}, infatti, ha una capienza massima di 10MB. Se è necessario memorizzare grandi moli di dati bisogna ricorrere a \texttt{IndexedDB} \cite{MDN_Web_docs:IndexedDB_basic}.
 \subsubsection{Utilizzo nella PWA}
-Nell'app \texttt{PWA Meteo} si fa utilizzo del session storage per capire se è la prima volta che si sta caricando la pagina all'interno della sessione di utilizzo (e quindi c'è bisogno di inserire i dati meteo relativi alla città salvata nel Cookie \texttt{last-searched}) oppure no: questo perché si vuole che siano mostrate le informazioni legate all'ultima località cercata solamente all'avvio dell'app, e non ogni volta che viene aggiornata la pagina. Per fare ciò è stata implementata la funzione \texttt{isAtStartup()}, la quale può assumere due comportamenti: se il \texttt{sessionStorage} è vuoto allora vi inserisce una coppia e poi restituisce \texttt{true}, altrimenti restituisce \texttt{false}. Quando si avvia l'app, il session storage è sicuramente vuoto e pertanto \texttt{isAtStartup()} comunica che c'è bisogno di caricare l'ultima città salvata, poi, a tutti i successivi aggiornamenti della pagina, session storage continuerà a contenere la coppia inserita e dunque la funzione restituirà sempre \texttt{false}.
-
-\section{IndexedDB} 
+Nell'app \texttt{PWA Meteo} si fa utilizzo del session storage per capire se è la prima volta che si sta caricando la pagina all'interno della sessione di utilizzo (e quindi c'è bisogno di inserire i dati meteo relativi alla città salvata nel Cookie \texttt{last-searched}) oppure no: questo perché si vuole che siano mostrate le informazioni legate all'ultima località cercata solamente all'avvio dell'app, e non ogni volta che viene aggiornata la pagina. Per fare ciò è stata implementata la funzione \texttt{isAtStartup()} (\figurename~\ref{storages:isAtStartup}), la quale può assumere due comportamenti: se il \texttt{sessionStorage} è vuoto allora vi inserisce una coppia e poi restituisce \texttt{true}, altrimenti restituisce \texttt{false}. Quando si avvia l'app, il session storage è sicuramente vuoto e pertanto \texttt{isAtStartup()} comunica che c'è bisogno di caricare l'ultima città salvata, poi, a tutti i successivi aggiornamenti della pagina, session storage continuerà a contenere la coppia inserita e dunque la funzione restituirà sempre \texttt{false}.
+\begin{figure}[ht]
+  \centering
+  \includegraphics[width=14cm]{images/local&session_storage/isAtStartup.png}
+  \caption{Code snippet della funzione \texttt{isAtStartup()} (file: \texttt{/src/input.jsx})}
+  \label{storages:isAtStartup}
+\end{figure}
+\section{IndexedDB} %<-------DA FINIRE
 Gli \textit{\texttt{IndexedDB}} (\textit{Indexed database}) costituiscono un'altra strategia con cui le Web App possono immagazzinare dati nel Browser dell'utente. Un \texttt{IndexedDB} implementa un \textit{Object Oriented Database Management System} (\textit{OODBMS}) e, in quanto tale, memorizza coppie chiave-valore.\\
 A differenza di \texttt{localStorage} e \texttt{sessionStorage}, \texttt{IndexedDB} non presenta limiti di spazio (in questo caso la capienza massima è definita dal singolo browser), inoltre chiavi e valori possono essere un qualunque oggetto, non per forza stringhe.\\
 Mentre in un \textit{RDBMS} (\textit{Relational Database Management System}) i dati sono memorizzati come righe all'interno di una tabella, in un OODBMS essi sono salvati come oggetti all'interno di \textit{Object Store}: all'interno di un Object Store ciascun record sarà identificato da una \textit{chiave} univoca (come nei RDBMS), che può essere sfruttata per ottenere il riferiìmento al valore associato.\\
@@ -152,6 +158,9 @@ La indexedDB API presenta delle limitazioni, fra cui il fatto che è prpogettata
 \subsection{Implementazione}
 La IndexedDB API è principalmente asincrona, ciò vuol dire che la maggioranza delle operazioni sulla base di dati è eseguita per mezzo di \textit{richieste}, rappresentate mediante oggetti di tipo \texttt{IDBRequest}: esse presentano i metodi \texttt{onSuccess()} e \texttt{onError()} che permettono di definire delle callback functions da eseguire rispettivamente in caso di successo o errore.\\
 È possibile inviare una richiesta di apertura della connessione con il database per mezzo della funzione \texttt{window.indexedDB.open(name, version)}, dove \texttt{name} è il nome del database (che deve essere unico all'interno del dominio) e \texttt{version} è la sua versione. Aprire un database con lo stesso nome di uno già esistente ma numero di versione maggiore viene interpretato come la richiesta di effettuare un aggiornamento sul database stesso e causa quindi il lancio dell'evento \texttt{upgradeneeded}: per gli oggetti di tipo \texttt{IDBOpenDBRequest} (la richiesta restituita da \texttt{open()}), è presente anche il metodo \texttt{onupgradeneeded()} che definisce che funzione eseguire in questa situazione.\\
+
+\section{Service Worker}
+
 \backmatter
 
 \begingroup %------------------------------ BIBLIOGRAPHY
