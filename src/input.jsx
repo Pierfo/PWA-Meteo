@@ -102,11 +102,6 @@ function Input2() {
                 {/* <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" /> */}
                 <Button variant="outlined" onClick={press}>invio</Button>
             </Box>
-            {/* <Autocomplete
-                freeSolo
-                options={cities.map((c) => c)}
-                renderInput={(params) => <TextField {...params} label="suggerimento citta" />}
-            /> */}
             {send && <TabellaMeteo city={senddati} invio={resend}/>}
         </>
     );
