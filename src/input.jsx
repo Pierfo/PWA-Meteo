@@ -31,11 +31,11 @@ function Input2() {
 
     //Legge il nome dell'ultima città cercata salvato nel Cookie "last-searched", restituisce null se non trovato
     function getLastSearchedCity() {
-        if(!document.cookie) {
+        if(!document.cookie.includes("last-searched")) {
             return null;
         }
 
-        let begin = document.cookie.indexOf('=') + 1;
+        let begin = document.cookie.indexOf('last-searched=') + 'last-searched='.length;
         return document.cookie.substring(begin);
     }
 

@@ -1,7 +1,7 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 // import './index.css'
-import './service-worker.js'
+import './service-worker-registration.js'
 import Input2 from './input.jsx'
 
 
