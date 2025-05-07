@@ -7,6 +7,11 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Autocomplete from '@mui/material/Autocomplete';
+import { log } from "mathjs";
+
+
 
 function Input2() {
     const [send , setSend] = useState(false); //variabile per far comparire la tabella
@@ -16,10 +21,12 @@ function Input2() {
     const [citta, setCitta] = useState([]);
     //Invia all'API il nome della città
     function press() {
-        console.log(dati);
         setSendDati(dati);
         setSend(true); 
-        setResend(!resend);       
+        setResend(!resend);   
+        console.log("dal press", dati);
+        setDati("");   
+         
     }
 
     //Legge il nome dell'ultima città cercata salvato nel Cookie "last-searched", restituisce null se non trovato
@@ -74,19 +81,32 @@ function Input2() {
         setCitta(results.slice(0, 10)); // Mostra fino a 10 risultati
       }, [dati]);
 
+
     return (
         <>
-            <Box sx={{display: 'flex', width: 900, height: 56, margin: '0 auto', justifyContent: 'center'}}>
-                <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />
+            <Box sx={{display: 'flex', width: 700, height: 56, margin: '0 auto', justifyContent: 'center'}}>
+                <Autocomplete
+                    value={dati} 
+                    freeSolo
+                    options={cities.map((c) => c)}
+                    renderInput={(params) => <TextField {...params} sx={{width: 300}} type="search" id="search-bar" onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />}
+                    onChange={(event, newValue) => {
+                        console.log("evento" , event);
+                        console.log("valore" ,newValue);
+                        setSendDati(newValue);
+                        setSend(true); 
+                        setResend(!resend);   
+                        setDati("");
+                    }}
+                />
+                {/* <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" /> */}
                 <Button variant="outlined" onClick={press}>invio</Button>
             </Box>
-            <ul className="border mt-2 rounded shadow bg-white">
-                {citta.map((city, index) => (
-                <li key={index} className="p-2 hover:bg-gray-100 cursor-pointer">
-                {city}
-                </li>
-                ))}
-            </ul>
+            {/* <Autocomplete
+                freeSolo
+                options={cities.map((c) => c)}
+                renderInput={(params) => <TextField {...params} label="suggerimento citta" />}
+            /> */}
             {send && <TabellaMeteo city={senddati} invio={resend}/>}
         </>
     );
