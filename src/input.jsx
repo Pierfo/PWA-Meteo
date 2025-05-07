@@ -84,12 +84,12 @@ function Input2() {
 
     return (
         <>
-            <Box sx={{display: 'flex', width: 700, height: 56, margin: '0 auto', justifyContent: 'center'}}>
+            <Box sx={{display: 'flex',  height: 56, margin: '0 auto', justifyContent: 'center'}}>
                 <Autocomplete
                     value={dati} 
                     freeSolo
                     options={cities.map((c) => c)}
-                    renderInput={(params) => <TextField {...params} sx={{width: 300}} type="search" id="search-bar" onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />}
+                    renderInput={(params) => <TextField {...params} sx={{width: 150}} type="search" id="search-bar" onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />}
                     onChange={(event, newValue) => {
                         console.log("evento" , event);
                         console.log("valore" ,newValue);
