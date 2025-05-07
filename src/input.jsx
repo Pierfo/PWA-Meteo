@@ -7,10 +7,7 @@ import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import Autocomplete from '@mui/material/Autocomplete';
-import { log } from "mathjs";
-
 
 
 function Input2() {
@@ -19,6 +16,7 @@ function Input2() {
     const [dati, setDati] = useState(""); //variabile aggiornata ogni volta che cambia nella textfield
     const [senddati, setSendDati] = useState(""); //variabile modificata solo all'invio utilizzata per evitare il ri-render dilla tabellameteo
     const [citta, setCitta] = useState([]);
+
     //Invia all'API il nome della città
     function press() {
         setSendDati(dati);
@@ -79,21 +77,24 @@ function Input2() {
         );
     
         setCitta(results.slice(0, 10)); // Mostra fino a 10 risultati
-      }, [dati]);
+    }, [dati]);
 
-
+    console.log(dati);
+    
+        
     return (
         <>
             <Box sx={{display: 'flex',  height: 56, margin: '0 auto', justifyContent: 'center'}}>
                 <Autocomplete
+                    id="search-bar" 
                     value={dati} 
                     freeSolo
                     options={cities.map((c) => c)}
                     renderInput={(params) => <TextField {...params} sx={{width: 150}} type="search" id="search-bar" onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />}
                     onChange={(event, newValue) => {
-                        if (newValue != null){
-                            console.log("evento" , event);
-                            console.log("valore" ,newValue);
+                        console.log(event);
+                        
+                        if (event.type == "click"){
                             setSendDati(newValue);
                             setSend(true); 
                             setResend(!resend);   
@@ -104,7 +105,7 @@ function Input2() {
                 {/* <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" /> */}
                 <Button variant="outlined" onClick={press}>invio</Button>
             </Box>
-            {send && <TabellaMeteo city={senddati} invio={resend}/>}
+            {/* {send && <TabellaMeteo city={senddati} invio={resend}/>} */}
         </>
     );
 }
