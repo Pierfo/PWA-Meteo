@@ -91,12 +91,14 @@ function Input2() {
                     options={cities.map((c) => c)}
                     renderInput={(params) => <TextField {...params} sx={{width: 150}} type="search" id="search-bar" onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" />}
                     onChange={(event, newValue) => {
-                        console.log("evento" , event);
-                        console.log("valore" ,newValue);
-                        setSendDati(newValue);
-                        setSend(true); 
-                        setResend(!resend);   
-                        setDati("");
+                        if (newValue != null){
+                            console.log("evento" , event);
+                            console.log("valore" ,newValue);
+                            setSendDati(newValue);
+                            setSend(true); 
+                            setResend(!resend);   
+                            setDati("");
+                        }
                     }}
                 />
                 {/* <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" /> */}
