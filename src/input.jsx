@@ -1,7 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import TabellaMeteo from './TabellaMeteo.jsx'
-import cities from "./cities_italy_1000.json";
+import cities from "./cities_italy_100.json";
 
 import Typography from '@mui/material/Typography';
 import TextField from '@mui/material/TextField';
