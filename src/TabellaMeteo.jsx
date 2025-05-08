@@ -63,7 +63,7 @@ function TabellaMeteo({city, invio}){
   const [result, setResult] = useState(""); 
 
   useEffect(() => {
-    // document.getElementById("search-bar").value = "";
+    document.getElementById("search-bar").value = "";
     setErrore("");
     setLetturaAPI(false);
     async function chiamataAPI(citta) {
