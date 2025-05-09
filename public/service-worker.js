@@ -5,5 +5,6 @@ self.addEventListener("install", () => {
 });
 
 self.addEventListener("activate", () => {
+    clients.claim();
     console.log("service worker activated");
 })
