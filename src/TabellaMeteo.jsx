@@ -20,6 +20,20 @@ import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
+import {
+  WiDaySunny,
+  WiDayCloudy,
+  WiCloud,
+  WiFog,
+  WiRain,
+  WiShowers,
+  WiSnow,
+  WiSleet,
+  WiThunderstorm,
+  WiDayRainMix,
+  WiHail,
+} from "react-icons/wi";
+
 // funzione per tradurre in codice dato dall'api in precipitazione
 function getWeatherDescription(weatherCode) {
   switch (weatherCode) {
@@ -53,6 +67,63 @@ function getWeatherDescription(weatherCode) {
     case 99: return "Temporale con grandine";
     default: return "Informazioni meteo non disponibili";
   }
+}
+
+// Funzione che restituisce un componente icona in base al codice meteo
+function getWeatherIcon(weatherCode, size = 32) {
+  switch (weatherCode) {
+    case 0:
+      return <WiDaySunny size={size} />;
+    case 1:
+    case 2:
+      return <WiDayCloudy size={size} />;
+    case 3:
+      return <WiCloud size={size} />;
+    case 45:
+    case 48:
+      return <WiFog size={size} />;
+    case 51:
+    case 53:
+    case 55:
+      return <WiShowers size={size} />;
+    case 56:
+    case 57:
+      return <WiSleet size={size} />;
+    case 61:
+    case 63:
+    case 65:
+      return <WiRain size={size} />;
+    case 66:
+    case 67:
+      return <WiSleet size={size} />;
+    case 71:
+    case 73:
+    case 75:
+    case 77:
+      return <WiSnow size={size} />;
+    case 80:
+    case 81:
+    case 82:
+      return <WiDayRainMix size={size} />;
+    case 85:
+    case 86:
+      return <WiSnow size={size} />;
+    case 95:
+      return <WiThunderstorm size={size} />;
+    case 96:
+    case 99:
+      return <WiHail size={size} />;
+    default:
+      return <WiDaySunny size={size} />; // fallback
+  }
+}
+
+function getDay(dataOraStringa){
+  const dataOggetto = new Date(dataOraStringa);
+  const anno = dataOggetto.getFullYear();
+  const mese = (dataOggetto.getMonth() + 1).toString().padStart(2, '0'); // Mese è base 0
+  const giorno = dataOggetto.getDate().toString().padStart(2, '0');
+  return `${anno}-${mese}-${giorno}`;
 }
 
 function TabellaMeteo({city, invio}){
@@ -168,44 +239,44 @@ function TabellaMeteo({city, invio}){
     >
       <Card sx={{ maxWidth: 500, minWidth: 500 }}>
         <CardContent>
-          <Typography variant="h6">giorno 1</Typography>
-          <Tabb arrraypassato={taglioarraydati(datiMeteo, 0,24)}></Tabb>
+          <Typography variant="h6">{getDay(datiMeteo.hourly.time[1])}</Typography>
+          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 0,24)}></TabellaGiorni>
         </CardContent>
       </Card>
       <Card sx={{ maxWidth: 500, minWidth: 500 }}>
         <CardContent>
-          <Typography variant="h6">giorno 2</Typography>
-          <Tabb arrraypassato={taglioarraydati(datiMeteo, 24,48)}></Tabb>
+          <Typography variant="h6">{getDay(datiMeteo.hourly.time[25])}</Typography>
+          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 24,48)}></TabellaGiorni>
         </CardContent>
       </Card>
       <Card sx={{ maxWidth: 500, minWidth: 500 }}>
         <CardContent>
-          <Typography variant="h6">giorno 3</Typography>
-          <Tabb arrraypassato={taglioarraydati(datiMeteo, 48,72)}></Tabb>
+          <Typography variant="h6">{getDay(datiMeteo.hourly.time[49])}</Typography>
+          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 48,72)}></TabellaGiorni>
         </CardContent>
       </Card>
       <Card sx={{ maxWidth: 500, minWidth: 500 }}>
         <CardContent>
-          <Typography variant="h6">giorno 4</Typography>
-          <Tabb arrraypassato={taglioarraydati(datiMeteo, 72,96)}></Tabb>
+          <Typography variant="h6">{getDay(datiMeteo.hourly.time[73])}</Typography>
+          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 72,96)}></TabellaGiorni>
         </CardContent>
       </Card>
       <Card sx={{ maxWidth: 500, minWidth: 500 }}>
         <CardContent>
-          <Typography variant="h6">giorno 5</Typography>
-          <Tabb arrraypassato={taglioarraydati(datiMeteo, 96,120)}></Tabb>
+          <Typography variant="h6">{getDay(datiMeteo.hourly.time[97])}</Typography>
+          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 96,120)}></TabellaGiorni>
         </CardContent>
       </Card>
       <Card sx={{ maxWidth: 500, minWidth: 500 }}>
         <CardContent>
-          <Typography variant="h6">giorno 6</Typography>
-          <Tabb arrraypassato={taglioarraydati(datiMeteo, 120,144)}></Tabb>
+          <Typography variant="h6">{getDay(datiMeteo.hourly.time[121])}</Typography>
+          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 120,144)}></TabellaGiorni>
         </CardContent>
       </Card>
       <Card sx={{ maxWidth: 500, minWidth: 500 }}>
         <CardContent>
-          <Typography variant="h6">giorno 7</Typography>
-          <Tabb arrraypassato={taglioarraydati(datiMeteo, 144,168)}></Tabb>
+          <Typography variant="h6">{getDay(datiMeteo.hourly.time[145])}</Typography>
+          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 144,168)}></TabellaGiorni>
         </CardContent>
       </Card>
 
@@ -225,7 +296,7 @@ function taglioarraydati(arrra, inizio, fine) {
 }
 
 // componet per creare la tabella partende da un json
-function Tabb({arrraypassato}) {
+function TabellaGiorni({jsonpassato}) {
   return(
     <>
       <TableContainer component={Paper}>
@@ -238,11 +309,11 @@ function Tabb({arrraypassato}) {
               </TableRow>
             </TableHead>
             <TableBody>
-              {arrraypassato.hourly.time.map((t, index) => (
+              {jsonpassato.hourly.time.map((t, index) => (
               <TableRow key={t}>
                 <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                <TableCell align="right">{arrraypassato.hourly.temperature_2m[index]}</TableCell>
-                <TableCell align="right">{getWeatherDescription(arrraypassato.hourly.weather_code[index])}</TableCell>
+                <TableCell align="right">{jsonpassato.hourly.temperature_2m[index]}</TableCell>
+                <TableCell align="right">{getWeatherIcon(jsonpassato.hourly.weather_code[index])}</TableCell>
               </TableRow>
               ))}
             </TableBody>
