@@ -21,6 +21,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
     e.respondWith(
         fetch(e.request).then((res) => {
+            console.log(res);
             const resClone = res.clone();
 
             e.waitUntil(() => caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)}));
