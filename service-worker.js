@@ -23,7 +23,7 @@ self.addEventListener("fetch", (e) => {
         fetch(e.request).then((res) => {
             const resClone = res.clone();
 
-            caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
+            e.waitUntil(() => caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)}));
 
             return resClone;
         })
