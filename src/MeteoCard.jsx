@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import {median, max, min} from 'mathjs';
+import Skeleton from '@mui/material/Skeleton';
 
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
@@ -121,27 +122,30 @@ function getWeatherIcon(weatherCode, size = 32) {
   }
 }
 
+// funzione che data una data restituisce giorno mese anno, usata per il giorno della card
 function getDay(dataOraStringa){
   const dataOggetto = new Date(dataOraStringa);
   const anno = dataOggetto.getFullYear();
   const mese = (dataOggetto.getMonth() + 1).toString().padStart(2, '0'); // Mese è base 0
   const giorno = dataOggetto.getDate().toString().padStart(2, '0');
-  return `${anno}-${mese}-${giorno}`;
+  return `${giorno}-${mese}-${anno}`;
 }
 
+// funzione che dalla data restituisce il giorno della settimana
 function getGiornoDellaSettimana(data) {
   const dataOggetto = new Date(data);
   const giorniSettimana = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   return giorniSettimana[dataOggetto.getDay()];
 }
 
-function MeteoCard({city, invio}){
+// component
+function MeteoCard({city}){
   
   const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto treu se la API ha finito di leggere
   const [datiMeteo , setDatiMeteo] = useState({}); // dati restituiti dalla API
   const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
   const [result, setResult] = useState(""); 
-  const [expanded, setExpanded] = useState(-1);
+  const [expanded, setExpanded] = useState(-1); // variabile usata per l'esoanzione delle card
 
   useEffect(() => {
     document.getElementById("search-bar").value = "";
@@ -166,7 +170,7 @@ function MeteoCard({city, invio}){
         const latitude = parseFloat(data[0].lat);
         const longitude = parseFloat(data[0].lon);
         console.log("risposta API citta --> coordinate ",{ latitude, longitude });
-        
+
         // API per il meteo con json
         const params = {
           "latitude": latitude,
@@ -226,188 +230,82 @@ function MeteoCard({city, invio}){
     ); 
   }
     
-  if (!letturaAPI){
-    return(
-      <Typography variant="h6">lettura dati api</Typography>
-    ); 
-  }
+  // if (!letturaAPI){
+  //   return(
+  //     <Typography variant="h6">lettura dati api</Typography>
+  //   ); 
+  // }
 
   console.log("FAX");
 
-  const ExpandMore = styled((props) => {
-    const { expand, ...other } = props;
-    return <IconButton {...other} />;
-  })(({ theme }) => ({
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-    variants: [
-      {
-        props: ({ expand }) => !expand,
-        style: {
-          transform: 'rotate(0deg)',
-        },
-      },
-      {
-        props: ({ expand }) => !!expand,
-        style: {
-          transform: 'rotate(180deg)',
-        },
-      },
-    ],
-  }));
-
+  //funzione per l'espansione delle card
   const handleExpandClick = i => {
     setExpanded(expanded === i ? -1 : i);
   };
 
-
-  // const handleExpandClick = () => {
-  //   setExpanded(!expanded);
-  // };
-
-  // const iterationperday = [{ _id: "1" }, { _id: "2" }, { _id: "3" }, { _id: "4" }, { _id: "5" }, { _id: "6" }, { _id: "7" }];
+  // array usato per il map delle card 
   const f = [1,2,3,4,5,6,7];
-  
-  function SingleCard({key, da, a, dati, numer = 1}) {
-    return(
-      <Card key={key} sx={{ minWidth: 400, margin: "auto", mt: 4 }}>
-          <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-            <Box>
-              <Typography variant="h5">{getGiornoDellaSettimana(dati.hourly.time[da +1])}</Typography>
-              <Typography variant="h6" color="text.secondary">{getDay(dati.hourly.time[da +1])}</Typography>
-            </Box>
-  
-            <Typography variant="h4">
-              {median(taglioarraydati(dati, da,a).hourly.temperature_2m)}  (°C)
-            </Typography>
-          </CardContent>
-  
-          <CardActions sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
-            <Box>
-              {getWeatherIcon(median(taglioarraydati(dati, da,a).hourly.weather_code),50)}
-            </Box>
-            <ExpandMore
-              expand={expanded}
-              onClick={() => handleExpandClick(number)}
-              aria-expanded={expanded === numer}
-              aria-label="Mostra di più"
-            >
-              <ExpandMoreIcon />
-            </ExpandMore>
-          </CardActions>
-  
-          <Collapse in={expanded} timeout="auto" unmountOnExit>
-            <CardContent>
-              <TabellaGiorni jsonpassato={taglioarraydati(dati, da,a)}/>
-            </CardContent>
-          </Collapse>
-        </Card>
-      );
-  }
 
-  const dati = datiMeteo;
+  const dayNow = (new Date()).getHours();    
    
   return (
     <>
-    <Typography variant="h6">Dati meteo relativi alla città {city}</Typography>
+    {/* <Typography variant="h6">Dati meteo relativi alla città {city}</Typography>
     <Typography variant="h6">Precipitazioni settimana: {getWeatherDescription(median(datiMeteo.hourly.weather_code))}</Typography>
-    <Typography variant="h6">Temperature dalla settimana tra {min(datiMeteo.hourly.temperature_2m)} e {max(datiMeteo.hourly.temperature_2m)}</Typography>
+    <Typography variant="h6">Temperature dalla settimana tra {min(datiMeteo.hourly.temperature_2m)} e {max(datiMeteo.hourly.temperature_2m)}</Typography> */}
+
+    
 
     <Box
       sx={{
         margin: 'auto',
         maxWidth: 400,
         display: 'box',
-        flexDirection: 'row',
-        overflowX: 'auto',
-        gap: 2, // Spazio tra le card
-        padding: 2, // Un po' di padding intorno alle card
       }}
     >
-      {f.map((g, i) =>(        
-          <Card key={g} sx={{ minWidth: 400, margin: "auto", mt: 4 }}>
+      {/* schede oscurate mente si carica l'API */}
+      {letturaAPI ? (
+        f.map((g, i) =>(        
+          <Card key={g} sx={{ minWidth: 350, margin: "auto", mt: 4 }}>
             <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <Box>
-                <Typography variant="h5">{getGiornoDellaSettimana(dati.hourly.time[i*24+1 +1])}</Typography>
-                <Typography variant="h6" color="text.seconi*24+1ry">{getDay(dati.hourly.time[i*24+1 +1])}</Typography>
+                <Typography variant="h5">{getGiornoDellaSettimana(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
+                <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
               </Box>
-    
               <Typography variant="h4">
-                {median(taglioarraydati(dati, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
+                {median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
               </Typography>
             </CardContent>
           <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
             <Box>
-              {getWeatherIcon(median(taglioarraydati(dati, i*24+1,(i+1)*24).hourly.weather_code),50)}
+              {getWeatherIcon(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
             </Box>
-            <ExpandMore
+            <Button
               onClick={() => handleExpandClick(i)}
               aria-expanded={expanded === i}
               aria-label="show more"
             >
-              <ExpandMoreIcon />
-            </ExpandMore>
+              {/* <ExpandMoreIcon /> */}
+              see more
+            </Button>
           </CardActions>
           <Collapse in={expanded === i} timeout="auto" unmountOnExit>
             <CardContent>
-              <TabellaGiorni jsonpassato={taglioarraydati(dati, i*24+1,(i+1)*24)}/>
+              <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
             </CardContent>
           </Collapse>
         </Card>
-      ))}
-
-      
-
-
-
-      {/* <Card sx={{ maxWidth: 500, minWidth: 500 }}>
-        <CardContent>
-          <Typography variant="h6">{getGiornoDellaSettimana(datiMeteo.hourly.time[1])} {getDay(datiMeteo.hourly.time[1])}</Typography>
-          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 0,24)}></TabellaGiorni>
-        </CardContent>
-      </Card>
-      <Card sx={{ maxWidth: 500, minWidth: 500 }}>
-        <CardContent>
-          <Typography variant="h6">{getGiornoDellaSettimana(datiMeteo.hourly.time[25])} {getDay(datiMeteo.hourly.time[25])}</Typography>
-          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 24,48)}></TabellaGiorni>
-        </CardContent>
-      </Card>
-      <Card sx={{ maxWidth: 500, minWidth: 500 }}>
-        <CardContent>
-          <Typography variant="h6">{getGiornoDellaSettimana(datiMeteo.hourly.time[49])} {getDay(datiMeteo.hourly.time[49])}</Typography>
-          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 48,72)}></TabellaGiorni>
-        </CardContent>
-      </Card>
-      <Card sx={{ maxWidth: 500, minWidth: 500 }}>
-        <CardContent>
-          <Typography variant="h6">{getGiornoDellaSettimana(datiMeteo.hourly.time[73])} {getDay(datiMeteo.hourly.time[73])}</Typography>
-          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 72,96)}></TabellaGiorni>
-        </CardContent>
-      </Card>
-      <Card sx={{ maxWidth: 500, minWidth: 500 }}>
-        <CardContent>
-          <Typography variant="h6">{getGiornoDellaSettimana(datiMeteo.hourly.time[97])} {getDay(datiMeteo.hourly.time[97])}</Typography>
-          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 96,120)}></TabellaGiorni>
-        </CardContent>
-      </Card>
-      <Card sx={{ maxWidth: 500, minWidth: 500 }}>
-        <CardContent>
-          <Typography variant="h6">{getGiornoDellaSettimana(datiMeteo.hourly.time[121])} {getDay(datiMeteo.hourly.time[121])}</Typography>
-          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 120,144)}></TabellaGiorni>
-        </CardContent>
-      </Card>
-      <Card sx={{ maxWidth: 500, minWidth: 500 }}>
-        <CardContent>
-          <Typography variant="h6">{getGiornoDellaSettimana(datiMeteo.hourly.time[145])} {getDay(datiMeteo.hourly.time[145])}</Typography>
-          <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, 144,168)}></TabellaGiorni>
-        </CardContent>
-        <CardActions>
-            <Button size="small">Learn More</Button>
-        </CardActions>
-      </Card> */}
-
+      ))) : (
+        f.map((g, i) =>( 
+          <Skeleton
+            key={i}
+            variant="rectangular"
+            width={300}
+            height={200}
+            animation="wave"
+            sx={{ minWidth: 350, margin: "auto", mt: 4 }}
+          />
+      )))}
     </Box>
 
     </>

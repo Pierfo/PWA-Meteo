@@ -121,7 +121,7 @@ function Input2() {
                 <Button variant="outlined" onClick={press}>invio</Button>
             </Box>
             {/* {send && <TabellaMeteo city={senddati} invio={resend}/>} */}
-            {send && <MeteoCard city={senddati} invio={resend}/>}
+            {send && <MeteoCard city={senddati}/>}
         </>
     );
 }
