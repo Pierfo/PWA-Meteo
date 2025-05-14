@@ -1,6 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import TabellaMeteo from './TabellaMeteo.jsx'
+import MeteoCard from "./MeteoCard.jsx";
 import cities from "./cities_italy_100.json";
 
 import Typography from '@mui/material/Typography';
@@ -81,6 +82,7 @@ function Input2() {
         
     return (
         <>
+        
             <Box sx={{display: 'flex',  height: 56, margin: '0 auto', justifyContent: 'center'}}>
                 <Autocomplete
                     id="search-bar"
@@ -118,7 +120,8 @@ function Input2() {
                 {/* <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" /> */}
                 <Button variant="outlined" onClick={press}>invio</Button>
             </Box>
-            {send && <TabellaMeteo city={senddati} invio={resend}/>}
+            {/* {send && <TabellaMeteo city={senddati} invio={resend}/>} */}
+            {send && <MeteoCard city={senddati} invio={resend}/>}
         </>
     );
 }
