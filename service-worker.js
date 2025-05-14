@@ -1,31 +1,10 @@
-const cacheName = "PWA-Meteo_v1"
+console.log("ciao")
 
-self.addEventListener("install", (e) => {
-    e.waitUntil(() => caches.open(cacheName));
+self.addEventListener("install", () => {
+    console.log("Service worker installed");
 });
 
-self.addEventListener("activate", (e) => {
-    e.waitUntil(() => {
-        caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map(cache => {
-                    if(cache != cacheName) {
-                        return caches.delete(cache);
-                    }
-                })
-            )
-        })
-    })
-})
-
-self.addEventListener("fetch", (e) => {
-    e.respondWith(
-        fetch(e.request).then((res) => {
-            const resClone = res.clone();
-
-            caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
-
-            return res;
-        })
-    )
+self.addEventListener("activate", () => {
+    clients.claim();
+    console.log("service worker activated");
 })
