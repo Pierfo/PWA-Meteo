@@ -266,7 +266,7 @@ function MeteoCard({city}){
       {/* schede oscurate mente si carica l'API */}
       {letturaAPI ? (
         f.map((g, i) =>(        
-          <Card key={g} sx={{ minWidth: 350, margin: "auto", mt: 4 }}>
+          <Card key={g} sx={{ minWidth: 350, height: 170, margin: "auto", mt: 4 }}>
             <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
               <Box>
                 <Typography variant="h5">{getGiornoDellaSettimana(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
@@ -300,8 +300,8 @@ function MeteoCard({city}){
           <Skeleton
             key={i}
             variant="rectangular"
-            width={300}
-            height={200}
+            width={350}
+            height={170}
             animation="wave"
             sx={{ minWidth: 350, margin: "auto", mt: 4 }}
           />
