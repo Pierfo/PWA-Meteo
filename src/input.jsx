@@ -20,11 +20,13 @@ function Input2() {
 
     //Invia all'API il nome della città
     function press() {
-        setSendDati(dati);
-        setSend(true); 
-        setResend(!resend);   
-        console.log("dal press", dati);
-        setDati("");   
+        if (dati.length > 2){
+            setSendDati(dati);
+            setSend(true); 
+            setResend(!resend);   
+            console.log("dal press", dati);
+            setDati("");   
+        }
          
     }
 

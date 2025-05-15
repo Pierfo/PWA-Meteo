@@ -215,7 +215,7 @@ function MeteoCard({city}){
           
         console.error("Errore durante la chiamata API:", error);
         setErrore(error);                
-      }finally {
+      }finally{
         setLetturaAPI(true);
       }
     }
@@ -246,14 +246,28 @@ function MeteoCard({city}){
   // array usato per il map delle card 
   const f = [1,2,3,4,5,6,7];
 
-  const dayNow = (new Date()).getHours();    
-   
+  const dayNow = (new Date()).getHours();   
+     
   return (
     <>
     {/* <Typography variant="h6">Dati meteo relativi alla città {city}</Typography>
     <Typography variant="h6">Precipitazioni settimana: {getWeatherDescription(median(datiMeteo.hourly.weather_code))}</Typography>
     <Typography variant="h6">Temperature dalla settimana tra {min(datiMeteo.hourly.temperature_2m)} e {max(datiMeteo.hourly.temperature_2m)}</Typography> */}
 
+
+    <Box sx={{marginTop: 3}}>
+      {letturaAPI ? (
+        <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+      ) : (
+        <Skeleton
+          variant="rectangular"
+          width={350}
+          height={32}
+          animation="wave"
+          sx={{margin: "auto", borderRadius: 2}}
+        />
+      )}
+    </Box>
     
 
     <Box
@@ -303,7 +317,7 @@ function MeteoCard({city}){
             width={350}
             height={170}
             animation="wave"
-            sx={{margin: "auto", mt: 4 }}
+            sx={{margin: "auto", mt: 4, borderRadius: 2}}
           />
       )))}
     </Box>
