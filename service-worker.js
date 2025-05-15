@@ -19,6 +19,8 @@ self.addEventListener("activate", (e) => {
 })
 
 self.addEventListener("fetch", (e) => {
+    console.log(Date.now().toUTCString())
+    
     e.respondWith(
         fetch(e.request).then((res) => {
             const resClone = res.clone();
