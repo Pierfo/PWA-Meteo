@@ -1,11 +1,11 @@
-const cacheName = "PWA-Meteo_v"
+const cacheName = "PWA-Meteo_v1"
 
 self.addEventListener("install", (e) => {
     e.waitUntil(() => caches.open(cacheName));
 });
 
 self.addEventListener("activate", (e) => {
-    e.waitUntil(() => {
+    e.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map(cache => {
@@ -15,7 +15,7 @@ self.addEventListener("activate", (e) => {
                 })
             )
         })
-    })
+    )
 })
 
 self.addEventListener("fetch", (e) => {
