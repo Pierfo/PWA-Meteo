@@ -21,7 +21,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         fetch(e.request).then((res) => {
-            const original_date;
+            let original_date;
             for(const pair of res.headers) {
                 if(pair[0] === "Date") {
                     original_date = Date.parse(pair[1])
