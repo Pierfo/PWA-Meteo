@@ -25,6 +25,7 @@ self.addEventListener("fetch", (e) => {
             for(const pair of res.headers) {
                 if(pair[0] === "Date") {
                     original_date = Date.parse(pair[1])
+                    console.log(original_date);
                 }
             }
             
