@@ -18,11 +18,11 @@ self.addEventListener("activate", (e) => {
     )
 })
 
-self.addEventListener("fetch", (e) => {
-    console.log(Date.now().toUTCString())
-    
+self.addEventListener("fetch", (e) => {    
     e.respondWith(
         fetch(e.request).then((res) => {
+            console.log(res.headers)
+            
             const resClone = res.clone();
 
             caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
