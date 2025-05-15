@@ -21,7 +21,9 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         fetch(e.request).then((res) => {
-            console.log(res.headers)
+            for(const pair of res.headers) {
+                console.log(pair[0] + ": " + pair[1])
+            }
             
             const resClone = res.clone();
 
