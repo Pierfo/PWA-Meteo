@@ -20,20 +20,27 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
-        fetch(e.request).then((res) => {
-            let original_date;
-            for(const pair of res.headers.entries()) {
-                if(pair[0] === "date") {
-                    original_date = Date.parse(pair[1])
-                    console.log(original_date);
-                }
-            }
-            
-            const resClone = res.clone();
+        caches.open(cacheName).then((cache) => {
+            cache.match(e.request).then((cached) => {
+                console.log("Reading from cache");
+                return cached;
+            }).catch(() => {
+                fetch(e.request).then((res) => {
+                    console.log("Reading from the web");
+                    let original_date;
+                    for(const pair of res.headers.entries()) {
+                        if(pair[0] === "date") {
+                            original_date = Date.parse(pair[1])
+                        }
+                    }
 
-            caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
+                    const resClone = res.clone();
 
-            return res;
+                    caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
+
+                    return res;
+                }).catch(() => alert("Sei offline!"));
+            })
         })
     )
 })
