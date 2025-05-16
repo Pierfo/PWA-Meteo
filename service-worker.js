@@ -21,22 +21,25 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         caches.match(e.request).then(cached => {
-            return cached || fetch(e.request);
-        }
-            /*
-            console.log("CIAO");
-            fetch(e.request).then((res) => {
-                console.log("Reading from the web");
-                let original_date;
-                for(const pair of res.headers.entries()) {
-                    if(pair[0] === "date") {
-                        original_date = Date.parse(pair[1])
-                    }
-                }
-                const resClone = res.clone();
-                caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
-                return res;
-            }).catch((error) => alert("Sei offline!"));
-        }*/)
+            let response;
+
+            if(cached === undefined) {
+                fetch(e.request).then((res) => {
+                    console.log("Fetching from the web");
+                    const resClone = res.clone();
+
+                    caches.open(cacheName).then((cache) => {cache.put(e.request, res)});
+
+                    response = resClone;
+                })
+            }
+
+            else {
+                console.log("Fetching from cache");
+                response = cached;
+            }
+
+            return response;
+        })
     )
 })
