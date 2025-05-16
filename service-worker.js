@@ -20,26 +20,34 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
-        caches.match(e.request).then(cached => {
-            if(cached === undefined) {
-                e.waitUntil(
-                    new Promise((resolve, reject) => {
-                        fetch(e.request).then((res) => {
-                            console.log("Fetching from the web");
-                            const resClone = res.clone();
+        new Promise ((resolve, reject) => {
+            caches.match(e.request).then(cached => {
+                if(cached === undefined) {
+                    resolve(fetchFromWebWrapper(e.request))
+                }
 
-                            caches.open(cacheName).then((cache) => {cache.put(e.request, res)});
-
-                            resolve(resClone);
-                        })
-                    })
-                ).then((response) => {return response})
-            }
-
-            else {
-                console.log("Fetching from cache");
-                return cached;
-            }
+                else {
+                    console.log("Fetching from cache");
+                    resolve(cached);
+                }
+            })
         })
     )
 })
+
+async function fetchFromWebWrapper(request) {
+    return await fetchFromWeb(request);
+}
+
+function fetchFromWeb(request) {
+    return new Promise((resolve, reject) => {
+        fetch(e.request).then((res) => {
+            console.log("Fetching from the web");
+            const resClone = res.clone();
+
+            caches.open(cacheName).then((cache) => {cache.put(e.request, res)});
+
+            resolve(response = resClone);
+        })
+    })
+}
