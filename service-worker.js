@@ -21,10 +21,8 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         caches.open(cacheName).then((cache) => {
-            cache.match(e.request).then((cached) => {
-                console.log(cached);
-                return cached;
-            }).catch(() => {
+            cache.match(e.request).then(cached => cached)
+            .catch(() => {
                 fetch(e.request).then((res) => {
                     console.log("Reading from the web");
                     let original_date;
