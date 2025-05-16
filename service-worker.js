@@ -22,7 +22,7 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(
         caches.open(cacheName).then((cache) => {
             cache.match(e.request).then((cached) => {
-                console.log("Reading from cache");
+                console.log(cached);
                 return cached;
             }).catch(() => {
                 fetch(e.request).then((res) => {
