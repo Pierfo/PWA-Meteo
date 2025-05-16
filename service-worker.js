@@ -42,7 +42,7 @@ async function fetchFromWebWrapper(request) {
 
 function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
-        fetch(e.request).then((res) => {
+        fetch(request).then((res) => {
             console.log("Fetching from the web");
             const resClone = res.clone();
 
