@@ -22,6 +22,7 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(
         caches.match(e.request).then(cached => cached)
         .catch((err) => {
+            console.log("CIAO");
             fetch(e.request).then((res) => {
                 console.log("Reading from the web");
                 let original_date;
