@@ -23,12 +23,23 @@ self.addEventListener("fetch", (e) => {
         new Promise ((resolve, reject) => {
             caches.match(e.request).then(cached => {
                 if(cached === undefined) {
-                    console.log("ciao")
                     resolve(fetchFromWebWrapper(e.request))
                 }
 
                 else {
                     console.log("Fetching from cache");
+
+                    let original_time;
+
+                    for(const header in cached.headers) {
+                        if(header[0] === "date") {
+                            original_time = Date.parse(header[1]);
+                        }
+                    }
+
+                    if(Date.now() - original_time > 30000)
+                        alert("Very old data");
+
                     resolve(cached);
                 }
             })
@@ -44,6 +55,7 @@ function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
         fetch(request).then((res) => {
             console.log("Fetching from the web");
+            
             const resClone = res.clone();
 
             caches.open(cacheName).then((cache) => {cache.put(request, res)});
