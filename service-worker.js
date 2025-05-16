@@ -25,13 +25,15 @@ self.addEventListener("fetch", (e) => {
 
             if(cached === undefined) {
                 e.waitUntil(
-                    fetch(e.request).then((res) => {
-                        console.log("Fetching from the web");
-                        const resClone = res.clone();
+                    new Promise((resolve, reject) => {
+                        fetch(e.request).then((res) => {
+                            console.log("Fetching from the web");
+                            const resClone = res.clone();
 
-                        caches.open(cacheName).then((cache) => {cache.put(e.request, res)});
+                            caches.open(cacheName).then((cache) => {cache.put(e.request, res)});
 
-                        response = resClone;
+                            resolve(response = resClone);
+                        })
                     })
                 )
             }
