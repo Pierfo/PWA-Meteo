@@ -31,8 +31,8 @@ self.addEventListener("fetch", (e) => {
 
                     let original_time;
 
-                    for(const header in cached.headers.entries()) {
-                        console.log(header[0]);
+                    for(const h in cached.headers.entries()) {
+                        console.log(h[0]);
                     }
 
                     console.log(`${original_time}, ${Date.now()}`);
