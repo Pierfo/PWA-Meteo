@@ -31,13 +31,11 @@ self.addEventListener("fetch", (e) => {
 
                     let original_time;
 
-                    for(const header in cached.headers) {
-                        if(header[0] === "date") {
-                            original_time = Date.parse(header[1]);
-                        }
+                    for(const h in cached.headers.entries()) {
+                        console.log(h[0]);
                     }
 
-                    console.log(`${}`)
+                    console.log(`${original_time}, ${Date.now()}`);
 
                     if(Date.now() - original_time > 30000)
                         alert("Very old data");
