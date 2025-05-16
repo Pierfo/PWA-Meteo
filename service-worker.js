@@ -21,8 +21,6 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         caches.match(e.request).then(cached => {
-            let response;
-
             if(cached === undefined) {
                 e.waitUntil(
                     new Promise((resolve, reject) => {
@@ -32,18 +30,16 @@ self.addEventListener("fetch", (e) => {
 
                             caches.open(cacheName).then((cache) => {cache.put(e.request, res)});
 
-                            resolve(response = resClone);
+                            resolve(resClone);
                         })
                     })
-                )
+                ).then((response) => {return response})
             }
 
             else {
                 console.log("Fetching from cache");
-                response = cached;
+                return cached;
             }
-
-            return response;
         })
     )
 })
