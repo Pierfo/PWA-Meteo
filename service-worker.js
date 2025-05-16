@@ -37,6 +37,8 @@ self.addEventListener("fetch", (e) => {
                         }
                     }
 
+                    console.log(`${original_time}, ${Date.now()}`);
+
                     if(Date.now() - original_time > 30000)
                         alert("Very old data");
 
