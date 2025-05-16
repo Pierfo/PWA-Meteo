@@ -23,6 +23,7 @@ self.addEventListener("fetch", (e) => {
         new Promise ((resolve, reject) => {
             caches.match(e.request).then(cached => {
                 if(cached === undefined) {
+                    console.log("ciao")
                     resolve(fetchFromWebWrapper(e.request))
                 }
 
