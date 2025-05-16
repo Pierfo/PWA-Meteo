@@ -21,7 +21,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         caches.match(e.request).then(cached => cached)
-        .catch(() => {
+        .catch((err) => {
             fetch(e.request).then((res) => {
                 console.log("Reading from the web");
                 let original_date;
@@ -33,7 +33,7 @@ self.addEventListener("fetch", (e) => {
                 const resClone = res.clone();
                 caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
                 return res;
-            }).catch(() => alert("Sei offline!"));
+            }).catch((error) => alert("Sei offline!"));
         })
     )
 })
