@@ -34,6 +34,7 @@ self.addEventListener("fetch", (e) => {
                     for(const header in cached.headers) {
                         if(header[0] === "date") {
                             original_time = Date.parse(header[1]);
+                            console.log(original_time);
                         }
                     }
 
