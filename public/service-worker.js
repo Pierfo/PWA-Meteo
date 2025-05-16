@@ -5,7 +5,7 @@ self.addEventListener("install", (e) => {
 });
 
 self.addEventListener("activate", (e) => {
-    e.waitUntil(() => {
+    e.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map(cache => {
@@ -15,17 +15,54 @@ self.addEventListener("activate", (e) => {
                 })
             )
         })
-    })
+    )
 })
 
-self.addEventListener("fetch", (e) => {
+self.addEventListener("fetch", (e) => {    
     e.respondWith(
-        fetch(e.request).then((res) => {
-            const resClone = res.clone();
+        new Promise ((resolve, reject) => {
+            caches.match(e.request).then(cached => {
+                if(cached === undefined) {
+                    resolve(fetchFromWebWrapper(e.request))
+                }
 
-            caches.open(cacheName).then((cache) => {cache.put(e.request, resClone)});
+                else {
+                    console.log("Fetching from cache");
 
-            return res;
+                    let original_time;
+
+                    for(const header in cached.headers) {
+                        if(header[0] === "date") {
+                            original_time = Date.parse(header[1]);
+                        }
+                    }
+
+                    console.log(`${}`)
+
+                    if(Date.now() - original_time > 30000)
+                        alert("Very old data");
+
+                    resolve(cached);
+                }
+            })
         })
     )
 })
+
+async function fetchFromWebWrapper(request) {
+    return await fetchFromWeb(request);
+}
+
+function fetchFromWeb(request) {
+    return new Promise((resolve, reject) => {
+        fetch(request).then((res) => {
+            console.log("Fetching from the web");
+            
+            const resClone = res.clone();
+
+            caches.open(cacheName).then((cache) => {cache.put(request, res)});
+
+            resolve(response = resClone);
+        })
+    })
+}
