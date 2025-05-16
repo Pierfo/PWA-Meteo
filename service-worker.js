@@ -20,7 +20,9 @@ self.addEventListener("activate", (e) => {
 
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
-        caches.match(e.request).then(cached => cached)
+        caches.match(e.request).then(cached => {
+            if(cached === undefined) throw new Error();
+            return cached})
         .catch((err) => {
             console.log("CIAO");
             fetch(e.request).then((res) => {
