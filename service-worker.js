@@ -1,4 +1,5 @@
 const cacheNames = ["PWA-Meteo_v3", "PWA-Meteo_time-cached_v1"];
+const expirationMinutes = 1;
 
 self.addEventListener("install", (e) => {
     e.waitUntil(() => caches.open(cacheNames));
@@ -24,7 +25,11 @@ self.addEventListener("fetch", (e) => {
             caches.open(cacheNames[1]).then((cache) => {
                 cache.match(e.request).then((res) => {
                     if(res != undefined) {
-                        console.log(res.statusText)
+                        const time_cached = parseInt(res.statusText);
+
+                        if(Date.now() - time_cached > expirationMinutes * 60 * 1000) {
+                            alert("TOO OLD!");
+                        }
                     }
                 })
             })
