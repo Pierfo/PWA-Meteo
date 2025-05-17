@@ -21,7 +21,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
-            caches.open(cacheNames[0]).then(() => {
+            caches.open(cacheNames[0]).then((cache) => {
                 cache.match(e.request).then(cached => {
                     if(cached === undefined) {
                         resolve(fetchFromWebWrapper(e.request))
