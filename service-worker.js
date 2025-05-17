@@ -21,6 +21,14 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
+            caches.open(cacheNames[1]).then((cache) => {
+                cache.match(e.request).then((res) => {
+                    if(res != undefined) {
+                        console.log(res.statusText)
+                    }
+                })
+            })
+            
             caches.open(cacheNames[0]).then((cache) => {
                 cache.match(e.request).then(cached => {
                     if(cached === undefined) {
@@ -52,26 +60,9 @@ function fetchFromWeb(request) {
             caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
             
             if(request.url.includes("https://api.open-meteo.com/v1/forecast")) {
-                caches.open(cacheNames[1]).then((cache) => {cache.put(request, new Response(Date.now().toString()))
-                    .then(() => {cache.match(request).then((res) => {
-                        const reader = res.body.getReader();
-
-                        let number;
-
-                        reader.read().then(function readStream({done, value}) {
-                            if(!done) {
-                                number += value;
-
-                                reader.read().then(readStream);
-                            }
-
-                            else{
-                                console.log(`${number}, ${Date.now()}`);
-                            }
-                        })
-
-                        
-                    })})});
+                caches.open(cacheNames[1]).then((cache) => {
+                    cache.put(request, new Response(null, {status: 200, statusText: Date.now().toString()}));
+                })
             }
 
             resolve(resClone);
