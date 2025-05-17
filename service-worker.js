@@ -1,15 +1,15 @@
-const cacheNames = ["PWA-Meteo_v3", "PWA-Meteo_time-cached_v1"];
+const cacheName = "PWA-Meteo_v1"
 
 self.addEventListener("install", (e) => {
-    e.waitUntil(() => caches.open(cacheNames));
+    e.waitUntil(() => caches.open(cacheName));
 });
 
 self.addEventListener("activate", (e) => {
     e.waitUntil(
-        caches.keys().then((otherCaches) => {
+        caches.keys().then((cacheNames) => {
             return Promise.all(
-                otherCaches.map(cache => {
-                    if(!(cache in cacheNames)) {
+                cacheNames.map(cache => {
+                    if(cache != cacheName) {
                         return caches.delete(cache);
                     }
                 })
@@ -21,18 +21,27 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
-            caches.open(cacheNames[0]).then((cache) => {
-                cache.match(e.request).then(cached => {
-                    if(cached === undefined) {
-                        resolve(fetchFromWebWrapper(e.request))
+            caches.match(e.request).then(cached => {
+                if(cached === undefined) {
+                    resolve(fetchFromWebWrapper(e.request))
+                }
+
+                else {
+                    console.log("Fetching from cache");
+
+                    let original_time;
+
+                    for(const h in cached.headers.entries()) {
+                        console.log(h[0]);
                     }
 
-                    else {
-                        console.log("Fetching from cache");
+                    console.log(`${original_time}, ${Date.now()}`);
 
-                        resolve(cached);
-                    }
-                })
+                    if(Date.now() - original_time > 30000)
+                        alert("Very old data");
+
+                    resolve(cached);
+                }
             })
         })
     )
@@ -49,30 +58,9 @@ function fetchFromWeb(request) {
             
             const resClone = res.clone();
 
-            caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
-            
-            if(request.url.includes("https://api.open-meteo.com/v1/forecast")) {
-                caches.open(cacheNames[1]).then((cache) => {cache.put(request, new Response(Date.now().toString())).then(
-                    cache.match(request).then((res) => {
-                    const reader = res.body.getReader();
-                    let number;
+            caches.open(cacheName).then((cache) => {cache.put(request, res)});
 
-                    reader.read().then(function parseText ({done, value}) {
-                        if(!done) {
-                            number += value;
-
-                            return reader.read().then(parseText);
-                        }
-
-                        else {
-                            console.log(number);
-                        }
-                    })
-                }))
-                });
-            }
-
-            resolve(resClone);
+            resolve(response = resClone);
         })
     })
 }
