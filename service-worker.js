@@ -52,9 +52,9 @@ function fetchFromWeb(request) {
             caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
             
             if(request.url.includes("https://api.open-meteo.com/v1/forecast")) {
-                caches.open(cacheNames[1]).then((cache) => {cache.put(request, new Response(Date.now().toString()))});
-                caches.open(cacheNames[1]).then((cache) => {cache.match(request).then((res) => {
-                    const reader = res.getReader();
+                caches.open(cacheNames[1]).then((cache) => {cache.put(request, new Response(Date.now().toString())).then(
+                    cache.match(request).then((res) => {
+                    const reader = res.body.getReader();
                     let number;
 
                     reader.read().then(function parseText ({done, value}) {
@@ -68,7 +68,8 @@ function fetchFromWeb(request) {
                             console.log(number);
                         }
                     })
-                })})
+                }))
+                });
             }
 
             resolve(resClone);
