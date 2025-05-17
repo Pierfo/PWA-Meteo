@@ -28,7 +28,7 @@ self.addEventListener("fetch", (e) => {
                         const time_cached = parseInt(res.statusText);
 
                         if(Date.now() - time_cached > expirationMinutes * 60 * 1000) {
-                            alert("TOO OLD!");
+                            console.log("TOO OLD!");
                         }
                     }
                 })
