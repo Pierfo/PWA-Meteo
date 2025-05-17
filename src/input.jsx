@@ -9,6 +9,8 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
+import SendIcon from '@mui/icons-material/Send';
+
 
 
 function Input2() {
@@ -120,7 +122,7 @@ function Input2() {
                     }}
                 />
                 {/* <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" /> */}
-                <Button variant="outlined" onClick={press}>invio</Button>
+                <Button sx={{ml: 1}} variant="outlined" disabled={dati.length <3} onClick={press} endIcon={<SendIcon />}>send</Button>
             </Box>
             {/* {send && <TabellaMeteo city={senddati} invio={resend}/>} */}
             {send && <MeteoCard city={senddati}/>}
