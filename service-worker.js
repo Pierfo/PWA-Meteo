@@ -1,4 +1,4 @@
-const cacheNames = ["PWA-Meteo_v2", "PWA-Meteo_time-cached"];
+const cacheNames = ["PWA-Meteo_v3", "PWA-Meteo_time-cached_v1"];
 
 self.addEventListener("install", (e) => {
     e.waitUntil(() => caches.open(cacheNames));
@@ -52,7 +52,7 @@ function fetchFromWeb(request) {
             caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
             
             if(request.url.includes("https://api.open-meteo.com/v1/forecast")) {
-                caches.open(cacheNames[1]).then((cache) => {cache.put(request, Date.now())});
+                caches.open(cacheNames[1]).then((cache) => {cache.put(request, new Response(Date.now().toString()))});
             }
 
             resolve(resClone);
