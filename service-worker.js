@@ -41,7 +41,7 @@ self.addEventListener("fetch", (e) => {
                     }
 
                     else {
-                        console.log("Fetching from cache");
+                        console.log(`Fetching from cache ${e.request.url}`);
 
                         resolve(cached);
                     }
@@ -58,7 +58,7 @@ async function fetchFromWebWrapper(request) {
 function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
         fetch(request).then((res) => {
-            console.log("Fetching from the web");
+            console.log(`Fetching from the web ${request.url}`);
             
             const resClone = res.clone();
 
