@@ -1,4 +1,4 @@
-const cacheNames = ["PWA-Meteo_v", "PWA-Meteo_time-cached"];
+const cacheNames = ["PWA-Meteo_v1", "PWA-Meteo_time-cached"];
 
 self.addEventListener("install", (e) => {
     e.waitUntil(() => caches.open(cacheNames));
@@ -50,6 +50,10 @@ function fetchFromWeb(request) {
             const resClone = res.clone();
 
             caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
+
+            if(request.includes("/v1/forecast")) {
+                caches.open(cacheNames[1]).then((cache) => {cache.put(request, Date.now())});
+            }
 
             resolve(resClone);
         })
