@@ -1,4 +1,4 @@
-const cacheName = "PWA-Meteo_v1"
+const cacheName = "PWA-Meteo_v2"
 
 self.addEventListener("install", (e) => {
     e.waitUntil(() => caches.open(cacheName));
@@ -32,7 +32,7 @@ self.addEventListener("fetch", (e) => {
                     let original_time;
 
                     for(const h in cached.headers.entries()) {
-                        console.log(h[0]);
+                        console.log(h);
                     }
 
                     console.log(`${original_time}, ${Date.now()}`);
