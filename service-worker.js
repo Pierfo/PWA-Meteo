@@ -1,15 +1,15 @@
-const cacheName = "PWA-Meteo_v3"
+const cacheNames = ["PWA-Meteo_v1", "PWA-Meteo_time-cached"];
 
 self.addEventListener("install", (e) => {
-    e.waitUntil(() => caches.open(cacheName));
+    e.waitUntil(() => caches.open(cacheNames));
 });
 
 self.addEventListener("activate", (e) => {
     e.waitUntil(
-        caches.keys().then((cacheNames) => {
+        caches.keys().then((otherCaches) => {
             return Promise.all(
-                cacheNames.map(cache => {
-                    if(cache != cacheName) {
+                otherCaches.map(cache => {
+                    if(!(cache in cacheNames)) {
                         return caches.delete(cache);
                     }
                 })
@@ -21,23 +21,18 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
-            caches.match(e.request).then(cached => {
-                if(cached === undefined) {
-                    resolve(fetchFromWebWrapper(e.request))
-                }
+            caches.open(cacheNames[0]).then(() => {
+                cache.match(e.request).then(cached => {
+                    if(cached === undefined) {
+                        resolve(fetchFromWebWrapper(e.request))
+                    }
 
-                else {
-                    console.log("Fetching from cache");
+                    else {
+                        console.log("Fetching from cache");
 
-                    let original_time = Date.parse(cached.headers.get("date"));
-
-                    console.log(`${original_time}, ${Date.now()}`);
-
-                    if(Date.now() - original_time > 30000)
-                        alert("Very old data");
-
-                    resolve(cached);
-                }
+                        resolve(cached);
+                    }
+                })
             })
         })
     )
@@ -54,9 +49,9 @@ function fetchFromWeb(request) {
             
             const resClone = res.clone();
 
-            caches.open(cacheName).then((cache) => {cache.put(request, res)});
+            caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
 
-            resolve(response = resClone);
+            resolve(resClone);
         })
     })
 }
