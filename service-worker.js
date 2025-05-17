@@ -51,9 +51,11 @@ function fetchFromWeb(request) {
 
             caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
 
-            if(request.toString().includes("/v1/forecast")) {
+            console.log(request.toString());
+            
+            /*if(request.toString().includes("/v1/forecast")) {
                 caches.open(cacheNames[1]).then((cache) => {cache.put(request, Date.now())});
-            }
+            }*/
 
             resolve(resClone);
         })
