@@ -31,9 +31,7 @@ self.addEventListener("fetch", (e) => {
 
                     let original_time;
 
-                    for(const h in cached.headers.entries()) {
-                        console.log(h);
-                    }
+                    
 
                     console.log(`${original_time}, ${Date.now()}`);
 
@@ -57,6 +55,10 @@ function fetchFromWeb(request) {
             console.log("Fetching from the web");
             
             const resClone = res.clone();
+
+            for(const h in res.headers) {
+                        console.log(h[0]);
+                    }
 
             caches.open(cacheName).then((cache) => {cache.put(request, res)});
 
