@@ -66,7 +66,7 @@ function fetchFromWeb(request) {
                             }
 
                             else{
-                                console.log(number);
+                                console.log(`${number}, ${Date.now()}`);
                             }
                         })
 
