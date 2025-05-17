@@ -64,9 +64,13 @@ function fetchFromWeb(request) {
 
                                 reader.read().then(readStream);
                             }
+
+                            else{
+                                console.log(number);
+                            }
                         })
 
-                        console.log(number);
+                        
                     })})});
             }
 
