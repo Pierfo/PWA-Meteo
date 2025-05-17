@@ -1,15 +1,17 @@
-const cacheName = "PWA-Meteo_v1"
+const cacheNames = ["PWA-Meteo_v3", "PWA-Meteo_time-cached_v1"];
+const expirationMinutes = 15;
 
+//C'è forse bisogno di inserire già degli elementi in cache
 self.addEventListener("install", (e) => {
-    e.waitUntil(() => caches.open(cacheName));
+    e.waitUntil(() => caches.open(cacheNames));
 });
 
 self.addEventListener("activate", (e) => {
     e.waitUntil(
-        caches.keys().then((cacheNames) => {
+        caches.keys().then((otherCaches) => {
             return Promise.all(
-                cacheNames.map(cache => {
-                    if(cache != cacheName) {
+                otherCaches.map(cache => {
+                    if(!(cache in cacheNames)) {
                         return caches.delete(cache);
                     }
                 })
@@ -21,27 +23,30 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
-            caches.match(e.request).then(cached => {
-                if(cached === undefined) {
-                    resolve(fetchFromWebWrapper(e.request))
-                }
+            caches.open(cacheNames[1]).then((cache) => {
+                cache.match(e.request).then((res) => {
+                    if(res != undefined) {
+                        const time_cached = parseInt(res.statusText);
 
-                else {
-                    console.log("Fetching from cache");
-
-                    let original_time;
-
-                    for(const h in cached.headers.entries()) {
-                        console.log(h[0]);
+                        if(Date.now() - time_cached > expirationMinutes * 60 * 1000) {
+                            resolve(fetchFromWebWrapper(e.request));
+                        }
+                    }
+                })
+            })
+            
+            caches.open(cacheNames[0]).then((cache) => {
+                cache.match(e.request).then(cached => {
+                    if(cached === undefined) {
+                        resolve(fetchFromWebWrapper(e.request))
                     }
 
-                    console.log(`${original_time}, ${Date.now()}`);
+                    else {
+                        console.log(`Fetching from cache ${e.request.url}`);
 
-                    if(Date.now() - original_time > 30000)
-                        alert("Very old data");
-
-                    resolve(cached);
-                }
+                        resolve(cached);
+                    }
+                })
             })
         })
     )
@@ -54,13 +59,19 @@ async function fetchFromWebWrapper(request) {
 function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
         fetch(request).then((res) => {
-            console.log("Fetching from the web");
+            console.log(`Fetching from the web ${request.url}`);
             
             const resClone = res.clone();
 
-            caches.open(cacheName).then((cache) => {cache.put(request, res)});
+            caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
+            
+            if(request.url.includes("https://api.open-meteo.com/v1/forecast")) {
+                caches.open(cacheNames[1]).then((cache) => {
+                    cache.put(request, new Response(null, {status: 200, statusText: Date.now().toString()}));
+                })
+            }
 
-            resolve(response = resClone);
+            resolve(resClone);
         })
     })
 }
