@@ -1,4 +1,4 @@
-const cacheNames = ["PWA-Meteo_v1", "PWA-Meteo_time-cached"];
+const cacheNames = ["PWA-Meteo_v", "PWA-Meteo_time-cached"];
 
 self.addEventListener("install", (e) => {
     e.waitUntil(() => caches.open(cacheNames));
