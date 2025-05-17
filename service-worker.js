@@ -65,6 +65,8 @@ function fetchFromWeb(request) {
                                 reader.read().then(readStream);
                             }
                         })
+
+                        console.log(number);
                     })})});
             }
 
