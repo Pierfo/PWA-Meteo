@@ -56,8 +56,8 @@ function fetchFromWeb(request) {
             
             const resClone = res.clone();
 
-            for(const h in res.headers) {
-                        console.log(h);
+            for(const h of res.headers) {
+                        console.log(h[0]);
                     }
 
             caches.open(cacheName).then((cache) => {cache.put(request, res)});
