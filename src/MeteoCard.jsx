@@ -24,6 +24,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
+import useMediaQuery from '@mui/material/useMediaQuery';
+
+
 import {
   WiDaySunny,
   WiDayCloudy,
@@ -74,7 +77,7 @@ function getWeatherDescription(weatherCode) {
 }
 
 // Funzione che restituisce un componente icona in base al codice meteo
-function getWeatherIcon(weatherCode, size = 32) {
+function GetWeatherIcon(weatherCode, size = 32) {
   switch (weatherCode) {
     case 0:
       return <WiDaySunny size={size} />;
@@ -247,81 +250,161 @@ function MeteoCard({city}){
   const f = [1,2,3,4,5,6,7];
 
   const dayNow = (new Date()).getHours();   
-     
-  return (
-    <>
-    {/* <Typography variant="h6">Dati meteo relativi alla città {city}</Typography>
-    <Typography variant="h6">Precipitazioni settimana: {getWeatherDescription(median(datiMeteo.hourly.weather_code))}</Typography>
-    <Typography variant="h6">Temperature dalla settimana tra {min(datiMeteo.hourly.temperature_2m)} e {max(datiMeteo.hourly.temperature_2m)}</Typography> */}
 
-
-    <Box sx={{marginTop: 3}}>
-      {letturaAPI ? (
-        <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
-      ) : (
-        <Skeleton
-          variant="rectangular"
-          width={350}
-          height={32}
-          animation="wave"
-          sx={{margin: "auto", borderRadius: 2}}
-        />
-      )}
-    </Box>
-    
-
-    <Box
-      sx={{
-        margin: 'auto',
-        maxWidth: 400,
-        display: 'box',
-      }}
-    >
-      {/* schede oscurate mente si carica l'API */}
-      {letturaAPI ? (
-        f.map((g, i) =>(        
-          <Card key={g} sx={{ width: 350, margin: "auto", mt: 4 }}>
-            <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-              <Box>
-                <Typography variant="h5">{getGiornoDellaSettimana(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
-                <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
-              </Box>
-              <Typography variant="h4">
-                {median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
-              </Typography>
-            </CardContent>
-          <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
-            <Box>
-              {getWeatherIcon(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
-            </Box>
-            <Button
-              onClick={() => handleExpandClick(i)}
-              aria-expanded={expanded === i}
-              aria-label="show more"
-            >
-              {/* <ExpandMoreIcon /> */}
-              see more
-            </Button>
-          </CardActions>
-          <Collapse in={expanded === i} timeout="auto" unmountOnExit>
-            <CardContent>
-              <TabellaGiorni jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
-            </CardContent>
-          </Collapse>
-        </Card>
-      ))) : (
-        f.map((g, i) =>( 
+  function SmallCard() {
+    return(
+      <>
+      <Box sx={{marginTop: 3}}>
+        {letturaAPI ? (
+          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+        ) : (
           <Skeleton
-            key={i}
             variant="rectangular"
             width={350}
-            height={170}
+            height={32}
             animation="wave"
-            sx={{margin: "auto", mt: 4, borderRadius: 2}}
+            sx={{margin: "auto", borderRadius: 2}}
           />
-      )))}
-    </Box>
+        )}
+      </Box>
+      
 
+      <Box
+        sx={{
+          margin: 'auto',
+          maxWidth: 400,
+          display: 'box',
+        }}
+      >
+        {/* schede oscurate mente si carica l'API */}
+        {letturaAPI ? (
+          f.map((g, i) =>(        
+            <Card key={g} sx={{ width: 350, margin: "auto", mt: 4 }}>
+              <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <Box>
+                  <Typography variant="h5">{getGiornoDellaSettimana(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
+                  <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
+                </Box>
+                <Typography variant="h4">
+                  {median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
+                </Typography>
+              </CardContent>
+            <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
+              <Box>
+                {GetWeatherIcon(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
+              </Box>
+              <Button
+                onClick={() => handleExpandClick(i)}
+                aria-expanded={expanded === i}
+                aria-label="show more"
+              >
+                {/* <ExpandMoreIcon /> */}
+                see more
+              </Button>
+            </CardActions>
+            <Collapse in={expanded === i} timeout="auto" unmountOnExit>
+              <CardContent>
+                <TabellaGiorniPiccola jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
+              </CardContent>
+            </Collapse>
+          </Card>
+        ))) : (
+          f.map((g, i) =>( 
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              width={350}
+              height={170}
+              animation="wave"
+              sx={{margin: "auto", mt: 4, borderRadius: 2}}
+            />
+        )))}
+      </Box>
+
+      </>
+    );
+  }
+
+  function BigCard() {
+    return(
+      <>
+      <Box sx={{marginTop: 3}}>
+        {letturaAPI ? (
+          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+        ) : (
+          <Skeleton
+            variant="rectangular"
+            width={350}
+            height={32}
+            animation="wave"
+            sx={{margin: "auto", borderRadius: 2}}
+          />
+        )}
+      </Box>
+      
+
+      <Box
+        sx={{
+          margin: 'auto',
+          maxWidth: 550,
+          display: 'box',
+        }}
+      >
+        {/* schede oscurate mente si carica l'API */}
+        {letturaAPI ? (
+          f.map((g, i) =>(        
+            <Card key={g} sx={{ width: 550, margin: "auto", mt: 4 }}>
+              <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                <Box>
+                  <Typography variant="h5">{getGiornoDellaSettimana(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
+                  <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
+                </Box>
+                <Typography variant="h4">
+                  {median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
+                </Typography>
+              </CardContent>
+            <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
+              <Box>
+                {GetWeatherIcon(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
+              </Box>
+              <Button
+                onClick={() => handleExpandClick(i)}
+                aria-expanded={expanded === i}
+                aria-label="show more"
+              >
+                {/* <ExpandMoreIcon /> */}
+                see more
+              </Button>
+            </CardActions>
+            <Collapse in={expanded === i} timeout="auto" unmountOnExit>
+              <CardContent>
+                <TabellaGiorniGrande jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
+              </CardContent>
+            </Collapse>
+          </Card>
+        ))) : (
+          f.map((g, i) =>( 
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              width={350}
+              height={170}
+              animation="wave"
+              sx={{margin: "auto", mt: 4, borderRadius: 2}}
+            />
+        )))}
+      </Box>
+
+      </>
+    );
+  }
+
+  const matches = useMediaQuery('(min-width:600px)'); 
+
+  
+  return (
+    <>
+      {matches ? <BigCard/> : <SmallCard/>}
     </>
   );
 }
@@ -336,8 +419,8 @@ function taglioarraydati(arrra, inizio, fine) {
 }
 
 
-// componet per creare la tabella partende da un json
-function TabellaGiorni({jsonpassato}) {
+// componet per creare la tabella partende da un json piccola
+function TabellaGiorniPiccola({jsonpassato}) {
   return(
     <>
       <TableContainer component={Paper}>
@@ -354,7 +437,35 @@ function TabellaGiorni({jsonpassato}) {
               <TableRow key={t}>
                 <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
                 <TableCell align="right">{jsonpassato.hourly.temperature_2m[index]}</TableCell>
-                <TableCell align="right">{getWeatherIcon(jsonpassato.hourly.weather_code[index])}</TableCell>
+                <TableCell align="right">{GetWeatherIcon(jsonpassato.hourly.weather_code[index])}</TableCell>
+              </TableRow>
+              ))}
+            </TableBody>
+        </Table>
+      </TableContainer>
+      </>
+  );
+}
+
+// componet per creare la tabella partende da un json grande con le scritte
+function TabellaGiorniGrande({jsonpassato}) {
+  return(
+    <>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 300 }} aria-label="simple table">
+          <TableHead>
+              <TableRow>
+                <TableCell>Ora</TableCell>
+                <TableCell align="right">Temp (°C)</TableCell>
+                <TableCell align="right">Precipitaizone</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {jsonpassato.hourly.time.map((t, index) => (
+              <TableRow key={t}>
+                <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                <TableCell align="right">{jsonpassato.hourly.temperature_2m[index]}</TableCell>
+                <TableCell align="right"><Box sx={{display: "box"}}>{GetWeatherIcon(jsonpassato.hourly.weather_code[index])}<Typography>{getWeatherDescription(jsonpassato.hourly.weather_code[index])}</Typography></Box></TableCell>
               </TableRow>
               ))}
             </TableBody>

@@ -11,8 +11,6 @@ import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
 import SendIcon from '@mui/icons-material/Send';
 
-
-
 function Input2() {
     const [send , setSend] = useState(false); //variabile per far comparire la tabella
     const [resend , setResend] = useState(false); //variabile per modificare la tabella
@@ -82,7 +80,7 @@ function Input2() {
         );
     
         setCitta(results.slice(0, 10)); // Mostra fino a 10 risultati
-    }, [dati]);    
+    }, [dati]);       
         
     return (
         <>
