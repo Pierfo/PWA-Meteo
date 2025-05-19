@@ -85,8 +85,9 @@ function Input2() {
     return (
         <>
         
-            <Box sx={{display: 'flex',  height: 56, margin: '0 auto', justifyContent: 'center'}}>
+            <Box sx={{display: 'flex', height: 56, margin: '0 auto', justifyContent: 'center'}}>
                 <Autocomplete
+                    sx={{ width: '35%' }}
                     id="search-bar"
                     value={dati}
                     type="search" 
@@ -95,7 +96,6 @@ function Input2() {
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            sx={{ width: 150 }}
                             // type="search" 
                             id="search-bar"
                             onKeyDown={handleKeyDown}

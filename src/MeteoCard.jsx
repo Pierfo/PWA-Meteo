@@ -387,7 +387,7 @@ function MeteoCard({city}){
             <Skeleton
               key={i}
               variant="rectangular"
-              width={350}
+              width={550}
               height={170}
               animation="wave"
               sx={{margin: "auto", mt: 4, borderRadius: 2}}
