@@ -144,11 +144,12 @@ function getGiornoDellaSettimana(data) {
 // component
 function MeteoCard({city}){
   
+  const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
   const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto treu se la API ha finito di leggere
   const [datiMeteo , setDatiMeteo] = useState({}); // dati restituiti dalla API
-  const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
   const [result, setResult] = useState(""); 
   const [expanded, setExpanded] = useState(-1); // variabile usata per l'esoanzione delle card
+  const matches = useMediaQuery('(min-width:600px)'); 
 
   useEffect(() => {
     document.getElementById("search-bar").value = "";
@@ -298,8 +299,9 @@ function MeteoCard({city}){
                 aria-expanded={expanded === i}
                 aria-label="show more"
               >
-                {/* <ExpandMoreIcon /> */}
-                see more
+                {/* <ExpandMoreIcon sx={{rotate: "180deg"}} /> */}
+                {expanded === i ? <ExpandMoreIcon sx={{rotate: "180deg", transform: 'scale(1.3)'}}/> : <ExpandMoreIcon sx={{rotate: "0deg", transform: 'scale(1.3)'}} size={100} />}
+                {/* see more */}
               </Button>
             </CardActions>
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
@@ -364,16 +366,18 @@ function MeteoCard({city}){
                 </Typography>
               </CardContent>
             <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
-              <Box>
+              <Box sx={{display: 'flex'}}>
                 {GetWeatherIcon(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
+                <Typography sx={{margin: 'auto', ml: 1}} variant='h6'>{getWeatherDescription(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}</Typography>
               </Box>
               <Button
                 onClick={() => handleExpandClick(i)}
                 aria-expanded={expanded === i}
                 aria-label="show more"
               >
-                {/* <ExpandMoreIcon /> */}
-                see more
+                {/* <ExpandMoreIcon sx={{rotate: "180deg"}} /> */}
+                {expanded === i ? <ExpandMoreIcon sx={{rotate: "180deg", transform: 'scale(1.3)'}}/> : <ExpandMoreIcon sx={{rotate: "0deg", transform: 'scale(1.3)'}} size={100} />}
+                {/* see more */}
               </Button>
             </CardActions>
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
@@ -399,7 +403,6 @@ function MeteoCard({city}){
     );
   }
 
-  const matches = useMediaQuery('(min-width:600px)'); 
 
   
   return (
@@ -427,9 +430,9 @@ function TabellaGiorniPiccola({jsonpassato}) {
         <Table sx={{ minWidth: 300 }} aria-label="simple table">
           <TableHead>
               <TableRow>
-                <TableCell>Ora</TableCell>
-                <TableCell align="right">Temp (°C)</TableCell>
-                <TableCell align="right">Precipitaizone</TableCell>
+              <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temp (°C)</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitaizone</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -455,9 +458,9 @@ function TabellaGiorniGrande({jsonpassato}) {
         <Table sx={{ minWidth: 300 }} aria-label="simple table">
           <TableHead>
               <TableRow>
-                <TableCell>Ora</TableCell>
-                <TableCell align="right">Temp (°C)</TableCell>
-                <TableCell align="right">Precipitaizone</TableCell>
+              <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temp (°C)</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitaizone</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>

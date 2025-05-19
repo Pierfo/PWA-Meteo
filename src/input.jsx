@@ -1,6 +1,5 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import TabellaMeteo from './TabellaMeteo.jsx'
 import MeteoCard from "./MeteoCard.jsx";
 import cities from "./cities_italy_100.json";
 
