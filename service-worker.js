@@ -1,4 +1,4 @@
-const cacheNames = ["PWA-Meteo_v6", "PWA-Meteo_time-cached_v4"];
+const cacheNames = ["PWA-Meteo_v7", "PWA-Meteo_time-cached_v5"];
 const expirationMinutes = 60;
 
 //C'è forse bisogno di inserire già degli elementi in cache
