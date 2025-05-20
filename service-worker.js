@@ -72,6 +72,10 @@ function fetchFromWeb(request) {
             }
 
             resolve(resClone);
+        }).catch((err) => {
+            console.log(`Fetching error, returning void response`);
+
+            resolve(new Response(null, {status: "404", statusText: "Offline"}))
         })
     })
 }
