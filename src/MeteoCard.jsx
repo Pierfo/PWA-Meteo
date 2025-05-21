@@ -50,7 +50,7 @@ import {
   WiLightning,
 } from "react-icons/wi";
 
-// funzione per tradurre in codice dato dall'api in precipitazione
+// funzione che fornisce una descrizione a parole del valore restituito dall'API
 function getWeatherDescription(weatherCode) {
   switch (weatherCode) {
     case 0: return "Cielo sereno";
@@ -444,7 +444,7 @@ function TabellaGiorniPiccola({jsonpassato}) {
               <TableRow>
               <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
                 <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temp (°C)</TableCell>
-                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitaizone</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitazione</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -471,8 +471,8 @@ function TabellaGiorniGrande({jsonpassato}) {
           <TableHead>
               <TableRow>
               <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
-                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temp (°C)</TableCell>
-                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitaizone</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temperatura (°C)</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitazione</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
