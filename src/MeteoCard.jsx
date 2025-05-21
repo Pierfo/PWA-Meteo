@@ -318,9 +318,11 @@ function MeteoCard({city}){
               </Button>
             </CardActions>
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
-              <CardContent>
-                <TabellaGiorniPiccola jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
-              </CardContent>
+              <Box height={300} overflow={'scroll'}>
+                <CardContent>
+                  <TabellaGiorniPiccola jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
+                </CardContent>
+              </Box>
             </Collapse>
           </Card>
         ))) : (
@@ -394,9 +396,11 @@ function MeteoCard({city}){
               </Button>
             </CardActions>
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
-              <CardContent>
-                <TabellaGiorniGrande jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
-              </CardContent>
+              <Box height={400} overflow={'scroll'}>
+                <CardContent>
+                  <TabellaGiorniGrande jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
+                </CardContent>
+              </Box>
             </Collapse>
           </Card>
         ))) : (
