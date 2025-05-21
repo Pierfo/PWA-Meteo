@@ -30,15 +30,23 @@ import useMediaQuery from '@mui/material/useMediaQuery';
 import {
   WiDaySunny,
   WiDayCloudy,
-  WiCloud,
+  WiCloudy,
+  WiDayShowers,
   WiFog,
+  WiDayRain,
   WiRain,
   WiShowers,
+  WiDaySnow,
   WiSnow,
+  WiSnowWind,
+  WiDaySnowWind,
+  WiDaySleet,
   WiSleet,
   WiThunderstorm,
-  WiDayRainMix,
-  WiHail,
+  WiDayRainWind,
+  WiRainWind,
+  WiNa,
+  WiLightning,
 } from "react-icons/wi";
 
 // funzione per tradurre in codice dato dall'api in precipitazione
@@ -79,49 +87,36 @@ function getWeatherDescription(weatherCode) {
 // Funzione che restituisce un componente icona in base al codice meteo
 function GetWeatherIcon(weatherCode, size = 32) {
   switch (weatherCode) {
-    case 0:
-      return <WiDaySunny size={size} />;
-    case 1:
-    case 2:
-      return <WiDayCloudy size={size} />;
-    case 3:
-      return <WiCloud size={size} />;
+    case 0: return <WiDaySunny size={size} />;
+    case 1: 
+    case 2: return <WiDayCloudy size={size} />;
+    case 3: return <WiCloudy size={size} />;
     case 45:
-    case 48:
-      return <WiFog size={size} />;
-    case 51:
+    case 48: return <WiFog size={size} />;
+    case 51: return <WiDayShowers size={size} />;
     case 53:
-    case 55:
-      return <WiShowers size={size} />;
-    case 56:
-    case 57:
-      return <WiSleet size={size} />;
-    case 61:
+    case 55: return <WiShowers size={size} />;
+    case 56: return <WiDaySleet size={size} />
+    case 57: return <WiSleet size={size} />;
+    case 61: return <WiDayRain size={size} />;
     case 63:
-    case 65:
-      return <WiRain size={size} />;
-    case 66:
-    case 67:
-      return <WiSleet size={size} />;
-    case 71:
+    case 65: return <WiRain size={size} />;
+    case 66: return <WiDaySleet size={size} />;
+    case 67: return <WiSleet size={size} />;
+    case 71: return <WiDaySnow size={size} />;
     case 73:
     case 75:
-    case 77:
-      return <WiSnow size={size} />;
-    case 80:
+    case 77: return <WiSnow size={size} />;
+    case 80: return <WiDayRainWind size={size} />;
     case 81:
-    case 82:
-      return <WiDayRainMix size={size} />;
-    case 85:
-    case 86:
-      return <WiSnow size={size} />;
-    case 95:
-      return <WiThunderstorm size={size} />;
+    case 82: return <WiRainWind size={size} />;
+    case 85: return <WiDaySnowWind size={size} />;
+    case 86: return <WiSnowWind size={size} />;
+    case 95: return <WiLightning size={size} />
     case 96:
-    case 99:
-      return <WiHail size={size} />;
+    case 99: return <WiThunderstorm size={size} />;
     default:
-      return <WiDaySunny size={size} />; // fallback
+      return <WiNa size={size} />; // fallback
   }
 }
 
