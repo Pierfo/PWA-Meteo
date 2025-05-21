@@ -1,5 +1,5 @@
-const cacheNames = ["PWA-Meteo_v4", "PWA-Meteo_time-cached_v2"];
-const expirationMinutes = 15;
+const cacheNames = ["PWA-Meteo_v11", "PWA-Meteo_time-cached_v9"];
+const expirationMinutes = 60;
 
 //C'è forse bisogno di inserire già degli elementi in cache
 self.addEventListener("install", (e) => {
@@ -72,6 +72,10 @@ function fetchFromWeb(request) {
             }
 
             resolve(resClone);
+        }).catch((err) => {
+            console.log(`Fetching error, returning void response`);
+
+            resolve(new Response(null, {status: "404", statusText: "Offline"}))
         })
     })
 }

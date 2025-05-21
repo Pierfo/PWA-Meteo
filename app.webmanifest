@@ -14,6 +14,12 @@
       "src": "https://img.icons8.com/?size=144&id=SBms8SdzwFBt&format=png&color=000000",
       "type": "image/png",
       "sizes": "144x144"
+    },
+    {
+      "src": "/PWA-Meteo/icon_vect.svg",
+      "type": "image/svg",
+      "sizes": "any",
+      "purpose": "any maskable"
     }
   ]
 
