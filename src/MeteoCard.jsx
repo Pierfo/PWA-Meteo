@@ -145,10 +145,11 @@ function getGiornoDellaSettimana(data) {
 function MeteoCard({city}){
   
   const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
-  const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto treu se la API ha finito di leggere
+  const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto true se la API ha finito di leggere
   const [datiMeteo , setDatiMeteo] = useState({}); // dati restituiti dalla API
   const [result, setResult] = useState(""); 
-  const [expanded, setExpanded] = useState(-1); // variabile usata per l'esoanzione delle card
+  const [expanded, setExpanded] = useState(-1); // variabile usata per l'espansione delle card
+  const [offline, setOffline] = useState(false); // se l'utente è offline
   const matches = useMediaQuery('(min-width:600px)'); 
 
   useEffect(() => {
@@ -163,8 +164,12 @@ function MeteoCard({city}){
         const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citta)}&format=jsonv2&limit=1`;
         const responsePos = await fetch(apiUrl);
         if (!responsePos.ok) {
+          setOffline(true);
           throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
         }
+
+        setOffline(false);
+
         const data = await responsePos.json();
     
         if (!(data && data.length > 0)) {
@@ -229,8 +234,16 @@ function MeteoCard({city}){
     
     
   if (errore != "") {
+    console.log(errore);
+    
+    if(offline) {
+      return(
+        <Typography variant="h6">Connessione a internet assente</Typography>
+      );
+    }
+    
     return(
-      <Typography variant="h6">errore lettura api</Typography>
+      <Typography variant="h6">Nessun risultato trovato per "{city}"</Typography>
     ); 
   }
     
