@@ -16,7 +16,7 @@
       "sizes": "144x144"
     },
     {
-      "src": "icons/icon_vect.svg",
+      "src": "/PWA-Meteo/icon_vect.svg",
       "type": "image/svg",
       "sizes": "any",
       "purpose": "any maskable"
