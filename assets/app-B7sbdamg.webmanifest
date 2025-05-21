@@ -17,6 +17,7 @@
     },
     {
       "src": "icons/icon_vect.svg",
+      "type": "image/svg",
       "sizes": "any",
       "purpose": "any maskable"
     }
