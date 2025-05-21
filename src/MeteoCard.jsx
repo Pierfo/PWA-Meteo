@@ -32,6 +32,7 @@ import {
   WiDayCloudy,
   WiCloudy,
   WiDayShowers,
+  WiDayFog,
   WiFog,
   WiDayRain,
   WiRain,
@@ -87,11 +88,11 @@ function getWeatherDescription(weatherCode) {
 // Funzione che restituisce un componente icona in base al codice meteo
 function GetWeatherIcon(weatherCode, size = 32) {
   switch (weatherCode) {
-    case 0: return <WiDaySunny size={size} />;
-    case 1: 
+    case 0: 
+    case 1: return <WiDaySunny size={size} />;
     case 2: return <WiDayCloudy size={size} />;
     case 3: return <WiCloudy size={size} />;
-    case 45:
+    case 45: return <WiDayFog size={size} />;
     case 48: return <WiFog size={size} />;
     case 51: return <WiDayShowers size={size} />;
     case 53:
@@ -115,8 +116,7 @@ function GetWeatherIcon(weatherCode, size = 32) {
     case 95: return <WiLightning size={size} />
     case 96:
     case 99: return <WiThunderstorm size={size} />;
-    default:
-      return <WiNa size={size} />; // fallback
+    default: return <WiNa size={size} />;
   }
 }
 
