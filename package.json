@@ -16,7 +16,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/icons-material": "^7.1.0",
-    "@mui/material": "^7.0.2",
+    "@mui/material": "^7.1.0",
     "gh-pages": "^6.3.0",
     "mathjs": "^14.4.0",
     "openmeteo": "^1.2.0",

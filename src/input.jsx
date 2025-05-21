@@ -84,7 +84,7 @@ function Input2() {
     return (
         <>
         
-            <Box sx={{display: 'flex', height: 56, margin: '0 auto', justifyContent: 'center'}}>
+            <Box sx={{display: 'flex', height: 56,mt: 3, justifyContent: 'center'}}>
                 <Autocomplete
                     sx={{ width: '35%' }}
                     id="search-bar"
