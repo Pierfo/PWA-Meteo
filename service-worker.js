@@ -1,5 +1,5 @@
-const cacheNames = ["PWA-Meteo_v16", "PWA-Meteo_time-cached_v14"];
-const expirationMinutes = 1;
+const cacheNames = ["PWA-Meteo_v17", "PWA-Meteo_time-cached_v15"];
+const expirationMinutes = 60;
 
 //C'è forse bisogno di inserire già degli elementi in cache
 self.addEventListener("install", (e) => {
