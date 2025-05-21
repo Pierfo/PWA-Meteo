@@ -188,9 +188,12 @@ function MeteoCard({city}){
         const response = await fetch(url + "?" + new URLSearchParams(params));
       
         if (!response.ok) {
+          setOffline(true);
           setErrore("errore api meteo");
           throw new Error(`Errore HTTP! Stato: ${response.status}`);
         }
+
+        setOffline(false);
       
         const jsonData = await response.json();
         // console.log(jsonData);
