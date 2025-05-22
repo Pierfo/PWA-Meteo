@@ -148,6 +148,9 @@ function MeteoCard({city}){
   const matches = useMediaQuery('(min-width:600px)'); 
 
   useEffect(() => {
+
+    city = city.toLowerCase();
+    
     document.getElementById("search-bar").value = "";
     setErrore("");
     setLetturaAPI(false);
