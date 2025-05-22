@@ -20,10 +20,6 @@ self.addEventListener("activate", (e) => {
     )
 })
 
-self.addEventListener("load", (e) => {
-    console.log("loading")
-})
-
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
