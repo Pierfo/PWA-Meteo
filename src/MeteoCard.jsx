@@ -49,6 +49,7 @@ import {
   WiNa,
   WiLightning,
 } from "react-icons/wi";
+import { capitalize } from '@mui/material';
 
 // funzione che fornisce una descrizione a parole del valore restituito dall'API
 function getWeatherDescription(weatherCode) {
@@ -264,14 +265,14 @@ function MeteoCard({city}){
   // array usato per il map delle card 
   const f = [1,2,3,4,5,6,7];
 
-  const dayNow = (new Date()).getHours();   
-
+  const dayNow = (new Date()).getHours();
+  
   function SmallCard() {
     return(
       <>
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
-          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city.at(0).toUpperCase()}{city.substr(1).toLowerCase()}</Typography>
+          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
         ) : (
           <Skeleton
             variant="rectangular"
@@ -348,7 +349,7 @@ function MeteoCard({city}){
       <>
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
-          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city.at(0).toUpperCase()}{city.substr(1).toLowerCase()}</Typography>
+          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
         ) : (
           <Skeleton
             variant="rectangular"
