@@ -231,7 +231,7 @@ function MeteoCard({city}){
     }
 
     chiamataAPI(city);
-  }, [city]);// con [] il codice viene esseguito unasola vonta (anche se ri-renderizzato)
+  }, [city]);// con [] il codice viene esseguito una sola volta (anche se ri-renderizzato)
     
     
   if (errore != "") {
@@ -271,7 +271,7 @@ function MeteoCard({city}){
       <>
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
-          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city.at(0).toUpperCase()}{city.substr(1).toLowerCase()}</Typography>
         ) : (
           <Skeleton
             variant="rectangular"
@@ -348,7 +348,7 @@ function MeteoCard({city}){
       <>
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
-          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+          <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city.at(0).toUpperCase()}{city.substr(1).toLowerCase()}</Typography>
         ) : (
           <Skeleton
             variant="rectangular"
