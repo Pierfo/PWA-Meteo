@@ -70,7 +70,7 @@ function Input2() {
 
     useEffect(() => {
         if (dati.length < 1) {
-          setCitta([]);
+          setCitta(cities);
           return;
         }
     
@@ -91,11 +91,11 @@ function Input2() {
                     value={dati}
                     type="search" 
                     freeSolo
-                    options={cities.map((c) => c)}
+                    options={citta.map((c) => c)}
                     renderInput={(params) => (
                         <TextField
                             {...params}
-                            // type="search" 
+                            //type="search" 
                             id="search-bar"
                             onKeyDown={handleKeyDown}
                             onChange={(e) => { setDati(e.target.value) }}
