@@ -49,7 +49,6 @@ import {
   WiNa,
   WiLightning,
 } from "react-icons/wi";
-import { capitalize } from '@mui/material';
 
 // funzione che fornisce una descrizione a parole del valore restituito dall'API
 function getWeatherDescription(weatherCode) {
