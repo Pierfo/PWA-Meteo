@@ -17,6 +17,14 @@ function Input2() {
     const [senddati, setSendDati] = useState(""); //variabile modificata solo all'invio utilizzata per evitare il ri-render dilla tabellameteo
     const [citta, setCitta] = useState([]);
 
+    function reloadSearchedItem() {
+        if(!window.localStorage.getItem("searched-item")) {
+            return "";
+        }
+
+        return window.localStorage.getItem("searched-item");
+    }
+
     //Invia all'API il nome della città
     function press() {
         if (dati.length > 2){
@@ -24,6 +32,7 @@ function Input2() {
             setSend(true); 
             setResend(!resend);   
             console.log("dal press", dati);
+            window.localStorage.removeItem("searched-item");
             setDati("");   
         }
          
@@ -50,12 +59,25 @@ function Input2() {
         return false;
     }
 
+    function reloadState() {
+        if(getLastSearchedCity() != null) {            
+            setDati(reloadSearchedItem());
+            if(getLastSearchedCity() != "none") {
+                setSendDati(getLastSearchedCity());
+                setSend(true); 
+                setResend(!resend);      
+            }
+        }
+    }
+
     useEffect(() => {
-        //Se è presente il Cookie e se l'utente ha appena cominciato a usare l'app allora carica l'ultima città cercata
-        if((getLastSearchedCity() != null) && isAtStartup()) {            
-            setSendDati(getLastSearchedCity());
-            setSend(true); 
-            setResend(!resend);       
+        if(isAtStartup()) {
+            reloadState();
+        }
+        
+        else {
+            document.cookie = "last-searched=none; max-age=" + (24 * 3600) + ";";
+            window.localStorage.removeItem("searched-item");
         }
     }, []);
 
@@ -98,9 +120,13 @@ function Input2() {
                             //type="search" 
                             id="search-bar"
                             onKeyDown={handleKeyDown}
-                            onChange={(e) => { setDati(e.target.value) }}
+                            onChange={(e) => {
+                                setDati(e.target.value);
+                                window.localStorage.setItem("searched-item", e.target.value);
+                            }}
+                            defaultValue={window.localStorage.getItem("searced-item")}
                             autoFocus
-                            label="inserire la citta"
+                            label="Inserire la città"
                             variant="outlined"
                             // InputProps={{
                             //     ...params.InputProps,
@@ -111,6 +137,7 @@ function Input2() {
                     onChange={(event, newValue) => {
                         // if (event.type === "click") {
                         if (newValue) {   
+                            window.localStorage.removeItem("searched-item");
                             setSendDati(newValue);
                             setSend(true);
                             setResend(!resend);

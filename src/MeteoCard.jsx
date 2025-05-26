@@ -149,6 +149,7 @@ function MeteoCard({city}){
 
   useEffect(() => {
 
+    document.cookie = "last-searched=" + city + "; max-age=" + 24*3600 + ";"
     city = city.toLowerCase();
     
     document.getElementById("search-bar").value = "";
@@ -215,10 +216,6 @@ function MeteoCard({city}){
         //stampa i risultati sulla console
         console.log("risposta API coordinate --> citta: ", city2);
         setResult(city2);
-
-        if(city2 != "località sconosciuta") {
-            document.cookie = "last-searched=" + city + "; max-age=" + 24*3600 + ";"
-        }
             
       } catch (error) {
         console.log("errore");
