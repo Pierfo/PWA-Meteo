@@ -13,6 +13,9 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { rgbToHex, styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
+import { FormControlLabel, Checkbox } from '@mui/material';
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -145,6 +148,7 @@ function MeteoCard({city}){
   const [result, setResult] = useState(""); 
   const [expanded, setExpanded] = useState(-1); // variabile usata per l'espansione delle card
   const [offline, setOffline] = useState(false); // se l'utente è offline
+  const [favourite, setFavourite] = useState(isFavourite())
   const matches = useMediaQuery('(min-width:600px)'); 
 
   useEffect(() => {
@@ -418,10 +422,28 @@ function MeteoCard({city}){
     );
   }
 
+  function isFavourite() {
+    const savedCity = window.localStorage.getItem("favourite-city");
 
+    return savedCity != null && savedCity === city.toLowerCase();
+  }
+
+  function changeFavourite() {
+    if(favourite) {
+      window.localStorage.removeItem("favourite-city");
+    }
+    else {
+      window.localStorage.setItem("favourite-city", city.toLowerCase());
+    }
+
+    setFavourite(!favourite);
+  }
   
   return (
     <>
+      <FormControlLabel label="Salva come preferito" control={
+        <Checkbox checked={favourite} onChange={changeFavourite} icon={<FavoriteBorder />} checkedIcon={<Favorite />}/>
+      }/>
       {matches ? <BigCard/> : <SmallCard/>}
     </>
   );
