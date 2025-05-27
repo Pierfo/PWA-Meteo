@@ -27,8 +27,9 @@ function Input2() {
 
     //Invia all'API il nome della città
     function press() {
+        
         if (dati.length > 2){
-            setSendDati(dati);
+            setSendDati(dati.trim());
             setSend(true); 
             setResend(!resend);   
             console.log("dal press", dati);
@@ -105,7 +106,6 @@ function Input2() {
         
     return (
         <>
-        
             <Box sx={{display: 'flex', height: 56,mt: 3, justifyContent: 'center'}}>
                 <Autocomplete
                     sx={{ width: '35%' }}
@@ -124,7 +124,7 @@ function Input2() {
                                 setDati(e.target.value);
                                 window.localStorage.setItem("searched-item", e.target.value);
                             }}
-                            defaultValue={window.localStorage.getItem("searced-item")}
+                            //defaultValue={window.localStorage.getItem("searced-item")}
                             autoFocus
                             label="Inserire la città"
                             variant="outlined"
@@ -135,7 +135,7 @@ function Input2() {
                         />
                     )}
                     onChange={(event, newValue) => {
-                        // if (event.type === "click") {
+                        //Per quando l'utente seleziona una città dal menù
                         if (newValue) {   
                             window.localStorage.removeItem("searched-item");
                             setSendDati(newValue);
@@ -143,7 +143,14 @@ function Input2() {
                             setResend(!resend);
                             setDati("");
                         }
+
+                        //Per quando l'utente ripulisce la barra di ricerca premendo la X
+                        else {
+                            window.localStorage.removeItem("searched-item");
+                            setDati("");
+                        }
                     }}
+                    
                 />
                 {/* <TextField type="search" id="search-bar" value={dati} onKeyDown={handleKeyDown} onChange={(e) => {setDati(e.target.value)}} autoFocus label="inserire la citta" variant="outlined" /> */}
                 <Button sx={{ml: 1}} variant="outlined" disabled={dati.length <3} onClick={press} endIcon={<SendIcon />}>send</Button>
