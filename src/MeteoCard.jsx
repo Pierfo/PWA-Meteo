@@ -293,7 +293,7 @@ function MeteoCard({city}){
           display: 'box',
         }}
       >
-        {/* schede oscurate mente si carica l'API */}
+        {/* schede oscurate mentre si carica l'API */}
         {letturaAPI ? (
           f.map((g, i) =>(        
             <Card key={g} sx={{ width: 350, margin: "auto", mt: 4 }}>
