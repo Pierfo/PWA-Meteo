@@ -148,10 +148,12 @@ function MeteoCard({city}){
   const [result, setResult] = useState(""); 
   const [expanded, setExpanded] = useState(-1); // variabile usata per l'espansione delle card
   const [offline, setOffline] = useState(false); // se l'utente è offline
-  const [favourite, setFavourite] = useState(isFavourite())
+  const [favourite, setFavourite] = useState(false);
   const matches = useMediaQuery('(min-width:600px)'); 
 
+  //chiamate API
   useEffect(() => {
+    isFavourite();
 
     document.cookie = "last-searched=" + city + "; max-age=" + 24*3600 + ";"
     city = city.toLowerCase();
@@ -248,12 +250,6 @@ function MeteoCard({city}){
       <Typography variant="h6">Nessun risultato trovato per "{city}"</Typography>
     ); 
   }
-    
-  // if (!letturaAPI){
-  //   return(
-  //     <Typography variant="h6">lettura dati api</Typography>
-  //   ); 
-  // }
 
   console.log("FAX");
 
@@ -272,7 +268,12 @@ function MeteoCard({city}){
       <>
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
+          <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+          <FormControlLabel sx={{ml: 1}} control={
+            <Checkbox checked={favourite} onChange={changeFavourite} icon={<FavoriteBorder />} checkedIcon={<Favorite />}/>
+          }/>
+          </Box>
         ) : (
           <Skeleton
             variant="rectangular"
@@ -349,7 +350,12 @@ function MeteoCard({city}){
       <>
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
+          <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+          <FormControlLabel sx={{ml: 1}} control={
+            <Checkbox checked={favourite} onChange={changeFavourite} icon={<FavoriteBorder />} checkedIcon={<Favorite />}/>
+          }/>
+          </Box>
         ) : (
           <Skeleton
             variant="rectangular"
@@ -424,8 +430,9 @@ function MeteoCard({city}){
 
   function isFavourite() {
     const savedCity = window.localStorage.getItem("favourite-city");
-
-    return savedCity != null && savedCity === city.toLowerCase();
+    console.log("dal is favorite", favourite);
+    
+    setFavourite(savedCity != null && savedCity === city.toLowerCase());
   }
 
   function changeFavourite() {
@@ -435,15 +442,12 @@ function MeteoCard({city}){
     else {
       window.localStorage.setItem("favourite-city", city.toLowerCase());
     }
-
     setFavourite(!favourite);
   }
-  
+
   return (
     <>
-      <FormControlLabel label="Salva come preferito" control={
-        <Checkbox checked={favourite} onChange={changeFavourite} icon={<FavoriteBorder />} checkedIcon={<Favorite />}/>
-      }/>
+      
       {matches ? <BigCard/> : <SmallCard/>}
     </>
   );
