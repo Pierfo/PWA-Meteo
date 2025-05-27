@@ -33,8 +33,7 @@ function Input2() {
             setSend(true); 
             setResend(!resend);   
             console.log("dal press", dati);
-            window.localStorage.removeItem("searched-item");
-            setDati("");   
+            modifyText(""); 
         }
          
     }
@@ -60,14 +59,24 @@ function Input2() {
         return false;
     }
 
-    function reloadState() {
-        if(getLastSearchedCity() != null) {            
-            setDati(reloadSearchedItem());
-            if(getLastSearchedCity() != "none") {
-                setSendDati(getLastSearchedCity());
-                setSend(true); 
-                setResend(!resend);      
-            }
+    function modifyText(text) {
+        setDati(text);
+
+        if(text === "") {
+            window.localStorage.removeItem("searched-item");
+        }
+
+        else {
+            window.localStorage.setItem("searched-item", text);
+        }
+    }
+
+    function reloadState() {          
+        modifyText(reloadSearchedItem());
+        if(getLastSearchedCity() != null && getLastSearchedCity() != "none") {
+            setSendDati(getLastSearchedCity());
+            setSend(true); 
+            setResend(!resend);      
         }
     }
 
@@ -121,8 +130,7 @@ function Input2() {
                             id="search-bar"
                             onKeyDown={handleKeyDown}
                             onChange={(e) => {
-                                setDati(e.target.value);
-                                window.localStorage.setItem("searched-item", e.target.value);
+                                modifyText(e.target.value);
                             }}
                             //defaultValue={window.localStorage.getItem("searced-item")}
                             autoFocus
@@ -137,17 +145,15 @@ function Input2() {
                     onChange={(event, newValue) => {
                         //Per quando l'utente seleziona una città dal menù
                         if (newValue) {   
-                            window.localStorage.removeItem("searched-item");
                             setSendDati(newValue);
                             setSend(true);
                             setResend(!resend);
-                            setDati("");
+                            modifyText("");
                         }
 
                         //Per quando l'utente ripulisce la barra di ricerca premendo la X
                         else {
-                            window.localStorage.removeItem("searched-item");
-                            setDati("");
+                            modifyText("");
                         }
                     }}
                     
