@@ -83,7 +83,7 @@ function Input2() {
 
     function reloadState() {          
         modifyText(reloadSearchedItem());
-        if(getLastSearchedCity() != null && getLastSearchedCity() != "none") {
+        if(getLastSearchedCity() != null) {
             setSendDati(getLastSearchedCity());
             setSend(true); 
             setResend(!resend);      
@@ -100,7 +100,7 @@ function Input2() {
         }
         
         else {
-            document.cookie = "last-searched=none; max-age=" + (24 * 3600) + ";";
+            document.cookie = "last-searched=none; expires=" + new Date(1970, 0, 1).toUTCString() + ";";
             window.localStorage.removeItem("searched-item");
             loadFavourite();
         }
