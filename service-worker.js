@@ -3,7 +3,7 @@ const expirationMinutes = 60;
 
 //C'è forse bisogno di inserire già degli elementi in cache
 self.addEventListener("install", (e) => {
-    e.waitUntil(() => caches.open(cacheNames));
+    e.waitUntil(caches.open(cacheNames));
 });
 
 self.addEventListener("activate", (e) => {
