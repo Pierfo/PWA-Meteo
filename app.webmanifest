@@ -11,13 +11,18 @@
 
   "icons": [
     {
-      "src": "https://img.icons8.com/?size=144&id=SBms8SdzwFBt&format=png&color=000000",
+      "src": "/PWA-Meteo/icon_144x144.png",
       "type": "image/png",
       "sizes": "144x144"
     },
     {
-      "src": "/PWA-Meteo/icon_vect.svg",
-      "type": "image/svg",
+      "src": "/PWA-Meteo/icon_512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    },
+    {
+      "src": "/PWA-Meteo/maskable-icon.png",
+      "type": "image/png",
       "sizes": "any",
       "purpose": "any maskable"
     }
