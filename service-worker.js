@@ -1,4 +1,4 @@
-const cacheNames = ["PWA-Meteo_v33", "PWA-Meteo_time-cached_v31"];
+const cacheNames = ["PWA-Meteo_v34", "PWA-Meteo_time-cached_v32"];
 const expirationMinutes = 60;
 
 //C'è forse bisogno di inserire già degli elementi in cache
@@ -25,28 +25,33 @@ self.addEventListener("fetch", (e) => {
         new Promise ((resolve, reject) => {
             caches.open(cacheNames[1]).then((timeCache) => {
                 timeCache.match(e.request).then((res) => {
+                    let expired = false;
+                    
                     if(res != undefined) {
                         const time_cached = parseInt(res.statusText);
 
                         if((Date.now() - time_cached) > (expirationMinutes * 60 * 1000)) {
                             console.log("Timeout");
+                            expired = true;
                             resolve(fetchFromWebWrapper(e.request));
                         }
                     }
 
-                    caches.open(cacheNames[0]).then((cache) => {
-                        cache.match(e.request).then(cached => {
-                            if(cached === undefined) {
-                                resolve(fetchFromWebWrapper(e.request))
-                            }
-                        
-                            else {
-                                console.log(`Fetching from cache ${e.request.url}`);
+                    if(!expired) {
+                        caches.open(cacheNames[0]).then((cache) => {
+                            cache.match(e.request).then(cached => {
+                                if(cached === undefined) {
+                                    resolve(fetchFromWebWrapper(e.request))
+                                }
                             
-                                resolve(cached);
-                            }
+                                else {
+                                    console.log(`Fetching from cache ${e.request.url}`);
+                                
+                                    resolve(cached);
+                                }
+                            })
                         })
-                    })
+                    }
                 })
             })
         })
