@@ -23,8 +23,8 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
-            caches.open(cacheNames[1]).then((cache) => {
-                cache.match(e.request).then((res) => {
+            caches.open(cacheNames[1]).then((timeCache) => {
+                timeCache.match(e.request).then((res) => {
                     if(res != undefined) {
                         const time_cached = parseInt(res.statusText);
 
@@ -33,20 +33,20 @@ self.addEventListener("fetch", (e) => {
                             resolve(fetchFromWebWrapper(e.request));
                         }
                     }
-                })
-            })
-            
-            caches.open(cacheNames[0]).then((cache) => {
-                cache.match(e.request).then(cached => {
-                    if(cached === undefined) {
-                        resolve(fetchFromWebWrapper(e.request))
-                    }
 
-                    else {
-                        console.log(`Fetching from cache ${e.request.url}`);
-
-                        resolve(cached);
-                    }
+                    caches.open(cacheNames[0]).then((cache) => {
+                        cache.match(e.request).then(cached => {
+                            if(cached === undefined) {
+                                resolve(fetchFromWebWrapper(e.request))
+                            }
+                        
+                            else {
+                                console.log(`Fetching from cache ${e.request.url}`);
+                            
+                                resolve(cached);
+                            }
+                        })
+                    })
                 })
             })
         })
