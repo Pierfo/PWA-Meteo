@@ -28,7 +28,8 @@ self.addEventListener("fetch", (e) => {
                     if(res != undefined) {
                         const time_cached = parseInt(res.statusText);
 
-                        if(Date.now() - time_cached > expirationMinutes * 60 * 1000) {
+                        if((Date.now() - time_cached) > (expirationMinutes * 60 * 1000)) {
+                            console.log("Timeout");
                             resolve(fetchFromWebWrapper(e.request));
                         }
                     }
