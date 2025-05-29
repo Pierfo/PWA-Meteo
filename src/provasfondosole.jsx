@@ -1,55 +1,89 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 
-const SunnyGrayBackground = () => {
+const SunnyBackground = () => {
+  const raysRef = useRef(null);
+
+  useEffect(() => {
+    let angle = 0;
+    let frameId;
+
+    const animate = () => {
+      angle += 0.0025;
+      if (raysRef.current) {
+        raysRef.current.style.transform = `rotate(${angle}rad)`;
+      }
+      frameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+    return () => cancelAnimationFrame(frameId);
+  }, []);
+
   return (
-    <div style={styles.container}>
-      <div style={styles.sun} />
+    <>
       <style>{`
-        @keyframes skyAnimation {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+        .sunny-container {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: white;
+          overflow: hidden;
+          z-index: -1;
         }
 
-        @keyframes sunPulse {
-          0% { transform: rotate(0deg) scale(1); }
-          50% { transform: rotate(180deg) scale(1.05); }
-          100% { transform: rotate(360deg) scale(1); }
+        .sun {
+          position: absolute;
+          top: -20px;
+          left: -20px;
+          width: 100px;
+          height: 100px;
+          border-radius: 50%;
+          z-index: 1;
+          background: radial-gradient(ellipse at center, rgb(0, 0, 0) 0%,rgba(255, 0, 0, 0) 60%);
+        }
+
+        .rays {
+          position: absolute;
+          top: 30px; /* centro Y del sole */
+          left: 30px; /* centro X del sole */
+          width: 0;
+          height: 0;
+          transform-origin: center;
+          pointer-events: none;
+        }
+
+        .ray {
+          position: absolute;
+          width: 2px;
+          height: 600px;
+          background: black;
+          opacity: 0.1;
+          filter: blur(1.5px);
+          transform-origin: top center;
         }
       `}</style>
-    </div>
+
+      <div className="sunny-container">
+        <div className="sun" />
+        <div className="rays" ref={raysRef}>
+          {Array.from({ length: 24 }).map((_, i) => {
+            const angleDeg = (i / 24) * 360;
+            return (
+              <div
+                key={i}
+                className="ray"
+                style={{
+                  transform: `rotate(${angleDeg}deg) translateY(-100px)`,
+                }}
+              />
+            );
+          })}
+        </div>
+      </div>
+    </>
   );
 };
 
-const styles = {
-  container: {
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: "linear-gradient(120deg, #d3d3d3, #f0f0f0)",
-    backgroundSize: "400% 400%",
-    animation: "skyAnimation 60s ease infinite",
-    zIndex: -1,
-    overflow: "hidden",
-  },
-  sun: {
-    position: "absolute",
-    top: "15%",
-    left: "75%",
-    width: "100px",
-    height: "100px",
-    borderRadius: "50%",
-    background: "#ffffff",
-    boxShadow: `
-      0 0 0 10px rgba(255, 255, 255, 0.2),
-      0 0 0 20px rgba(255, 255, 255, 0.15),
-      0 0 0 30px rgba(255, 255, 255, 0.1),
-      0 0 40px 20px rgba(255, 255, 255, 0.05)
-    `,
-    animation: "sunPulse 10s linear infinite",
-  },
-};
-
-export default SunnyGrayBackground;
+export default SunnyBackground;
