@@ -148,14 +148,14 @@ function MeteoCard({city}){
   const [result, setResult] = useState(""); 
   const [expanded, setExpanded] = useState(-1); // variabile usata per l'espansione delle card
   const [offline, setOffline] = useState(false); // se l'utente è offline
-  const [favourite, setFavourite] = useState(false);
+  const [favourite, setFavourite] = useState(false); // se la città cercata è stata salvata come preferita
   const matches = useMediaQuery('(min-width:600px)'); 
 
   //chiamate API
   useEffect(() => {
     isFavourite();
 
-    document.cookie = "last-searched=" + city + "; max-age=" + 24*3600 + ";"
+    document.cookie = "last-searched=" + city + "; max-age=" + 3*3600 + ";"
     city = city.toLowerCase();
     
     document.getElementById("search-bar").value = "";
@@ -293,7 +293,7 @@ function MeteoCard({city}){
           display: 'box',
         }}
       >
-        {/* schede oscurate mente si carica l'API */}
+        {/* schede oscurate mentre si carica l'API */}
         {letturaAPI ? (
           f.map((g, i) =>(        
             <Card key={g} sx={{ width: 350, margin: "auto", mt: 4 }}>

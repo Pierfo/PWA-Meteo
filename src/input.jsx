@@ -17,6 +17,16 @@ function Input2() {
     const [senddati, setSendDati] = useState(""); //variabile modificata solo all'invio utilizzata per evitare il ri-render dilla tabellameteo
     const [citta, setCitta] = useState([]);
 
+    function loadFavourite() {
+        if(!window.localStorage.getItem("favourite-city")) {
+            return;
+        }
+
+        setSendDati(window.localStorage.getItem("favourite-city"));
+        setSend(true); 
+        setResend(!resend);
+    }
+    
     function reloadSearchedItem() {
         if(!window.localStorage.getItem("searched-item")) {
             return "";
@@ -73,10 +83,14 @@ function Input2() {
 
     function reloadState() {          
         modifyText(reloadSearchedItem());
-        if(getLastSearchedCity() != null && getLastSearchedCity() != "none") {
+        if(getLastSearchedCity() != null) {
             setSendDati(getLastSearchedCity());
             setSend(true); 
             setResend(!resend);      
+        }
+
+        else {
+            loadFavourite();
         }
     }
 
@@ -86,8 +100,9 @@ function Input2() {
         }
         
         else {
-            document.cookie = "last-searched=none; max-age=" + (24 * 3600) + ";";
+            document.cookie = "last-searched=none; expires=" + new Date(1970, 0, 1).toUTCString() + ";";
             window.localStorage.removeItem("searched-item");
+            loadFavourite();
         }
     }, []);
 
