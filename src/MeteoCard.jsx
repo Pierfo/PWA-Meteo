@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import React from 'react';
 import {median, max, min} from 'mathjs';
-import Skeleton from '@mui/material/Skeleton';
 
+import Skeleton from '@mui/material/Skeleton';
 import Button from '@mui/material/Button';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -11,24 +11,18 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { rgbToHex, styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { FormControlLabel, Checkbox } from '@mui/material';
-import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
-import Favorite from '@mui/icons-material/Favorite';
-
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import IconButton from '@mui/material/IconButton';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
+import useMediaQuery from '@mui/material/useMediaQuery';// Usato per prendere la grandezza dello schermo
+
+import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
+import Favorite from '@mui/icons-material/Favorite';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
-import useMediaQuery from '@mui/material/useMediaQuery';
-
 
 import {
   WiDaySunny,
@@ -53,7 +47,9 @@ import {
   WiLightning,
 } from "react-icons/wi";
 
-// funzione che fornisce una descrizione a parole del valore restituito dall'API
+// Funzione che fornisce una descrizione a parole del valore restituito dall'API
+// Ha come parametro il codice formito da openmeteo e restituisce il significato in italiano del del codice 
+// Es prende in input 0 e restituisce cielo sereno, i significati sono stati presi dalla documentazione nel sito di openmeteo
 function getWeatherDescription(weatherCode) {
   switch (weatherCode) {
     case 0: return "Cielo sereno";
@@ -89,6 +85,8 @@ function getWeatherDescription(weatherCode) {
 }
 
 // Funzione che restituisce un componente icona in base al codice meteo
+// Prende in input il codice formito da openmeteo e la grandezza dell'icona e restituisce una icona presa da react icon/wi
+// Es prende in input 0 e restituisce l'icona del sole essendo il cielo esereno 
 function GetWeatherIcon(weatherCode, size = 32) {
   switch (weatherCode) {
     case 0: 
@@ -118,12 +116,12 @@ function GetWeatherIcon(weatherCode, size = 32) {
     case 86: return <WiSnowWind size={size} />;
     case 95: return <WiLightning size={size} />
     case 96:
-    case 99: return <WiThunderstorm size={size} />;
-    default: return <WiNa size={size} />;
-  }
+      case 99: return <WiThunderstorm size={size} />;
+      default: return <WiNa size={size} />;
+    }
 }
-
-// funzione che data una data restituisce giorno mese anno, usata per il giorno della card
+  
+// Funzione che ricavuta in input una data restituisce giorno mese anno, usata per il giorno della card
 function getDay(dataOraStringa){
   const dataOggetto = new Date(dataOraStringa);
   const anno = dataOggetto.getFullYear();
@@ -131,43 +129,126 @@ function getDay(dataOraStringa){
   const giorno = dataOggetto.getDate().toString().padStart(2, '0');
   return `${giorno}-${mese}-${anno}`;
 }
-
-// funzione che dalla data restituisce il giorno della settimana
+  
+// Funzione che dalla data restituisce il giorno della settimana
 function getGiornoDellaSettimana(data) {
   const dataOggetto = new Date(data);
   const giorniSettimana = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   return giorniSettimana[dataOggetto.getDay()];
 }
-
-// component
-function MeteoCard({city}){
   
-  const [errore, setErrore] = useState(""); // errore riscontrato durante la chiamata API
-  const [letturaAPI , setLetturaAPI] = useState(false); // false se la API non ha ancora letto true se la API ha finito di leggere
-  const [datiMeteo , setDatiMeteo] = useState({}); // dati restituiti dalla API
-  const [result, setResult] = useState(""); 
-  const [expanded, setExpanded] = useState(-1); // variabile usata per l'espansione delle card
-  const [offline, setOffline] = useState(false); // se l'utente è offline
-  const [favourite, setFavourite] = useState(false); // se la città cercata è stata salvata come preferita
-  const matches = useMediaQuery('(min-width:600px)'); 
+// Funzione per sezionare il json da inizio a fine
+function taglioarraydati(jsonOriginale, inizio, fine) {
+  let jsonTagliato = JSON.parse(JSON.stringify(jsonOriginale)); // usata per non perdere l'array originale
+  jsonTagliato.hourly.time = jsonTagliato.hourly.time.slice(inizio, fine); 
+  jsonTagliato.hourly.temperature_2m = jsonTagliato.hourly.temperature_2m.slice(inizio, fine); 
+  jsonTagliato.hourly.weather_code = jsonTagliato.hourly.weather_code.slice(inizio, fine); 
+  return jsonTagliato;
+}
+  
+// Componet per creare la tabella piccola partendo dal json
+// La tabella piccola è piu stretta e non mostra le precipitazioni in modo esteso ma solo le icone
+// Viene usata se lo shermo è piu stretto di 600px
+function TabellaGiorniPiccola({jsonpassato}) {
+  return(
+    <>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 300 }} aria-label="simple table">
+          <TableHead>
+              <TableRow>
+              <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temp (°C)</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitazione</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {jsonpassato.hourly.time.map((t, index) => (
+              <TableRow key={t}>
+                <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                <TableCell align="right">{jsonpassato.hourly.temperature_2m[index]}</TableCell>
+                <TableCell align="right">{GetWeatherIcon(jsonpassato.hourly.weather_code[index])}</TableCell>
+              </TableRow>
+              ))}
+            </TableBody>
+        </Table>
+      </TableContainer>
+      </>
+  );
+}
+  
+// Componet per creare la tabella grande partendo da un json 
+// Si differisce dalla tabella piccola perhce è piu larga e contiene in modo esplicito i nomi delle precipitazioni oltre che le icone
+// Usate se lo schermo è piu largo di 600px
+function TabellaGiorniGrande({jsonpassato}) {
+  return(
+    <>
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 300 }} aria-label="simple table">
+          <TableHead>
+              <TableRow>
+              <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temperatura (°C)</TableCell>
+                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitazione</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {jsonpassato.hourly.time.map((t, index) => (
+              <TableRow key={t}>
+                <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
+                <TableCell align="right">{jsonpassato.hourly.temperature_2m[index]}</TableCell>
+                <TableCell align="right"><Box sx={{display: "box"}}>{GetWeatherIcon(jsonpassato.hourly.weather_code[index])}<Typography>{getWeatherDescription(jsonpassato.hourly.weather_code[index])}</Typography></Box></TableCell>
+              </TableRow>
+              ))}
+            </TableBody>
+        </Table>
+      </TableContainer>
+      </>
+  );
+}
 
-  //chiamate API
+// Component principale
+function MeteoCard({city}){
+    
+  // Dichiarazioni degli usestate
+  const [errore, setErrore] = useState(""); // Errore riscontrato durante la chiamata API
+  const [letturaAPI , setLetturaAPI] = useState(false); // False se la API non ha ancora letto, true se la API ha finito di leggere, usato per gli skeleton
+  const [datiMeteo , setDatiMeteo] = useState({}); // Dati restituiti dalla API, qui viene salvato il json dopo aver fatto la chimata API
+  const [result, setResult] = useState(""); 
+  const [expanded, setExpanded] = useState(-1); // Variabile usata per l'espansione delle card, assume un valore da 0 a 6 che indica quale delle sette card ha la tabella espansa, assume valore -1 se nessuna è espanda, facendo cosi se ne puo espandere solamente una alla volta
+  const [offline, setOffline] = useState(false); // Variabile usata per registrare se l'utente è offline
+  const [favourite, setFavourite] = useState(false); // Varaibile usate per registrare se la città cercata è stata salvata come preferita, se la variabile cambia viene rirenderizzato pe far cambiare il tipo di checkbox,(il cuore diventa vuoto o pieno per segnalare all'utente la modifica)
+  const matches = useMediaQuery('(min-width:600px)'); // Variabile collegata alla media query per modificare la card e di conseguenza le taeblle da piccole a grandi, assume valore true o false se la shermata è maggiore o minore di 600px
+
+  // Useeffect per le chiamate API, viene eseguito ogni volta che city viene modificata
   useEffect(() => {
+
+    // Controllo se la citta inserita è impostata come preferita
     isFavourite();
 
+    // DA COMMENTARE-----!!!-----
     document.cookie = "last-searched=" + city + "; max-age=" + 3*3600 + ";"
     city = city.toLowerCase();
     
-    document.getElementById("search-bar").value = "";
+    // Reset delle variabili (usato per le chiamate API dopo la prima)
     setErrore("");
     setLetturaAPI(false);
+
+    setOffline(false);//DA CAPIRE SE VA BENE LO HO AGGIUNTO ROA QUA 
+
+    // Funzione async necessaria per fare await necessario a sua volta per le fetch alle API
     async function chiamataAPI(citta) {
+
+      // Try e catch per gestire chi errori delle chiamate API
       try {
         console.log(city);
         
-        // API per estrarre le coordinate dal nome della citta
+        // API per estrarre le coordinate (latitudine e longitudine) dal nome della citta
+        // Viene utilizzata una API senza apikey 
         const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citta)}&format=jsonv2&limit=1`;
         const responsePos = await fetch(apiUrl);
+
+        // If per controllare se la chiamata è andata a buon fine 
+        // DA COMMENTARE MEGLIO-----!!!-----
         if (!responsePos.ok) {
           setOffline(true);
           throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
@@ -177,26 +258,33 @@ function MeteoCard({city}){
 
         const data = await responsePos.json();
     
+        // If per capire se l'API ha risposto ma è vuota, in questo caso genera errore 
         if (!(data && data.length > 0)) {
-          throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
           setErrore("Nessun risultato trovato per la città");
+          throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
         }
+
+        // Salvataggio latitudine e longitudine per poi usarla nell' API del meteo 
         const latitude = parseFloat(data[0].lat);
         const longitude = parseFloat(data[0].lon);
-        console.log("risposta API citta --> coordinate ",{ latitude, longitude });
+console.log("risposta API citta --> coordinate ",{ latitude, longitude });
 
-        // API per il meteo con json
+        // API del meteo
+        // Creo un json a supporto della chimata
         const params = {
           "latitude": latitude,
           "longitude": longitude,
           "hourly": ["temperature_2m", "weather_code"],
           // "models": "italia_meteo_arpae_icon_2i",
-          "timezone": "Europe/Rome" // Imposta la tua timezone desiderata
+          "timezone": "Europe/Rome"
         };
         const url = "https://api.open-meteo.com/v1/forecast";
 
+        // Eseguo la chimata
         const response = await fetch(url + "?" + new URLSearchParams(params));
       
+        // If per controllare se la chiamata è andata a buon fine 
+        // DA COMMENTARE MEGLIO-----!!!-----
         if (!response.ok) {
           setOffline(true);
           setErrore("errore api meteo");
@@ -205,11 +293,12 @@ function MeteoCard({city}){
 
         setOffline(false);
       
+        // creo il json e lo salvo in datiMeteo
         const jsonData = await response.json();
-        // console.log(jsonData);
         setDatiMeteo(jsonData)  
-        console.log(jsonData);
+console.log(jsonData);
                         
+        // ---------------------------------------------DA TOGLIERE ALLA CONSEGNA---------------------------------------------
         //API controllo citta da posiszione
         //ottiene il nome della città usando Nominatim (geocoding inverso)
         const nominatimApiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2`;
@@ -224,19 +313,20 @@ function MeteoCard({city}){
         setResult(city2);
             
       } catch (error) {
-        console.log("errore");
+console.log("errore");
           
-        console.error("Errore durante la chiamata API:", error);
+console.error("Errore durante la chiamata API:", error);
         setErrore(error);                
       }finally{
+        // Le API hanno terminato
         setLetturaAPI(true);
       }
     }
 
     chiamataAPI(city);
-  }, [city]);// con [] il codice viene esseguito una sola volta (anche se ri-renderizzato)
+  }, [city]);// Questo useefect viene chiamata ogni volta che viene modificato city, necessario per evitare il ri-render continuo delle api e per fare le chiamate API solo quando necessario 
     
-    
+  // Funzione per segnalare all'utente un arrore durante la chiamata API 
   if (errore != "") {
     console.log(errore);
     
@@ -251,21 +341,25 @@ function MeteoCard({city}){
     ); 
   }
 
-  console.log("FAX");
+console.log("FAX");
 
-  //funzione per l'espansione delle card
+  // Funzione per l'espansione delle card
+  // Usate nell'onclick del bottone della card 
   const handleExpandClick = i => {
     setExpanded(expanded === i ? -1 : i);
   };
 
-  // array usato per il map delle card 
+  // Array usato per il map delle card e per assegnarli un id essenziale per l'espanzione 
   const f = [1,2,3,4,5,6,7];
 
   const dayNow = (new Date()).getHours();
   
+  // Component per la creazione delle card piccole se la larghezza dello schermo è minore di 600px
+  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per la citta preferita 
   function SmallCard() {
     return(
       <>
+      {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
           <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -293,7 +387,7 @@ function MeteoCard({city}){
           display: 'box',
         }}
       >
-        {/* schede oscurate mentre si carica l'API */}
+        {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
         {letturaAPI ? (
           f.map((g, i) =>(        
             <Card key={g} sx={{ width: 350, margin: "auto", mt: 4 }}>
@@ -345,10 +439,13 @@ function MeteoCard({city}){
     );
   }
 
+  // Component per la creazione delle card grandi se la larghezza dello schermo è minore di 600px
+  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per la citta preferita 
   function BigCard() {
     return(
       <>
       <Box sx={{marginTop: 3}}>
+        {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
         {letturaAPI ? (
           <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
@@ -375,7 +472,7 @@ function MeteoCard({city}){
           display: 'box',
         }}
       >
-        {/* schede oscurate mente si carica l'API */}
+        {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
         {letturaAPI ? (
           f.map((g, i) =>(        
             <Card key={g} sx={{ width: 550, margin: "auto", mt: 4 }}>
@@ -447,76 +544,10 @@ function MeteoCard({city}){
 
   return (
     <>
-      
       {matches ? <BigCard/> : <SmallCard/>}
     </>
   );
 }
 
-// funzione per separare i giorni della settimanda in datimeteo
-function taglioarraydati(arrra, inizio, fine) {
-  let taglio = JSON.parse(JSON.stringify(arrra)); // usata per non perdere l'array originale
-  taglio.hourly.time = taglio.hourly.time.slice(inizio, fine); 
-  taglio.hourly.temperature_2m = taglio.hourly.temperature_2m.slice(inizio, fine); 
-  taglio.hourly.weather_code = taglio.hourly.weather_code.slice(inizio, fine); 
-  return taglio;
-}
-
-
-// componet per creare la tabella partende da un json piccola
-function TabellaGiorniPiccola({jsonpassato}) {
-  return(
-    <>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 300 }} aria-label="simple table">
-          <TableHead>
-              <TableRow>
-              <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
-                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temp (°C)</TableCell>
-                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitazione</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {jsonpassato.hourly.time.map((t, index) => (
-              <TableRow key={t}>
-                <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                <TableCell align="right">{jsonpassato.hourly.temperature_2m[index]}</TableCell>
-                <TableCell align="right">{GetWeatherIcon(jsonpassato.hourly.weather_code[index])}</TableCell>
-              </TableRow>
-              ))}
-            </TableBody>
-        </Table>
-      </TableContainer>
-      </>
-  );
-}
-
-// componet per creare la tabella partende da un json grande con le scritte
-function TabellaGiorniGrande({jsonpassato}) {
-  return(
-    <>
-      <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 300 }} aria-label="simple table">
-          <TableHead>
-              <TableRow>
-              <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} >Ora</TableCell>
-                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Temperatura (°C)</TableCell>
-                <TableCell sx={{fontWeight: 'bold', fontSize: 15.5}} align="right">Precipitazione</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {jsonpassato.hourly.time.map((t, index) => (
-              <TableRow key={t}>
-                <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
-                <TableCell align="right">{jsonpassato.hourly.temperature_2m[index]}</TableCell>
-                <TableCell align="right"><Box sx={{display: "box"}}>{GetWeatherIcon(jsonpassato.hourly.weather_code[index])}<Typography>{getWeatherDescription(jsonpassato.hourly.weather_code[index])}</Typography></Box></TableCell>
-              </TableRow>
-              ))}
-            </TableBody>
-        </Table>
-      </TableContainer>
-      </>
-  );
-}
 
 export default React.memo(MeteoCard);
