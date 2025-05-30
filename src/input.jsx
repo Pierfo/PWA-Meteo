@@ -1,3 +1,11 @@
+/**
+ * Gestisce gli aspetti relativi alla pagina iniziale dell'app: gestisce la barra di ricerca, il caricamento 
+ * dello stato precedentemente salvato e il caricamento dei dati relativi alla città preferita.
+ * 
+ * All'avvio dell'app, cerca in memoria eventuali componenti dello stato da caricare: in particolare, verifica se
+ * l'utente   
+ */
+
 import React from "react";
 import { useState, useEffect } from "react";
 import MeteoCard from "./MeteoCard.jsx";
@@ -17,6 +25,7 @@ function Input2({callBack}) {
     const [senddati, setSendDati] = useState(""); //variabile modificata solo all'invio utilizzata per evitare il ri-render dilla tabellameteo
     const [citta, setCitta] = useState([]);
 
+    //Avvia il caricamento dei dati meteo relativi alla città salvata come preferita, se presente
     function loadFavourite() {
         if(!window.localStorage.getItem("favourite-city")) {
             return;
@@ -27,6 +36,7 @@ function Input2({callBack}) {
         setResend(!resend);
     }
     
+    //Se presente nello stato dell'app, carica il contenuto della barra di ricerca
     function reloadSearchedItem() {
         if(!window.localStorage.getItem("searched-item")) {
             return "";
@@ -35,7 +45,7 @@ function Input2({callBack}) {
         return window.localStorage.getItem("searched-item");
     }
 
-    //Invia all'API il nome della città
+    //Avvia il caricamento dei dati meteo relativi alla città cercata
     function press() {
         
         if (dati.length > 2){
@@ -69,6 +79,7 @@ function Input2({callBack}) {
         return false;
     }
 
+    //Sostituisce il contenuto della barra di ricerca con la stringa "text" e la salva nello stato dell'app
     function modifyText(text) {
         setDati(text);
 
@@ -81,6 +92,9 @@ function Input2({callBack}) {
         }
     }
 
+    //Carica lo stato dell'app: carica il contenuto della barra di ricerca precedente all'ultima volta che l'utente
+    //è uscito dall'app e invia la richiesta per ottenere i dati meteo relativi all'ultima città cercata. Se 
+    //quest'ultima non è definita allora ottiene i dati meteo per la città preferita
     function reloadState() {          
         modifyText(reloadSearchedItem());
         if(getLastSearchedCity() != null) {
