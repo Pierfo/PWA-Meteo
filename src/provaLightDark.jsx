@@ -30,6 +30,7 @@ function isLight(g){
   return g=='light';
 }
 
+// Inverte il valore del tema
 function invert(theme) {
   return isLight(theme) ? "dark" : "light";
 }
@@ -39,10 +40,12 @@ export default function Temax (){
   
   let prefersDark;
   
+  // Se non è salvata alcuna preferenza sul tema usa il tema di default del sistema
   if(!window.localStorage.getItem("preferred-theme")) {
     prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
   }
 
+  // Carica il tema salvato dall'utente
   else {
     if(window.localStorage.getItem("preferred-theme") === "dark") {
       prefersDark = true;
@@ -56,7 +59,7 @@ export default function Temax (){
   console.log(prefersDark);
   
   const [themeMode, setThemeMode] = useState(prefersDark ? 'dark' : 'light');
-  const [animation, setAnimation] = useState(true);
+  const [animation, setAnimation] = useState(window.localStorage.getItem("prefers-animations") && window.localStorage.getItem("prefers-animations") === "true");
   const [callBackAnimation, setCallBackAnimation] = useState(0);
 
   const themeOptions = {
@@ -72,7 +75,6 @@ export default function Temax (){
   };
 
   const theme = createTheme(themeOptions);
-
 
   console.log("callBackAnimation" ,callBackAnimation);
   
@@ -119,7 +121,12 @@ export default function Temax (){
             <MotionPhotosOffIcon color={animation ? 'with' : 'primary'}/>
             <Switch
               checked={animation}
-              onChange={() => {setAnimation(!animation)}}
+              onChange={() => {
+                const newAnimation = !animation;
+                setAnimation(newAnimation);
+
+                window.localStorage.setItem("prefers-animations", newAnimation.toString());
+              }}
               color="default"
               />
             <MotionPhotosAutoIcon color={animation ? 'primary' : 'with'}/>
