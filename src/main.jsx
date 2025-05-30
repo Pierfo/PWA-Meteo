@@ -10,20 +10,12 @@ import RainBackground from './provasfondopioggia.jsx'
 import SnowBackground from './nevebackground.jsx'
 import SunnyBackground from './provasfondosole.jsx'
 import { createTheme } from '@mui/material/styles';
-import {themeOptions} from './theme.js'
-
-
-const theme = createTheme(themeOptions);
-
+// import {themeOptions} from './theme.js'
+import { useState, useEffect } from 'react';
+import Temax from './provaLightDark.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <RainBackground wind={20}/>
-      {/* <SnowBackground></SnowBackground> */}
-      {/* <SunnyBackground></SunnyBackground> */}
-      <Input2></Input2>
-    </ThemeProvider>
+    <Temax></Temax>
   </StrictMode>
 )

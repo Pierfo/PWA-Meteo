@@ -207,7 +207,7 @@ function TabellaGiorniGrande({jsonpassato}) {
 }
 
 // Component principale
-function MeteoCard({city}){
+function MeteoCard({city , callBack}){
     
   // Dichiarazioni degli usestate
   const [errore, setErrore] = useState(""); // Errore riscontrato durante la chiamata API

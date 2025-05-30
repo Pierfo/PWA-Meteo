@@ -1,9 +1,12 @@
 import { Translate } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
+import { Box, useTheme } from '@mui/material';
 
-const RainBackground = ({wind = 0 }) => {
+
+const RainBackground = ({wind = 0}) => {
   //array di gocce
   const [drops, setDrops] = useState([]);
+  const theme = useTheme();
 
   //fatto per un saso particolare in cui l'app viene avviata con una grandezza e poi la cambia 
   //quindi usata per modificare dinamicamente la densita delle gocce in base alla larghezza della finestra
@@ -64,7 +67,7 @@ const RainBackground = ({wind = 0 }) => {
         .raindrop {
           position: absolute;
           top: -10%;
-          background: rgba(185, 185, 185, 0.75);
+          background: ${theme.palette.mode === 'light' ? theme.palette.primary.main : 'rgb(255, 255, 255)'};
           border-radius: 50%;
           animation-name: fall;
           animation-timing-function: linear;

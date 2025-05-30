@@ -10,7 +10,7 @@ import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
 import SendIcon from '@mui/icons-material/Send';
 
-function Input2() {
+function Input2({callBack}) {
     const [send , setSend] = useState(false); //variabile per far comparire la tabella
     const [resend , setResend] = useState(false); //variabile per modificare la tabella
     const [dati, setDati] = useState(""); //variabile aggiornata ogni volta che cambia nella textfield
@@ -130,7 +130,7 @@ function Input2() {
         
     return (
         <>
-            <Box sx={{display: 'flex', height: 56,mt: 3, justifyContent: 'center'}}>
+            <Box sx={{display: 'flex', height: 56,mt: 8, justifyContent: 'center'}}>
                 <Autocomplete
                     sx={{ width: '35%' }}
                     id="search-bar"
@@ -177,7 +177,7 @@ function Input2() {
                 <Button sx={{ml: 1}} variant="outlined" disabled={dati.length <3} onClick={press} endIcon={<SendIcon />}>send</Button>
             </Box>
             {/* {send && <TabellaMeteo city={senddati} invio={resend}/>} */}
-            {send && <MeteoCard city={senddati}/>}
+            {send && <MeteoCard city={senddati} callBack={setCallBack}/>}
         </>
     );
 }
