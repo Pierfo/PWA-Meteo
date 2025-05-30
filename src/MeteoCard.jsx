@@ -625,11 +625,19 @@ console.log("FAX");
     const savedCity = window.localStorage.getItem("favourite-city");
     console.log("dal is favorite", favourite);
     
-    setFavourite(savedCity != null && savedCity === city.toLowerCase());
+    setFavourite(savedCity != null && savedCity.toLowerCase() === city.toLowerCase());
   }
 
   function capitalize(name) {
-    return name;
+    let capitalized = "";
+
+    const words = name.split(" ");
+
+    words.map((word) => {
+      capitalized += (word.at(0).toUpperCase() + word.toLowerCase().substring(1, word.length) + " ");
+    })
+
+    return capitalized.substring(0, capitalized.length - 1)
   }
 
   function changeFavourite() {
