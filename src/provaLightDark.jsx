@@ -12,36 +12,16 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import MotionPhotosAutoIcon from '@mui/icons-material/MotionPhotosAuto';
 import MotionPhotosOffIcon from '@mui/icons-material/MotionPhotosOff';
+import { BsWindowX } from 'react-icons/bs';
 
-function isLight(g){
-  return g=='light';
-}
-
-export default function Temax (){
-  
-  let prefersDark;
-  
-  // Se non è salvata alcuna preferenza sul tema usa il tema di default del sistema
-  if(!window.localStorage.getItem("preferred-theme")) {
-    prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
-  }
-
-  // Carica il tema salvato dall'utente
-  else {
-    if(window.localStorage.getItem("preferred-theme") === "dark") {
-      prefersDark = true;
-    }
-
-    if(window.localStorage.getItem("preferred-theme") === "light") {
-      prefersDark = false;
-    }
-  }
-
-  console.log(prefersDark);
-  
-  const [themeMode, setThemeMode] = useState(prefersDark ? 'dark' : 'light');
+export default function Temax (){  
+  const [darkMode, setDarkMode] = useState(
+    (!window.localStorage.getItem("preferred-theme")) || (window.localStorage.getItem("preferred-theme") === "dark")
+  );
   const [animation, setAnimation] = useState(window.localStorage.getItem("prefers-animations") && window.localStorage.getItem("prefers-animations") === "true");
   const [callBackAnimation, setCallBackAnimation] = useState(0);
+
+  let themeMode = darkMode ? "dark" : "light";
 
   const themeOptions = {
     palette: {
@@ -65,8 +45,8 @@ export default function Temax (){
         <CssBaseline />
         {/* <SnowBackground wind={20}/> */}
         {/* <RainBackground wind={20}/> */}
-        {(animation && (callBackAnimation < 0)) && <SnowBackground wind={(callBackAnimation)*-1} color={isLight(themeMode) ? 'primary' : 'with'}/>}
-        {(animation && (callBackAnimation > 0)) && <RainBackground wind={callBackAnimation} color={isLight(themeMode) ? 'primary' : 'with'}/>}
+        {(animation && (callBackAnimation < 0)) && <SnowBackground wind={(callBackAnimation)*-1} color={!darkMode ? 'primary' : 'with'}/>}
+        {(animation && (callBackAnimation > 0)) && <RainBackground wind={callBackAnimation} color={!darkMode ? 'primary' : 'with'}/>}
         <Box sx={{display: 'flex', width: 200}}>
           <Box
             sx={{
@@ -77,17 +57,16 @@ export default function Temax (){
               height: 56,
             }}
             >
-            <LightModeIcon color={isLight(themeMode) ? 'primary' : 'white'} />
+            <LightModeIcon color={!darkMode ? 'primary' : 'white'} />
             <Switch
-              checked={!isLight(themeMode)}
+              checked={darkMode}
               onChange={() => {
-                const newThemeMode = invert(themeMode);
-                setThemeMode(newThemeMode);
-                window.localStorage.setItem("preferred-theme", newThemeMode);
+                window.localStorage.setItem("preferred-theme", darkMode ? "light" : "dark");
+                setDarkMode(!darkMode);
               }}
               color="default"
             />
-            <DarkModeIcon color={isLight(themeMode) ? 'white' : 'primary'} />
+            <DarkModeIcon color={!darkMode ? 'white' : 'primary'} />
           </Box>
 
           <Box
@@ -105,9 +84,9 @@ export default function Temax (){
               checked={animation}
               onChange={() => {
                 const newAnimation = !animation;
-                setAnimation(newAnimation);
-
                 window.localStorage.setItem("prefers-animations", newAnimation.toString());
+                
+                setAnimation(newAnimation);
               }}
               color="default"
               />

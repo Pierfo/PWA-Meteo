@@ -628,12 +628,16 @@ console.log("FAX");
     setFavourite(savedCity != null && savedCity === city.toLowerCase());
   }
 
+  function capitalize(name) {
+    return name;
+  }
+
   function changeFavourite() {
     if(favourite) {
       window.localStorage.removeItem("favourite-city");
     }
     else {
-      window.localStorage.setItem("favourite-city", city.toLowerCase());
+      window.localStorage.setItem("favourite-city", capitalize(city.toLowerCase()));
     }
     setFavourite(!favourite);
   }
