@@ -1,36 +1,21 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
 import './service-worker-registration.js'
 import Input2 from './input.jsx'
-// import {themeOptions} from './tema'
 import { ThemeProvider } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
 import CssBaseline from '@mui/material/CssBaseline';
 import RainBackground from './provasfondopioggia.jsx'
 import SnowBackground from './nevebackground.jsx'
-import SunnyBackground from './provasfondosole.jsx'
 import { createTheme } from '@mui/material/styles';
-// import {themeOptions} from './theme.js'
 import { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { Switch, Box } from '@mui/material';
 import LightModeIcon from '@mui/icons-material/LightMode';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
-import AnimationIcon from '@mui/icons-material/Animation';
-
 import MotionPhotosAutoIcon from '@mui/icons-material/MotionPhotosAuto';
 import MotionPhotosOffIcon from '@mui/icons-material/MotionPhotosOff';
-
-
-
-
-
 
 function isLight(g){
   return g=='light';
 }
-
 
 export default function Temax (){
   
@@ -62,9 +47,10 @@ export default function Temax (){
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        {/* <SnowBackground wind={20}/> */}
+        {/* <RainBackground wind={20}/> */}
+        {(animation && (callBackAnimation < 0)) && <SnowBackground wind={(callBackAnimation)*-1} color={isLight(themeMode) ? 'primary' : 'with'}/>}
         {(animation && (callBackAnimation > 0)) && <RainBackground wind={callBackAnimation} color={isLight(themeMode) ? 'primary' : 'with'}/>}
-        {/* <SnowBackground></SnowBackground> */}
-        {/* <SunnyBackground></SunnyBackground> */}
         <Box sx={{display: 'flex', width: 200}}>
           <Box
             sx={{
@@ -75,13 +61,13 @@ export default function Temax (){
               height: 56,
             }}
             >
-            <LightModeIcon color={isLight(themeMode) ? 'primary' : 'with'} />
+            <LightModeIcon color={isLight(themeMode) ? 'primary' : 'white'} />
             <Switch
               checked={!isLight(themeMode)}
               onChange={() => {isLight(themeMode) ? setThemeMode('dark') : setThemeMode('light')}}
               color="default"
             />
-            <DarkModeIcon color={isLight(themeMode) ? 'with' : 'primary'} />
+            <DarkModeIcon color={isLight(themeMode) ? 'white' : 'primary'} />
           </Box>
 
           <Box
@@ -103,10 +89,8 @@ export default function Temax (){
             <MotionPhotosAutoIcon color={animation ? 'primary' : 'with'}/>
           </Box>
         </Box>
-        {/* <Button sx={{position: 'absolute', mt: 2, mr: 'auto'}} onClick={() => {isLight(themeMode) ? setThemeMode('dark') : setThemeMode('light')}}>cambio colore</Button> */}
         <Input2 callBack={(i) => {setCallBackAnimation(i)}}></Input2>
       </ThemeProvider>
-    
     </>
   )
 }
