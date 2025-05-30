@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import CssBaseline from '@mui/material/CssBaseline';
 import RainBackground from './provasfondopioggia.jsx'
 import SnowBackground from './nevebackground.jsx'
-import SunnyBackground from './provasfondosole.jsx'
 import { createTheme } from '@mui/material/styles';
 // import {themeOptions} from './theme.js'
 import { useState, useEffect } from 'react';

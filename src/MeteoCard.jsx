@@ -282,8 +282,12 @@ function MeteoCard({city , callBack}){
     // Controllo se la citta inserita è impostata come preferita
     isFavourite();
     
-    // DA COMMENTARE-----!!!-----
+    // Salvo l'ultima città cercata in un cookie della durata di 3 ore, cosicché l'utente possa ritrovare la sua
+    // ultima ricerca alla riapertura dell'app
     document.cookie = "last-searched=" + city + "; max-age=" + 3*3600 + ";"
+    
+    // Senza questo il programma interpreterebbe "Roma" e "roma" come due città distinte, dunque salverebbe i json
+    // relativi a entrambe le città in cache
     city = city.toLowerCase();
     
     // Reset delle variabili (usato per le chiamate API dopo la prima)
@@ -305,75 +309,96 @@ function MeteoCard({city , callBack}){
           dummySearch = true;
         }
         
-        // API per estrarre le coordinate (latitudine e longitudine) dal nome della citta
-        // Viene utilizzata una API senza apikey 
-        const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citta)}&format=jsonv2&limit=1`;
-        const responsePos = await fetch(apiUrl);
-        
-        // If per controllare se la chiamata è andata a buon fine 
-        // DA COMMENTARE MEGLIO-----!!!-----
-        if (!responsePos.ok) {
-          setOffline(true);
-          throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
-        }
-        
-        setOffline(false);
-        
-        const data = await responsePos.json();
-    
-        // If per capire se l'API ha risposto ma è vuota, in questo caso genera errore 
-        if (!(data && data.length > 0)) {
-          setErrore("Nessun risultato trovato per la città");
-          throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
-        }
-        
-        // Salvataggio latitudine e longitudine per poi usarla nell' API del meteo 
-        const latitude = parseFloat(data[0].lat);
-        const longitude = parseFloat(data[0].lon);
-        console.log("risposta API citta --> coordinate ",{ latitude, longitude });
-        
-        // API del meteo
-        // Creo un json a supporto della chimata
-        const params = {
-          "latitude": latitude,
-          "longitude": longitude,
-          "hourly": ["temperature_2m", "weather_code"],
-          // "models": "italia_meteo_arpae_icon_2i",
-          "timezone": "Europe/Rome"
-        };
-        const url = "https://api.open-meteo.com/v1/forecast";
+        if(!dummySearch) {
+          // API per estrarre le coordinate (latitudine e longitudine) dal nome della citta
+          // Viene utilizzata una API senza apikey 
+          const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citta)}&format=jsonv2&limit=1`;
+          const responsePos = await fetch(apiUrl);
 
-        // Eseguo la chimata
-        const response = await fetch(url + "?" + new URLSearchParams(params));
-      
-        // If per controllare se la chiamata è andata a buon fine 
-        // DA COMMENTARE MEGLIO-----!!!-----
-        if (!response.ok) {
-          setOffline(true);
-          setErrore("errore api meteo");
-          throw new Error(`Errore HTTP! Stato: ${response.status}`);
-        }
+          // If per controllare se la chiamata è andata a buon fine 
+          // DA COMMENTARE MEGLIO-----!!!-----
+          if (!responsePos.ok) {
+            setOffline(true);
+            throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
+          }
 
-        setOffline(false);
-      
-        // creo il json e lo salvo in datiMeteo
-        const jsonData = await response.json();
-        setDatiMeteo(jsonData)  
+          setOffline(false);
+
+          const data = await responsePos.json();
+        
+          // If per capire se l'API ha risposto ma è vuota, in questo caso genera errore 
+          if (!(data && data.length > 0)) {
+            setErrore("Nessun risultato trovato per la città");
+            throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
+          }
+
+          // Salvataggio latitudine e longitudine per poi usarla nell' API del meteo 
+          const latitude = parseFloat(data[0].lat);
+          const longitude = parseFloat(data[0].lon);
+          console.log("risposta API citta --> coordinate ",{ latitude, longitude });
+
+          // API del meteo
+          // Creo un json a supporto della chimata
+          const params = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "hourly": ["temperature_2m", "weather_code"],
+            // "models": "italia_meteo_arpae_icon_2i",
+            "timezone": "Europe/Rome"
+          };
+          const url = "https://api.open-meteo.com/v1/forecast";
+
+          // Eseguo la chimata
+          const response = await fetch(url + "?" + new URLSearchParams(params));
+        
+          // If per controllare se la chiamata è andata a buon fine 
+          // DA COMMENTARE MEGLIO-----!!!-----
+          if (!response.ok) {
+            setOffline(true);
+            setErrore("errore api meteo");
+            throw new Error(`Errore HTTP! Stato: ${response.status}`);
+          }
+
+          setOffline(false);
+        
+          // creo il json e lo salvo in datiMeteo
+          const jsonData = await response.json();
+          setDatiMeteo(jsonData)  
 console.log(jsonData);
                         
-        // ---------------------------------------------DA TOGLIERE ALLA CONSEGNA---------------------------------------------
-        //API controllo citta da posiszione
-        //ottiene il nome della città usando Nominatim (geocoding inverso)
-        const nominatimApiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2`;
-        const nominatimResponse = await fetch(nominatimApiUrl);
-        const nominatimData = await nominatimResponse.json();
-          
-        //estrai il nome della città (potrebbe variare a seconda della precisione)
-        const city2 = nominatimData.address.city || nominatimData.address.town || nominatimData.address.village || 'Località sconosciuta';
-          
-        //stampa i risultati sulla console
-        console.log("risposta API coordinate --> citta: ", city2);
-        setResult(city2);
+          // ---------------------------------------------DA TOGLIERE ALLA CONSEGNA---------------------------------------------
+          //API controllo citta da posiszione
+          //ottiene il nome della città usando Nominatim (geocoding inverso)
+          const nominatimApiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2`;
+          const nominatimResponse = await fetch(nominatimApiUrl);
+          const nominatimData = await nominatimResponse.json();
+
+          //estrai il nome della città (potrebbe variare a seconda della precisione)
+          const city2 = nominatimData.address.city || nominatimData.address.town || nominatimData.address.village || 'Località sconosciuta';
+
+          //stampa i risultati sulla console
+          console.log("risposta API coordinate --> citta: ", city2);
+          setResult(city2);
+        }
+
+        else {
+          // Eseguo la chimata
+          const response = await fetch(
+            `https://pierfo.github.io/Dummy_data/openmeteo/${encodeURIComponent(
+              citta.substring(0, citta.lastIndexOf(" "))
+              )}.json`
+          );
+        
+          // If per controllare se la chiamata è andata a buon fine 
+          // DA COMMENTARE MEGLIO-----!!!-----
+          if (!response.ok) {
+            setOffline(true);
+            setErrore("errore api meteo");
+            throw new Error(`Errore HTTP! Stato: ${response.status}`);
+          }
+
+          setOffline(false);
+        }
             
       } catch (error) {
 console.log("errore");
