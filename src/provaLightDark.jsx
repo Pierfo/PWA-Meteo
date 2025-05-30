@@ -55,11 +55,14 @@ export default function Temax (){
 
   const theme = createTheme(themeOptions);
 
+
+  console.log("callBackAnimation" ,callBackAnimation);
+  
   return (
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {(animation && (callBackAnimation === 0)) && <RainBackground wind={20} color={isLight(themeMode) ? 'primary' : 'with'}/>}
+        {(animation && (callBackAnimation > 0)) && <RainBackground wind={callBackAnimation} color={isLight(themeMode) ? 'primary' : 'with'}/>}
         {/* <SnowBackground></SnowBackground> */}
         {/* <SunnyBackground></SunnyBackground> */}
         <Box sx={{display: 'flex', width: 200}}>
@@ -80,7 +83,6 @@ export default function Temax (){
             />
             <DarkModeIcon color={isLight(themeMode) ? 'with' : 'primary'} />
           </Box>
-          <Typography>call back {callBackAnimation}</Typography>
 
           <Box
             sx={{

@@ -384,7 +384,13 @@ console.error("Errore durante la chiamata API:", error);
   }, [city]);// Questo useefect viene chiamata ogni volta che viene modificato city, necessario per evitare il ri-render continuo delle api e per fare le chiamate API solo quando necessario 
     
   useEffect(()=>{
-    if(letturaAPI) callBack(getWeatherIntensity(median(taglioarraydati(datiMeteo, 1,24).hourly.weather_code)))}, [letturaAPI])
+    if(letturaAPI) {
+      callBack(getWeatherIntensity(median(taglioarraydati(datiMeteo, 1,24).hourly.weather_code)));
+    }
+    else{
+      callBack(0);
+    }
+  }, [letturaAPI])
   // Funzione per segnalare all'utente un arrore durante la chiamata API 
   if (errore != "") {
     console.log(errore);
