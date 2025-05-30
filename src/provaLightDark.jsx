@@ -31,6 +31,10 @@ function isLight(g){
   return g=='light';
 }
 
+function invert(theme) {
+  return isLight(theme) ? "dark" : "light";
+}
+
 
 export default function Temax (){
   
@@ -91,15 +95,9 @@ export default function Temax (){
             <Switch
               checked={!isLight(themeMode)}
               onChange={() => {
-                if(isLight(themeMode)) {
-                  setThemeMode('dark');
-                  window.localStorage.setItem("preferred-theme", "dark");
-                } 
-                else{
-                  setThemeMode('light');
-                  window.localStorage.setItem("preferred-theme", "light");
-                }}
-              }
+                setThemeMode(invert(themeMode));
+                window.localStorage.setItem("preferred-theme", themeMode);
+              }}
               color="default"
             />
             <DarkModeIcon color={isLight(themeMode) ? 'with' : 'primary'} />
