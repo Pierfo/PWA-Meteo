@@ -34,10 +34,25 @@ function isLight(g){
 
 export default function Temax (){
   
-  const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  console.log(prefersDarkMode);
+  let prefersDark;
   
-  const [themeMode, setThemeMode] = useState(prefersDarkMode ? 'dark' : 'light');
+  if(!window.localStorage.getItem("preferred-theme")) {
+    prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
+  }
+
+  else {
+    if(window.localStorage.getItem("preferred-theme") === "dark") {
+      prefersDark = true;
+    }
+
+    if(window.localStorage.getItem("preferred-theme") === "light") {
+      prefersDark = false;
+    }
+  }
+
+  console.log(prefersDark);
+  
+  const [themeMode, setThemeMode] = useState(prefersDark ? 'dark' : 'light');
   const [animation, setAnimation] = useState(true);
   const [callBackAnimation, setCallBackAnimation] = useState(0);
 
@@ -75,7 +90,16 @@ export default function Temax (){
             <LightModeIcon color={isLight(themeMode) ? 'primary' : 'with'} />
             <Switch
               checked={!isLight(themeMode)}
-              onChange={() => {isLight(themeMode) ? setThemeMode('dark') : setThemeMode('light')}}
+              onChange={() => {
+                if(isLight(themeMode)) {
+                  setThemeMode('dark');
+                  window.localStorage.setItem("preferred-theme", "dark");
+                } 
+                else{
+                  setThemeMode('light');
+                  window.localStorage.setItem("preferred-theme", "light");
+                }}
+              }
               color="default"
             />
             <DarkModeIcon color={isLight(themeMode) ? 'with' : 'primary'} />
