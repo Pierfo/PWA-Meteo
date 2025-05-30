@@ -98,8 +98,9 @@ export default function Temax (){
             <Switch
               checked={!isLight(themeMode)}
               onChange={() => {
-                setThemeMode(invert(themeMode));
-                window.localStorage.setItem("preferred-theme", themeMode);
+                const newThemeMode = invert(themeMode);
+                setThemeMode(newThemeMode);
+                window.localStorage.setItem("preferred-theme", newThemeMode);
               }}
               color="default"
             />
