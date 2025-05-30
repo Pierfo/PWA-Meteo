@@ -241,6 +241,12 @@ function MeteoCard({city , callBack}){
       // Try e catch per gestire chi errori delle chiamate API
       try {
         console.log(city);
+
+        let dummySearch = false;
+
+        if(city.endsWith("-dummy")) {
+          dummySearch = true;
+        }
         
         // API per estrarre le coordinate (latitudine e longitudine) dal nome della citta
         // Viene utilizzata una API senza apikey 
