@@ -39,11 +39,7 @@ export default function Temax (){
   
   const [themeMode, setThemeMode] = useState(prefersDarkMode ? 'dark' : 'light');
   const [animation, setAnimation] = useState(true);
-  const [callBackAnimation, setCallBackAnimation] = useState(-1);
-
-  function setCallBack(i){
-    setCallBackAnimation(i);
-  }
+  const [callBackAnimation, setCallBackAnimation] = useState(0);
 
   const themeOptions = {
     palette: {
@@ -63,7 +59,7 @@ export default function Temax (){
     <>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        {animation && <RainBackground wind={20} color={isLight(themeMode) ? 'primary' : 'with'}/>}
+        {(animation && (callBackAnimation === 0)) && <RainBackground wind={20} color={isLight(themeMode) ? 'primary' : 'with'}/>}
         {/* <SnowBackground></SnowBackground> */}
         {/* <SunnyBackground></SunnyBackground> */}
         <Box sx={{display: 'flex', width: 200}}>
@@ -84,6 +80,7 @@ export default function Temax (){
             />
             <DarkModeIcon color={isLight(themeMode) ? 'with' : 'primary'} />
           </Box>
+          <Typography>call back {callBackAnimation}</Typography>
 
           <Box
             sx={{
@@ -105,7 +102,7 @@ export default function Temax (){
           </Box>
         </Box>
         {/* <Button sx={{position: 'absolute', mt: 2, mr: 'auto'}} onClick={() => {isLight(themeMode) ? setThemeMode('dark') : setThemeMode('light')}}>cambio colore</Button> */}
-        <Input2 callBack={setCallBack}></Input2>
+        <Input2 callBack={(i) => {setCallBackAnimation(i)}}></Input2>
       </ThemeProvider>
     
     </>

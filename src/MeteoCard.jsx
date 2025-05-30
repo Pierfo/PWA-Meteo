@@ -84,6 +84,64 @@ function getWeatherDescription(weatherCode) {
   }
 }
 
+function getWeatherIntensity(weatherCode) {
+  let intensity = 0;
+
+  switch (weatherCode) {
+    case 51:
+    case 56:
+    case 61:
+    case 66:
+    case 80:
+      intensity = 1;
+      break;
+
+    case 53:
+    case 57:
+    case 63:
+    case 67:
+    case 81:
+    case 95:
+      intensity = 20;
+      break;
+
+    case 55:
+    case 65:
+    case 82:
+    case 96:
+    case 99:
+      intensity = 45;
+      break;
+
+    case 71:
+      intensity = -1;
+      break;
+
+    case 73:
+    case 85:
+      intensity = -20;
+      break;
+
+    case 75:
+    case 86:
+      intensity = -45;
+      break;
+
+    case 77:
+      intensity = -10;
+      break;
+
+    default:
+      intensity = 0;
+  }
+
+  console.log("intensity",intensity);
+  console.log("codice", weatherCode);
+  
+  
+  return intensity;
+}
+
 // Funzione che restituisce un componente icona in base al codice meteo
 // Prende in input il codice formito da openmeteo e la grandezza dell'icona e restituisce una icona presa da react icon/wi
 // Es prende in input 0 e restituisce l'icona del sole essendo il cielo esereno 
@@ -221,10 +279,9 @@ function MeteoCard({city , callBack}){
 
   // Useeffect per le chiamate API, viene eseguito ogni volta che city viene modificata
   useEffect(() => {
-
     // Controllo se la citta inserita è impostata come preferita
     isFavourite();
-
+    
     // DA COMMENTARE-----!!!-----
     document.cookie = "last-searched=" + city + "; max-age=" + 3*3600 + ";"
     city = city.toLowerCase();
@@ -232,12 +289,12 @@ function MeteoCard({city , callBack}){
     // Reset delle variabili (usato per le chiamate API dopo la prima)
     setErrore("");
     setLetturaAPI(false);
-
+    
     setOffline(false);//DA CAPIRE SE VA BENE LO HO AGGIUNTO ROA QUA 
 
     // Funzione async necessaria per fare await necessario a sua volta per le fetch alle API
     async function chiamataAPI(citta) {
-
+      
       // Try e catch per gestire chi errori delle chiamate API
       try {
         console.log(city);
@@ -246,16 +303,16 @@ function MeteoCard({city , callBack}){
         // Viene utilizzata una API senza apikey 
         const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citta)}&format=jsonv2&limit=1`;
         const responsePos = await fetch(apiUrl);
-
+        
         // If per controllare se la chiamata è andata a buon fine 
         // DA COMMENTARE MEGLIO-----!!!-----
         if (!responsePos.ok) {
           setOffline(true);
           throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
         }
-
+        
         setOffline(false);
-
+        
         const data = await responsePos.json();
     
         // If per capire se l'API ha risposto ma è vuota, in questo caso genera errore 
@@ -263,12 +320,12 @@ function MeteoCard({city , callBack}){
           setErrore("Nessun risultato trovato per la città");
           throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
         }
-
+        
         // Salvataggio latitudine e longitudine per poi usarla nell' API del meteo 
         const latitude = parseFloat(data[0].lat);
         const longitude = parseFloat(data[0].lon);
-console.log("risposta API citta --> coordinate ",{ latitude, longitude });
-
+        console.log("risposta API citta --> coordinate ",{ latitude, longitude });
+        
         // API del meteo
         // Creo un json a supporto della chimata
         const params = {
@@ -326,6 +383,8 @@ console.error("Errore durante la chiamata API:", error);
     chiamataAPI(city);
   }, [city]);// Questo useefect viene chiamata ogni volta che viene modificato city, necessario per evitare il ri-render continuo delle api e per fare le chiamate API solo quando necessario 
     
+  useEffect(()=>{
+    if(letturaAPI) callBack(getWeatherIntensity(median(taglioarraydati(datiMeteo, 1,24).hourly.weather_code)))}, [letturaAPI])
   // Funzione per segnalare all'utente un arrore durante la chiamata API 
   if (errore != "") {
     console.log(errore);

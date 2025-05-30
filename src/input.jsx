@@ -177,7 +177,7 @@ function Input2({callBack}) {
                 <Button sx={{ml: 1}} variant="outlined" disabled={dati.length <3} onClick={press} endIcon={<SendIcon />}>send</Button>
             </Box>
             {/* {send && <TabellaMeteo city={senddati} invio={resend}/>} */}
-            {send && <MeteoCard city={senddati} callBack={setCallBack}/>}
+            {send && <MeteoCard city={senddati} callBack={callBack}/>}
         </>
     );
 }
