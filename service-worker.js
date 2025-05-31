@@ -81,6 +81,7 @@ function updateCache() {
                 return Promise.all(
                     keys.map((key) => {
                         if(isOutdatedWrapper(timeCache, key)) {
+                            console.log(`removing ${key.url}`)
                             return cache.delete(key) 
                         }
                     })
@@ -97,7 +98,7 @@ function isOutdated(cache, key) {
                 return;
             }
 
-            const timeInt = perseInt(time.statusText);
+            const timeInt = parseInt(time.statusText);
 
             resolve((Date.now() - timeInt) > (expirationMinutes * 60 * 1000))
         })
