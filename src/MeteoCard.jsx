@@ -322,7 +322,7 @@ function MeteoCard({city , callBack}){
             throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
           }
 
-          setOffline(false);
+          //setOffline(false);
 
           const data = await responsePos.json();
         
@@ -359,7 +359,7 @@ function MeteoCard({city , callBack}){
             throw new Error(`Errore HTTP! Stato: ${response.status}`);
           }
 
-          setOffline(false);
+          //setOffline(false);
         
           // creo il json e lo salvo in datiMeteo
           const jsonData = await response.json();
@@ -397,7 +397,7 @@ console.log(jsonData);
             throw new Error(`Errore HTTP! Stato: ${response.status}`);
           }
 
-          setOffline(false);
+          //setOffline(false);
         }
             
       } catch (error) {
@@ -406,6 +406,7 @@ console.log("errore");
 console.error("Errore durante la chiamata API:", error);
         setErrore(error);                
       }finally{
+console.log("offline = " + offline);
         // Le API hanno terminato
         setLetturaAPI(true);
       }
@@ -415,7 +416,7 @@ console.error("Errore durante la chiamata API:", error);
   }, [city]);// Questo useefect viene chiamata ogni volta che viene modificato city, necessario per evitare il ri-render continuo delle api e per fare le chiamate API solo quando necessario 
     
   useEffect(()=>{
-    if(letturaAPI) {
+    if(letturaAPI && !offline) {
       callBack(getWeatherIntensity(median(taglioarraydati(datiMeteo, 1,24).hourly.weather_code)));
     }
     else{
