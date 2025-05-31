@@ -21,21 +21,7 @@ self.addEventListener("activate", (e) => {
 })
 
 self.addEventListener("load", (e) => {
-    e.waitUntil(        
-        caches.open(cacheNames[1]).then((timeCache) => {
-            caches.open(cacheNames[0]).then((cache) => {
-                timeCache.keys().then((keys) => {
-                    return Promise.all(
-                        keys.map((key) => {
-                            if(isOutdatedWrapper(timeCache, key)) {
-                                return cache.delete(key) 
-                            }
-                        })
-                    )
-                })
-            })
-        })
-    )
+    updateCacheWrapper();
 })
 
 self.addEventListener("fetch", (e) => {    
@@ -76,12 +62,32 @@ self.addEventListener("fetch", (e) => {
     )
 })
 
+async function updateCacheWrapper() {    
+    await updateCache();
+}
+
 async function isOutdatedWrapper(cache, key) {
     return await isOutdated(cache, key);
 }
 
 async function fetchFromWebWrapper(request) {
     return await fetchFromWeb(request);
+}
+
+function updateCache() {
+    caches.open(cacheNames[1]).then((timeCache) => {
+        caches.open(cacheNames[0]).then((cache) => {
+            timeCache.keys().then((keys) => {
+                return Promise.all(
+                    keys.map((key) => {
+                        if(isOutdatedWrapper(timeCache, key)) {
+                            return cache.delete(key) 
+                        }
+                    })
+                )
+            })
+        })
+    })
 }
 
 function isOutdated(cache, key) {
