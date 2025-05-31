@@ -20,6 +20,10 @@ self.addEventListener("activate", (e) => {
     )
 })
 
+self.addEventListener("load", (e) => {
+    updateCacheWrapper();
+})
+
 self.addEventListener("fetch", (e) => {    
     e.respondWith(
         new Promise ((resolve, reject) => {
@@ -58,8 +62,47 @@ self.addEventListener("fetch", (e) => {
     )
 })
 
+async function updateCacheWrapper() {    
+    await updateCache();
+}
+
+async function isOutdatedWrapper(cache, key) {
+    return await isOutdated(cache, key);
+}
+
 async function fetchFromWebWrapper(request) {
     return await fetchFromWeb(request);
+}
+
+function updateCache() {
+    caches.open(cacheNames[1]).then((timeCache) => {
+        caches.open(cacheNames[0]).then((cache) => {
+            timeCache.keys().then((keys) => {
+                return Promise.all(
+                    keys.map((key) => {
+                        if(isOutdatedWrapper(timeCache, key)) {
+                            console.log(`REMOVING ${key.url}`)
+                            return cache.delete(key) 
+                        }
+                    })
+                )
+            })
+        })
+    })
+}
+
+function isOutdated(cache, key) {
+    return new Promise((resolve, reject) => {
+        cache.match(key).then((time) => {
+            if(time === undefined) {
+                return;
+            }
+
+            const timeInt = parseInt(time.statusText);
+
+            resolve((Date.now() - timeInt) > (expirationMinutes * 60 * 1000))
+        })
+    })
 }
 
 function fetchFromWeb(request) {
