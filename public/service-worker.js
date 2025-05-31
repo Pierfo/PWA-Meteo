@@ -114,7 +114,7 @@ function fetchFromWeb(request) {
 
             caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
             
-            if(request.url.includes("https://api.open-meteo.com/v1/forecast")) {
+            if(request.url.includes("https://api.open-meteo.com/v1/forecast") || request.url.includes("https://pierfo.github.io/Dummy_data/openmeteo")) {
                 caches.open(cacheNames[1]).then((cache) => {
                     cache.put(request, new Response(null, {status: 200, statusText: Date.now().toString()}));
                 })
