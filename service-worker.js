@@ -24,7 +24,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {    
     if((Date.now()-lastUpdate) > 3600 * 1000) {
         e.waitUntil(
-            updateCacheWrapper().then(() => {
+            updateCache().then(() => {
                 return new Promise((resolve, reject) => {
                     resolve();
                 })
