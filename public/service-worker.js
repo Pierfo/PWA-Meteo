@@ -1,5 +1,6 @@
 const cacheNames = ["PWA-Meteo_v40", "PWA-Meteo_time-cached_v38"];
 const expirationMinutes = 60;
+let lastUpdate = 0;
 
 //C'è forse bisogno di inserire già degli elementi in cache
 self.addEventListener("install", (e) => {
@@ -20,11 +21,19 @@ self.addEventListener("activate", (e) => {
     )
 })
 
-self.addEventListener("load", (e) => {
-    updateCacheWrapper();
-})
-
 self.addEventListener("fetch", (e) => {    
+    if((Date.now()-lastUpdate) > 3600 * 1000) {
+        e.waitUntil(
+            updateCache().then(() => {
+                return new Promise((resolve, reject) => {
+                    resolve();
+                })
+            })
+        )
+        lastUpdate = Date.now();
+        console.log("has cleaned cache");
+    }
+    
     e.respondWith(
         new Promise ((resolve, reject) => {
             caches.open(cacheNames[1]).then((timeCache) => {
@@ -75,21 +84,25 @@ async function fetchFromWebWrapper(request) {
 }
 
 function updateCache() {
-    caches.open(cacheNames[1]).then((timeCache) => {
-        caches.open(cacheNames[0]).then((cache) => {
-            timeCache.keys().then((keys) => {
-                return Promise.all(
-                    keys.map((key) => {
-                        isOutdatedWrapper(timeCache, key).then(() => {
-                            console.log(`REMOVING ${key.url}`)
-                            return Promise.all([cache.delete(key), timeCache.delete(key)]);
-                        }).catch(() => {
-                            return new Promise((resolve, reject) => {
-                                resolve();
+    return new Promise((resolve, reject) => {
+        caches.open(cacheNames[1]).then((timeCache) => {
+            caches.open(cacheNames[0]).then((cache) => {
+                timeCache.keys().then((keys) => {
+                    resolve(
+                        Promise.all(
+                            keys.map((key) => {
+                                isOutdatedWrapper(timeCache, key).then(() => {
+                                    console.log(`REMOVING ${key.url}`)
+                                    return Promise.all([cache.delete(key), timeCache.delete(key)]);
+                                }).catch(() => {
+                                    return new Promise((resolve, reject) => {
+                                        resolve();
+                                    })
+                                })
                             })
-                        })
-                    })
-                )
+                        )
+                    )
+                })
             })
         })
     })
