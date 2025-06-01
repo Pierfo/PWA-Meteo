@@ -82,7 +82,7 @@ function updateCache() {
                     keys.map((key) => {
                         if(isOutdatedWrapper(timeCache, key)) {
                             console.log(`REMOVING ${key.url}`)
-                            return cache.delete(key) 
+                            return new Promise.all([cache.delete(key), timeCache.delete(key)]);
                         }
                     })
                 )
