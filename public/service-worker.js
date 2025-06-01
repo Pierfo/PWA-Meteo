@@ -80,10 +80,14 @@ function updateCache() {
             timeCache.keys().then((keys) => {
                 return Promise.all(
                     keys.map((key) => {
-                        if(isOutdatedWrapper(timeCache, key)) {
+                        isOutdatedWrapper(timeCache, key).then(() => {
                             console.log(`REMOVING ${key.url}`)
-                            return cache.delete(key) 
-                        }
+                            return Promise.all([cache.delete(key), timeCache.delete(key)]);
+                        }).catch(() => {
+                            return new Promise((resolve, reject) => {
+                                resolve();
+                            })
+                        })
                     })
                 )
             })
@@ -100,7 +104,15 @@ function isOutdated(cache, key) {
 
             const timeInt = parseInt(time.statusText);
 
-            resolve((Date.now() - timeInt) > (expirationMinutes * 60 * 1000))
+            const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
+
+            if(result) {
+                resolve();
+            }
+            
+            else {
+                reject();
+            }
         })
     })
 }

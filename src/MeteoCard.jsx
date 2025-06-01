@@ -274,6 +274,7 @@ function MeteoCard({city , callBack}){
   const [result, setResult] = useState(""); 
   const [expanded, setExpanded] = useState(-1); // Variabile usata per l'espansione delle card, assume un valore da 0 a 6 che indica quale delle sette card ha la tabella espansa, assume valore -1 se nessuna è espanda, facendo cosi se ne puo espandere solamente una alla volta
   const [offline, setOffline] = useState(false); // Variabile usata per registrare se l'utente è offline
+  const [badSearch, setBadSearch] = useState(false); // Variabile per capire se la città cercata esiste o meno
   const [favourite, setFavourite] = useState(false); // Varaibile usate per registrare se la città cercata è stata salvata come preferita, se la variabile cambia viene rirenderizzato pe far cambiare il tipo di checkbox,(il cuore diventa vuoto o pieno per segnalare all'utente la modifica)
   const matches = useMediaQuery('(min-width:600px)'); // Variabile collegata alla media query per modificare la card e di conseguenza le taeblle da piccole a grandi, assume valore true o false se la shermata è maggiore o minore di 600px
 
@@ -295,6 +296,7 @@ function MeteoCard({city , callBack}){
     setLetturaAPI(false);
     
     setOffline(false);//DA CAPIRE SE VA BENE LO HO AGGIUNTO ROA QUA 
+    setBadSearch(false);
 
     // Funzione async necessaria per fare await necessario a sua volta per le fetch alle API
     async function chiamataAPI(citta) {
@@ -329,6 +331,7 @@ function MeteoCard({city , callBack}){
           // If per capire se l'API ha risposto ma è vuota, in questo caso genera errore 
           if (!(data && data.length > 0)) {
             setErrore("Nessun risultato trovato per la città");
+            setBadSearch(true);
             throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
           }
 
@@ -397,6 +400,9 @@ console.log(jsonData);
             throw new Error(`Errore HTTP! Stato: ${response.status}`);
           }
 
+          const jsonData = await response.json();
+          setDatiMeteo(jsonData)
+
           //setOffline(false);
         }
             
@@ -416,7 +422,7 @@ console.log("offline = " + offline);
   }, [city]);// Questo useefect viene chiamata ogni volta che viene modificato city, necessario per evitare il ri-render continuo delle api e per fare le chiamate API solo quando necessario 
     
   useEffect(()=>{
-    if(letturaAPI && !offline) {
+    if(letturaAPI && !offline && !badSearch) {
       callBack(getWeatherIntensity(median(taglioarraydati(datiMeteo, 1,24).hourly.weather_code)));
     }
     else{
