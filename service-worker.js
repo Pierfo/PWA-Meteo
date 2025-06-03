@@ -139,17 +139,19 @@ function fetchFromWeb(request) {
                 resolve(res);
             }
             
-            const resClone = res.clone();
+            else {
+                const resClone = res.clone();
 
-            caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
-            
-            if(request.url.includes("https://api.open-meteo.com/v1/forecast") || request.url.includes("https://pierfo.github.io/Dummy_data/openmeteo")) {
-                caches.open(cacheNames[1]).then((cache) => {
-                    cache.put(request, new Response(null, {status: 200, statusText: Date.now().toString()}));
-                })
+                caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
+
+                if(request.url.includes("https://api.open-meteo.com/v1/forecast") || request.url.includes("https://pierfo.github.io/Dummy_data/openmeteo")) {
+                    caches.open(cacheNames[1]).then((cache) => {
+                        cache.put(request, new Response(null, {status: 200, statusText: Date.now().toString()}));
+                    })
+                }
+
+                resolve(resClone);
             }
-
-            resolve(resClone);
         }).catch((err) => {
             console.log(`Fetching error, returning void response`);
 
