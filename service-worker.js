@@ -134,6 +134,10 @@ function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
         fetch(request).then((res) => {
             console.log(`Fetching from the web ${request.url}`);
+
+            if(request.url === "https://pierfo.github.io/Dummy_data/test.txt") {
+                resolve(res);
+            }
             
             const resClone = res.clone();
 
