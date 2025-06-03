@@ -19,6 +19,9 @@ import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import useMediaQuery from '@mui/material/useMediaQuery';// Usato per prendere la grandezza dello schermo.
+import { IoCloudOffline } from "react-icons/io5";
+import { MdDoNotDisturb } from "react-icons/md";
+
 
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
@@ -369,6 +372,23 @@ console.log(jsonData);
 
         // Inoltra la richiesta al server placeholder
         else {
+          // 
+          const contents = await fetch("https://pierfo.github.io/Dummy_data/contents.json");
+
+          if(!contents.ok) {
+            setOffline(true);
+            setErrore("Offline");
+            throw new Error(`Errore HTTP! Stato: ${response.status}`);
+          }
+
+          const contentsJSON = await contents.json();
+
+          if(!contentsJSON.includes(`${citta.substring(0, citta.lastIndexOf(" "))}.json`)) {
+            setBadSearch(true);
+            setErrore("Città non salvata nel server placeholder");
+            throw new Error(`Città non salvata nel server placeholder`);
+          }
+          
           // Esegue la chimata
           const response = await fetch(
             `https://pierfo.github.io/Dummy_data/openmeteo/${encodeURIComponent(
@@ -389,7 +409,8 @@ console.log(jsonData);
         }
             
       } catch (error) {
-        setErrore(error);                
+        setErrore(error); 
+        console.error(error)               
       }finally{
         // Le API hanno terminato
         setLetturaAPI(true);
@@ -417,18 +438,24 @@ console.log(jsonData);
   if (errore != "") {
     if(offline) {
       return(
-        <Typography variant="h6">Connessione a internet assente</Typography>
+        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3}}>
+          <Typography sx={{textAlign: "center", mr: "17px"}} variant="h5">Connessione a internet assente</Typography>
+          <IoCloudOffline size={30} sx={{ml: "10px"}} />
+        </Box>
       );
     }
     
     return(
-      <Typography variant="h6">Nessun risultato trovato per "{city}"</Typography>
+      <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3}}>
+        <Typography sx={{textAlign: "center", mr: "17px"}} variant="h5">Nessun risultato trovato per "{city}"</Typography>
+        <MdDoNotDisturb size={30} sx={{ml: "10px"}} />
+      </Box>
     ); 
   }
 
 console.log("FAX");
 
-  // Funzione per l'espansione delle card
+  // Funzione per comunicare quale Card è stata espansa
   // Usate nell'onclick del bottone della card 
   const handleExpandClick = i => {
     setExpanded(expanded === i ? -1 : i);
@@ -437,14 +464,15 @@ console.log("FAX");
   // Array usato per il map delle card e per assegnarli un id essenziale per l'espanzione 
   const f = [1,2,3,4,5,6,7];
 
+  
   const dayNow = (new Date()).getHours();
   
-  // Component per la creazione delle card piccole se la larghezza dello schermo è minore di 600px
-  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per la citta preferita 
+  // Component per la creazione delle card piccole, per quando la larghezza dello schermo è minore di 600px
+  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per salvare la citta come preferita 
   function SmallCard() {
     return(
       <>
-      {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
+      {/* Operatore ternatio per gli skeleton per comunicare che la chimata API è in corso ma non ancora terminata */}
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
           <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
@@ -524,8 +552,8 @@ console.log("FAX");
     );
   }
 
-  // Component per la creazione delle card grandi se la larghezza dello schermo è minore di 600px
-  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per la citta preferita 
+  // Component per la creazione delle Card grandi, per quando la larghezza dello schermo è minore di 600px
+  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per salvare la citta come preferita 
   function BigCard() {
     return(
       <>
@@ -632,7 +660,7 @@ console.log("FAX");
   }
   
 
-  // kegrkhwegrfgwerkuyfgwek
+  // Se la città cercata non è la città preferita, la salva come tale; altrimenti la rimuove
   function changeFavourite() {
     if(favourite) {
       window.localStorage.removeItem("favourite-city");
@@ -650,6 +678,5 @@ console.log("FAX");
     </>
   );
 }
-
 
 export default React.memo(MeteoCard);
