@@ -1,5 +1,5 @@
 import './service-worker-registration.js'
-import Input2 from './input.jsx'
+import Input from './input.jsx'
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import RainBackground from './provasfondopioggia.jsx'
@@ -16,9 +16,9 @@ import { BsWindowX } from 'react-icons/bs';
 
 export default function Temax (){  
   const [darkMode, setDarkMode] = useState(
-    (!window.localStorage.getItem("preferred-theme")) || (window.localStorage.getItem("preferred-theme") === "dark")
+    ((window.localStorage.getItem("preferred-theme")) === null) || (window.localStorage.getItem("preferred-theme") === "dark")
   );
-  const [animation, setAnimation] = useState(window.localStorage.getItem("prefers-animations") && window.localStorage.getItem("prefers-animations") === "true");
+  const [animation, setAnimation] = useState((window.localStorage.getItem("prefers-animations") != null) && window.localStorage.getItem("prefers-animations") === "true");
   const [callBackAnimation, setCallBackAnimation] = useState(0);
 
   let themeMode = darkMode ? "dark" : "light";
@@ -93,7 +93,7 @@ export default function Temax (){
             <MotionPhotosAutoIcon color={animation ? 'primary' : 'with'}/>
           </Box>
         </Box>
-        <Input2 callBack={(i) => {setCallBackAnimation(i)}}></Input2>
+        <Input callBack={(i) => {setCallBackAnimation(i)}}></Input>
       </ThemeProvider>
     </>
   )

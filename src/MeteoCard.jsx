@@ -18,7 +18,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import useMediaQuery from '@mui/material/useMediaQuery';// Usato per prendere la grandezza dello schermo
+import useMediaQuery from '@mui/material/useMediaQuery';// Usato per prendere la grandezza dello schermo.
 
 import FavoriteBorder from '@mui/icons-material/FavoriteBorder';
 import Favorite from '@mui/icons-material/Favorite';
@@ -47,9 +47,10 @@ import {
   WiLightning,
 } from "react-icons/wi";
 
-// Funzione che fornisce una descrizione a parole del valore restituito dall'API
-// Ha come parametro il codice formito da openmeteo e restituisce il significato in italiano del del codice 
-// Es prende in input 0 e restituisce cielo sereno, i significati sono stati presi dalla documentazione nel sito di openmeteo
+// Funzione che fornisce una descrizione testuale del valore restituito dall'API openmeteo.
+// Ha come parametro il codice formito da openmeteo e restituisce il significato in italiano del del codice.
+// Es prende in input 0 e restituisce cielo sereno, i significati sono stati presi dalla documentazione.
+// Link documentazione: https://open-meteo.com/en/docs?hourly=temperature_2m,weather_code.
 function getWeatherDescription(weatherCode) {
   switch (weatherCode) {
     case 0: return "Cielo sereno";
@@ -84,6 +85,8 @@ function getWeatherDescription(weatherCode) {
   }
 }
 
+// In base al risultato meteo di oggi, determina la potenza del vento nello sfondo animato.
+// Valori positivi riguardano la pioggia, valori negativi la neve.
 function getWeatherIntensity(weatherCode) {
   let intensity = 0;
 
@@ -134,17 +137,14 @@ function getWeatherIntensity(weatherCode) {
     default:
       intensity = 0;
   }
-
-  console.log("intensity",intensity);
-  console.log("codice", weatherCode);
-  
   
   return intensity;
 }
 
-// Funzione che restituisce un componente icona in base al codice meteo
-// Prende in input il codice formito da openmeteo e la grandezza dell'icona e restituisce una icona presa da react icon/wi
-// Es prende in input 0 e restituisce l'icona del sole essendo il cielo esereno 
+// Funzione che restituisce un componente icona in base al codice meteo.
+// Prende in input il codice formito da openmeteo e la grandezza dell'icona e restituisce una icona.
+// presa da react icon/wi (https://react-icons.github.io/react-icons/icons/wi/).
+// Es prende in input 0 e restituisce l'icona del sole essendo il cielo esereno.
 function GetWeatherIcon(weatherCode, size = 32) {
   switch (weatherCode) {
     case 0: 
@@ -174,12 +174,12 @@ function GetWeatherIcon(weatherCode, size = 32) {
     case 86: return <WiSnowWind size={size} />;
     case 95: return <WiLightning size={size} />
     case 96:
-      case 99: return <WiThunderstorm size={size} />;
-      default: return <WiNa size={size} />;
-    }
+    case 99: return <WiThunderstorm size={size} />;
+    default: return <WiNa size={size} />;
+  }
 }
   
-// Funzione che ricavuta in input una data restituisce giorno mese anno, usata per il giorno della card
+// Funzione che, ricevuta in input una data, restituisce il numoro di giorno, mese e anno.
 function getDay(dataOraStringa){
   const dataOggetto = new Date(dataOraStringa);
   const anno = dataOggetto.getFullYear();
@@ -188,25 +188,27 @@ function getDay(dataOraStringa){
   return `${giorno}-${mese}-${anno}`;
 }
   
-// Funzione che dalla data restituisce il giorno della settimana
+// Funzione che, dalla data, restituisce il giorno della settimana.
 function getGiornoDellaSettimana(data) {
   const dataOggetto = new Date(data);
   const giorniSettimana = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
   return giorniSettimana[dataOggetto.getDay()];
 }
   
-// Funzione per sezionare il json da inizio a fine
-function taglioarraydati(jsonOriginale, inizio, fine) {
-  let jsonTagliato = JSON.parse(JSON.stringify(jsonOriginale)); // usata per non perdere l'array originale
+// Prende il JSON proveniente da opnemeteo (passato per parametro) e crea un nuovo JSON
+// contenente gli elementi dei campi "hourly":"time", "hourly":"temperature_2m" e 
+// "hourly":"weather_code" compresi fra gli indici "inizio" e "fine".
+function tagliojsondati(jsonOriginale, inizio, fine) {
+  let jsonTagliato = JSON.parse(JSON.stringify(jsonOriginale)); // si crea una copia per non perdere l'array originale
   jsonTagliato.hourly.time = jsonTagliato.hourly.time.slice(inizio, fine); 
   jsonTagliato.hourly.temperature_2m = jsonTagliato.hourly.temperature_2m.slice(inizio, fine); 
   jsonTagliato.hourly.weather_code = jsonTagliato.hourly.weather_code.slice(inizio, fine); 
   return jsonTagliato;
 }
   
-// Componet per creare la tabella piccola partendo dal json
-// La tabella piccola è piu stretta e non mostra le precipitazioni in modo esteso ma solo le icone
-// Viene usata se lo shermo è piu stretto di 600px
+// Component per creare la tabella piccola (usata quando lo schermo ha larghezza inferiore a 600px)
+// partendo dal json
+// La tabella piccola è piu stretta e non mostra la descrizione testuale delle precipitazioni ma solo le icone
 function TabellaGiorniPiccola({jsonpassato}) {
   return(
     <>
@@ -220,6 +222,7 @@ function TabellaGiorniPiccola({jsonpassato}) {
               </TableRow>
             </TableHead>
             <TableBody>
+              {/*Crea le righe della tabella*/}
               {jsonpassato.hourly.time.map((t, index) => (
               <TableRow key={t}>
                 <TableCell component="th" scope="row">{new Date(t).toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}</TableCell>
@@ -234,9 +237,9 @@ function TabellaGiorniPiccola({jsonpassato}) {
   );
 }
   
-// Componet per creare la tabella grande partendo da un json 
-// Si differisce dalla tabella piccola perhce è piu larga e contiene in modo esplicito i nomi delle precipitazioni oltre che le icone
-// Usate se lo schermo è piu largo di 600px
+// Component per creare la tabella grande (usata quando la largheza dello schermo supera i 600px)
+// partendo da un json 
+// La tabella grande riporta anche la descrizione testuale del tempo
 function TabellaGiorniGrande({jsonpassato}) {
   return(
     <>
@@ -265,135 +268,116 @@ function TabellaGiorniGrande({jsonpassato}) {
 }
 
 // Component principale
+// city prop che indica la cittaà che l'utentne sta cercado
+// callback prop per fare il callback, utilizzato per impostare lo sfondo hce cambia in base alle condizioni meteo del giorno 
 function MeteoCard({city , callBack}){
     
-  // Dichiarazioni degli usestate
+  // Dichiarazioni degli useState
   const [errore, setErrore] = useState(""); // Errore riscontrato durante la chiamata API
   const [letturaAPI , setLetturaAPI] = useState(false); // False se la API non ha ancora letto, true se la API ha finito di leggere, usato per gli skeleton
   const [datiMeteo , setDatiMeteo] = useState({}); // Dati restituiti dalla API, qui viene salvato il json dopo aver fatto la chimata API
-  const [result, setResult] = useState(""); 
-  const [expanded, setExpanded] = useState(-1); // Variabile usata per l'espansione delle card, assume un valore da 0 a 6 che indica quale delle sette card ha la tabella espansa, assume valore -1 se nessuna è espanda, facendo cosi se ne puo espandere solamente una alla volta
+  const [expanded, setExpanded] = useState(-1); // Variabile usata per l'espansione delle card, assume un valore da 0 a 6 che indica quale delle sette card è stata espansa, -1 se nessuna è espanda. Facendo cosi se ne puo espandere solamente una alla volta
   const [offline, setOffline] = useState(false); // Variabile usata per registrare se l'utente è offline
-  const [badSearch, setBadSearch] = useState(false); // Variabile per capire se la città cercata esiste o meno
-  const [favourite, setFavourite] = useState(false); // Varaibile usate per registrare se la città cercata è stata salvata come preferita, se la variabile cambia viene rirenderizzato pe far cambiare il tipo di checkbox,(il cuore diventa vuoto o pieno per segnalare all'utente la modifica)
-  const matches = useMediaQuery('(min-width:600px)'); // Variabile collegata alla media query per modificare la card e di conseguenza le taeblle da piccole a grandi, assume valore true o false se la shermata è maggiore o minore di 600px
+  const [badSearch, setBadSearch] = useState(false); // Assume valore false se la ricerca completa con successo, true se invece la ricerca fallisce perché la città inserita non esiste
+  const [favourite, setFavourite] = useState(false); // Varaibile usata per verificare se la città cercata è stata salvata come preferita
+  const matches = useMediaQuery('(min-width:600px)'); // Media query per monitorare la larghezza dello schermo, serve per capire se usare la Card grande o quella piccola
 
-  // Useeffect per le chiamate API, viene eseguito ogni volta che city viene modificata
+  // Useffect per le chiamate API, viene eseguito ogni volta che city viene modificata
   useEffect(() => {
-    // Controllo se la citta inserita è impostata come preferita
+    // Controlla se la citta inserita è impostata come preferita
     isFavourite();
     
-    // Salvo l'ultima città cercata in un cookie della durata di 3 ore, cosicché l'utente possa ritrovare la sua
+    // Salva l'ultima città cercata in un cookie della durata di 3 ore, cosicché l'utente possa ritrovare la sua
     // ultima ricerca alla riapertura dell'app
     document.cookie = "last-searched=" + city + "; max-age=" + 3*3600 + ";"
     
-    // Senza questo il programma interpreterebbe "Roma" e "roma" come due città distinte, dunque salverebbe i json
-    // relativi a entrambe le città in cache
+    // Senza questo il programma interpreterebbe "Roma" e "roma" come due città distinte, dunque salverebbe
+    // in cache i json relativi a entrambe le città
     city = city.toLowerCase();
     
-    // Reset delle variabili (usato per le chiamate API dopo la prima)
+    // Reset delle variabili (usato per le chiamate API successive la prima)
     setErrore("");
     setLetturaAPI(false);
-    
-    setOffline(false);//DA CAPIRE SE VA BENE LO HO AGGIUNTO ROA QUA 
+    setOffline(false); 
     setBadSearch(false);
 
-    // Funzione async necessaria per fare await necessario a sua volta per le fetch alle API
+    // Esegue le chiamate API per la città cercata. È stato necessario creare la funzione come "async"
+    // per poter usare la keyword "await"
     async function chiamataAPI(citta) {
-      
-      // Try e catch per gestire chi errori delle chiamate API
       try {
-        console.log(city);
+        // Per capire se inoltrare la richiesta al server placeholder oppure all'API openstreetmap
+        let placeholderSearch = false;
 
-        let dummySearch = false;
-
-        if(city.endsWith("-dummy")) {
-          dummySearch = true;
+        if(city.endsWith("-p")) {
+          placeholderSearch = true;
         }
         
-        if(!dummySearch) {
-          // API per estrarre le coordinate (latitudine e longitudine) dal nome della citta
-          // Viene utilizzata una API senza apikey 
+        // Indirizza la richiesta alle API openMeteo e openstreetmap
+        if(!placeholderSearch) {
+          // Invia il nome della città all'API openstreetmap per convertirla in coordinate geografiche
+          // da usare in openmeteo
           const apiUrl = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(citta)}&format=jsonv2&limit=1`;
           const responsePos = await fetch(apiUrl);
 
-          // If per controllare se la chiamata è andata a buon fine 
-          // DA COMMENTARE MEGLIO-----!!!-----
+          // Una risposta non andata a buon fine viene interpretata come assenza di connessione a
+          // internet, dato che questo è il caso più probabile 
           if (!responsePos.ok) {
             setOffline(true);
             throw new Error(`Errore HTTP! Stato: ${responsePos.status}`);
           }
 
-          //setOffline(false);
-
+          // Estrazione del json dalla response
           const data = await responsePos.json();
         
-          // If per capire se l'API ha risposto ma è vuota, in questo caso genera errore 
+          // Se la città cercata non esiste allora la fetch ha succeso ma si verifica questa condizione
           if (!(data && data.length > 0)) {
             setErrore("Nessun risultato trovato per la città");
             setBadSearch(true);
             throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
           }
 
-          // Salvataggio latitudine e longitudine per poi usarla nell' API del meteo 
+          // Salvataggio latitudine e longitudine per poi usarla nell'API openmeteo 
           const latitude = parseFloat(data[0].lat);
           const longitude = parseFloat(data[0].lon);
           console.log("risposta API citta --> coordinate ",{ latitude, longitude });
 
-          // API del meteo
-          // Creo un json a supporto della chimata
+          // Crea un json a supporto della chimata a openmeteo
           const params = {
             "latitude": latitude,
             "longitude": longitude,
             "hourly": ["temperature_2m", "weather_code"],
-            // "models": "italia_meteo_arpae_icon_2i",
             "timezone": "Europe/Rome"
           };
           const url = "https://api.open-meteo.com/v1/forecast";
 
-          // Eseguo la chimata
+          // Esegue la chimata a openmeteo
           const response = await fetch(url + "?" + new URLSearchParams(params));
         
-          // If per controllare se la chiamata è andata a buon fine 
-          // DA COMMENTARE MEGLIO-----!!!-----
+          // Una risposta non andata a buon fine viene interpretata come assenza di connessione a
+          // internet, dato che questo è il caso più probabile 
           if (!response.ok) {
             setOffline(true);
             setErrore("errore api meteo");
             throw new Error(`Errore HTTP! Stato: ${response.status}`);
           }
 
-          //setOffline(false);
-        
-          // creo il json e lo salvo in datiMeteo
+          // Estrae il JSON
           const jsonData = await response.json();
           setDatiMeteo(jsonData)  
 console.log(jsonData);
-                        
-          // ---------------------------------------------DA TOGLIERE ALLA CONSEGNA---------------------------------------------
-          //API controllo citta da posiszione
-          //ottiene il nome della città usando Nominatim (geocoding inverso)
-          const nominatimApiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=jsonv2`;
-          const nominatimResponse = await fetch(nominatimApiUrl);
-          const nominatimData = await nominatimResponse.json();
-
-          //estrai il nome della città (potrebbe variare a seconda della precisione)
-          const city2 = nominatimData.address.city || nominatimData.address.town || nominatimData.address.village || 'Località sconosciuta';
-
-          //stampa i risultati sulla console
-          console.log("risposta API coordinate --> citta: ", city2);
-          setResult(city2);
         }
 
+        // Inoltra la richiesta al server placeholder
         else {
-          // Eseguo la chimata
+          // Esegue la chimata
           const response = await fetch(
             `https://pierfo.github.io/Dummy_data/openmeteo/${encodeURIComponent(
               citta.substring(0, citta.lastIndexOf(" "))
               )}.json`
           );
         
-          // If per controllare se la chiamata è andata a buon fine 
-          // DA COMMENTARE MEGLIO-----!!!-----
+          // Una risposta non andata a buon fine viene interpretata come assenza di connessione a
+          // internet, dato che questo è il caso più probabile
           if (!response.ok) {
             setOffline(true);
             setErrore("errore api meteo");
@@ -402,37 +386,35 @@ console.log(jsonData);
 
           const jsonData = await response.json();
           setDatiMeteo(jsonData)
-
-          //setOffline(false);
         }
             
       } catch (error) {
-console.log("errore");
-          
-console.error("Errore durante la chiamata API:", error);
         setErrore(error);                
       }finally{
-console.log("offline = " + offline);
         // Le API hanno terminato
         setLetturaAPI(true);
       }
     }
 
     chiamataAPI(city);
-  }, [city]);// Questo useefect viene chiamata ogni volta che viene modificato city, necessario per evitare il ri-render continuo delle api e per fare le chiamate API solo quando necessario 
+  }, [city]); // Questo useEffect viene chiamato solo quando viene modificato city 
     
+  // useEffect eseguito ad ogni chiamata (o meglio a ogni modifica di letturaAPI che avviene a ogni nuova chimata)
+  // Per ogni chiamata all'API ogni volta che finisce chiamo la funzione callback per inviare a theme la condizione meteo 
+  // questo lofaccio per la modifica dello sfondo 
   useEffect(()=>{
-    if(letturaAPI && !offline && !badSearch) {
-      callBack(getWeatherIntensity(median(taglioarraydati(datiMeteo, 1,24).hourly.weather_code)));
+    if(letturaAPI && !offline && !badSearch) {  
+      // Viene estratto il valore mediano di weather_code e interpretato per capire l'intensità della pioggia (valore positivo) o  della neve ()valore negativo
+      callBack(getWeatherIntensity(median(tagliojsondati(datiMeteo, 1,24).hourly.weather_code)));
     }
     else{
+      // Altrimenti vinelimpostato a 0 (corrispone a nessuno sfondo)
       callBack(0);
     }
-  }, [letturaAPI])
-  // Funzione per segnalare all'utente un arrore durante la chiamata API 
+  }, [letturaAPI])// useEffect che viene eseguito a ogni modifica di lettudaletturaAPI
+  
+  // Funzione per segnalare all'utente gli arrori durante le chiamate API 
   if (errore != "") {
-    console.log(errore);
-    
     if(offline) {
       return(
         <Typography variant="h6">Connessione a internet assente</Typography>
@@ -500,12 +482,12 @@ console.log("FAX");
                   <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
                 </Box>
                 <Typography variant="h4">
-                  {median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
+                  {median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
                 </Typography>
               </CardContent>
             <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
               <Box>
-                {GetWeatherIcon(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
+                {GetWeatherIcon(median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
               </Box>
               <Button
                 onClick={() => handleExpandClick(i)}
@@ -520,7 +502,7 @@ console.log("FAX");
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
               <Box height={300} overflow={'scroll'}>
                 <CardContent>
-                  <TabellaGiorniPiccola jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
+                  <TabellaGiorniPiccola jsonpassato={tagliojsondati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
                 </CardContent>
               </Box>
             </Collapse>
@@ -585,13 +567,13 @@ console.log("FAX");
                   <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
                 </Box>
                 <Typography variant="h4">
-                  {median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
+                  {median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
                 </Typography>
               </CardContent>
             <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
               <Box sx={{display: 'flex'}}>
-                {GetWeatherIcon(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
-                <Typography sx={{margin: 'auto', ml: 1}} variant='h6'>{getWeatherDescription(median(taglioarraydati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}</Typography>
+                {GetWeatherIcon(median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
+                <Typography sx={{margin: 'auto', ml: 1}} variant='h6'>{getWeatherDescription(median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}</Typography>
               </Box>
               <Button
                 onClick={() => handleExpandClick(i)}
@@ -606,7 +588,7 @@ console.log("FAX");
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
               <Box height={400} overflow={'scroll'}>
                 <CardContent>
-                  <TabellaGiorniGrande jsonpassato={taglioarraydati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
+                  <TabellaGiorniGrande jsonpassato={tagliojsondati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
                 </CardContent>
               </Box>
             </Collapse>
@@ -628,13 +610,15 @@ console.log("FAX");
     );
   }
 
+  // Verifica se la città cercata è stata salvata come preferita e modifica l'hook "favourite" in base al risultato
   function isFavourite() {
     const savedCity = window.localStorage.getItem("favourite-city");
-    console.log("dal is favorite", favourite);
     
-    setFavourite(savedCity != null && savedCity.toLowerCase() === city.toLowerCase());
+    setFavourite((savedCity != null) && (savedCity.toLowerCase() === city.toLowerCase()));
   }
 
+  // Riscrive il nome della città in modo tale che ciascuna parola inizi con la lettera maiuscola,
+  // serve per il salvataggio della città nella entry "favourite-city" in localStorage
   function capitalize(name) {
     let capitalized = "";
 
@@ -646,7 +630,9 @@ console.log("FAX");
 
     return capitalized.substring(0, capitalized.length - 1)
   }
+  
 
+  // kegrkhwegrfgwerkuyfgwek
   function changeFavourite() {
     if(favourite) {
       window.localStorage.removeItem("favourite-city");
@@ -659,6 +645,7 @@ console.log("FAX");
 
   return (
     <>
+      {/*Restituisce BigCard o SmallCard in base al risultato della mediaQuery*/}
       {matches ? <BigCard/> : <SmallCard/>}
     </>
   );

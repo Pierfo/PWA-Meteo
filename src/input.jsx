@@ -9,20 +9,21 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import MeteoCard from "./MeteoCard.jsx";
-import cities from "./cities_italy_100.json";
-
-import Typography from '@mui/material/Typography';
+import cities from "./cities_italy_100.json"; //json per l'autocompletamento delle città
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Autocomplete from '@mui/material/Autocomplete';
 import SendIcon from '@mui/icons-material/Send';
 
-function Input2({callBack}) {
-    const [send , setSend] = useState(false); //variabile per far comparire la tabella
-    const [resend , setResend] = useState(false); //variabile per modificare la tabella
-    const [dati, setDati] = useState(""); //variabile aggiornata ogni volta che cambia nella textfield
-    const [senddati, setSendDati] = useState(""); //variabile modificata solo all'invio utilizzata per evitare il ri-render dilla tabellameteo
+// Component principale usato per la ricerca, contiene l'autocomplete il bottone di invio e una volta inserita una città fa partire la ricerca e la visualizzazione invocando il component meteocard
+function Input({callBack}) {
+
+    // Dichiarazioni degli useState
+    const [send , setSend] = useState(false); // Variabile per far comparire la tabella la prima volta
+    const [resend , setResend] = useState(false); // Variabile segnalare la modifica della citta mandata a meteocarde e di conseguenza modificare le card
+    const [dati, setDati] = useState(""); // Variabile aggiornata ogni volta che cambia nella textfield
+    const [senddati, setSendDati] = useState(""); // Variabile che sarà passata come prop a meteocard, rappresenta la città che l'utente vuole cercare
     const [citta, setCitta] = useState([]);
 
     //Avvia il caricamento dei dati meteo relativi alla città salvata come preferita, se presente
@@ -196,4 +197,4 @@ function Input2({callBack}) {
     );
 }
 
-export default Input2;
+export default Input;
