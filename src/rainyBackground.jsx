@@ -49,7 +49,6 @@ const RainBackground = ({wind = 0}) => {
         height: 10 + Math.random() * 10,
       });
     }
-    console.log("grandezza array", newDrops.length);
     // Salvataggio dell'array nello useState
     setDrops(newDrops);
   }, [size]);

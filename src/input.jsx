@@ -5,7 +5,14 @@
  * All'avvio dell'app, cerca in memoria eventuali componenti dello stato da caricare: in particolare, verifica se 
  * è presente in localStorage la entry "searched-item" (che salva il testo contenuto nella barra di ricerca prima
  * che l'utente uscisse dall'app l'ultima volta) e, in caso affermativo, carica il contenuto nella barra di 
- * ricerca;
+ * ricerca; poi verifica se è ancora attivo il cookie "last-searched" e in tal caso avvia la ricerca della città
+ * salvata in quest'ultimo, altrimenti avvia la ricerca della città salvata come preferita (contenuta nella entry
+ * "favourite-city" di localStorage), se presente.
+ * 
+ * Quando l'utente ricarica la pagina, invece, carica i dati meteo relativi all'eventuale città preferita.
+ * 
+ * La componente si occupa anche di inoltrare la città inserita dall'utente nella barra di ricerca a MeteoCard, il
+ * quale effettua le opportune chiamate API per caricare i relativi dati meteo.
  */
 
 import React from "react";
@@ -119,6 +126,7 @@ function Input({callBack}) {
         }
     }
 
+    // Se si sta avviando l'app ricarica lo stato, se, invece, si sta ricaricando la pagina, carica la città preferita
     useEffect(() => {
         if(isAtStartup()) {
             reloadState();

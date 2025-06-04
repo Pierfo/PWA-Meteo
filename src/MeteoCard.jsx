@@ -342,7 +342,6 @@ function MeteoCard({city , callBack}){
           // Salvataggio latitudine e longitudine per poi usarla nell'API openmeteo 
           const latitude = parseFloat(data[0].lat);
           const longitude = parseFloat(data[0].lon);
-          console.log("risposta API citta --> coordinate ",{ latitude, longitude });
 
           // Crea un json a supporto della chimata a openmeteo
           const params = {
@@ -367,7 +366,6 @@ function MeteoCard({city , callBack}){
           // Estrae il JSON
           const jsonData = await response.json();
           setDatiMeteo(jsonData)  
-console.log(jsonData);
         }
 
         // Inoltra la richiesta al server placeholder

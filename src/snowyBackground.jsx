@@ -4,16 +4,19 @@ import { Box, useTheme } from '@mui/material';
 
 
 const SnowBackground = ({wind = 0}) => {
-  //array 
+  // Array di fiocchi di neve
   const [drops, setDrops] = useState([]);
+  // Prendo i valori del tema (utilizzato per determinare il colore delle gocce)
   const theme = useTheme();
 
-  //fatto per un saso particolare in cui l'app viene avviata con una grandezza e poi la cambia 
-  //quindi usata per modificare dinamicamente la densita delle gocce in base alla larghezza della finestra
+  // Variabile creata per un caso particolare in cui l'app viene avviata con una larghezza dello shermo che poi viene cambiata 
+  // Quindi usata per modificare dinamicamente la densita dei fiocchi di neve in base alla larghezza della finestra
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  // useEffect eseguito solo all'avvio per creare l'evento che gestisce la quantita di fiocchi di neve al cambio della grandezza della finestra
   useEffect(() => {
     const handleResize = () => {
       setSize({
@@ -25,16 +28,17 @@ const SnowBackground = ({wind = 0}) => {
     window.addEventListener("resize", handleResize);
   }, []);  
 
+  // useeffect eseguito a ogni momifica della grandezza dello schermo, usato per modificare la quantita di fiocchi di neve dinamicamente al ridimensionamento dello shermo
   useEffect(() => {
-    const width = window.innerWidth;
-    console.log(width);
-    
-    const density = 0.1; // gocce per pixel
+    const width = window.innerWidth; 
+    const density = 0.1; // fiocchi di neve per pixel
+    // Intero usato per le iterazioni del for
     const numDrops = Math.floor(width * density);
   
-    //creo l'array di gocce che poi sarausato nel map
+    // Creo l'array di fiocchi di neve che poi sarà usato nel map
     const newDrops = [];
-  
+
+    // Creo i fiocchi di neve ognuno con dimensioni spaziali e temporali diverse
     for (let i = 0; i < numDrops; i++) {
       newDrops.push({
         id: i,
@@ -44,7 +48,7 @@ const SnowBackground = ({wind = 0}) => {
         size: 2 + Math.random() * 4,
       });
     }
-  
+    // Salvataggio dell'array nello useState
     setDrops(newDrops);
   }, [size]);
 
@@ -88,13 +92,13 @@ const SnowBackground = ({wind = 0}) => {
         }
       `}</style>
 
-      {/* Rain drops */}
       <div className="rain-container">
         {drops.map((drop) => (
           <div
           key={drop.id}
           className="raindrop"
           style={{
+            // passaggio attributi dall'array randomico
             rotate: `${wind*-1}deg`,
             left: `${drop.left}%`,
             width: `${drop.size}px`,
