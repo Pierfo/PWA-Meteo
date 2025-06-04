@@ -150,11 +150,6 @@ function cleanCache() {
 function isOutdated(cache, key) {
     return new Promise((resolve, reject) => {
         cache.match(key).then((time) => {
-            // La chiave non è stata trovata
-            if(time === undefined) {
-                return;
-            }
-
             const timeInt = parseInt(time.statusText);
 
             const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
