@@ -353,7 +353,7 @@ function MeteoCard({city , callBack}){
           };
           const url = "https://api.open-meteo.com/v1/forecast";
 
-          // Esegue la chimata a openmeteo
+          // Esegue la chiamata a openmeteo
           const response = await fetch(url + "?" + new URLSearchParams(params));
         
           // Una risposta non andata a buon fine viene interpretata come assenza di connessione a
@@ -372,9 +372,10 @@ console.log(jsonData);
 
         // Inoltra la richiesta al server placeholder
         else {
-          // 
+          // Richiede dal server placeholder il file contenente la lista di tutte le città salvate al suo interno
           const contents = await fetch("https://pierfo.github.io/Dummy_data/contents.json");
 
+          // Se la richiesta ha fallito è perché l'utente è offline
           if(!contents.ok) {
             setOffline(true);
             setErrore("Offline");
@@ -383,27 +384,28 @@ console.log(jsonData);
 
           const contentsJSON = await contents.json();
 
+          // Se la città cercata non è inclusa nel server placeholder allora la ricerca fallisce
           if(!contentsJSON.includes(`${citta.substring(0, citta.lastIndexOf(" "))}.json`)) {
             setBadSearch(true);
             setErrore("Città non salvata nel server placeholder");
             throw new Error(`Città non salvata nel server placeholder`);
           }
           
-          // Esegue la chimata
+          // Esegue la richiesta al server placeholder
           const response = await fetch(
             `https://pierfo.github.io/Dummy_data/openmeteo/${encodeURIComponent(
               citta.substring(0, citta.lastIndexOf(" "))
               )}.json`
           );
         
-          // Una risposta non andata a buon fine viene interpretata come assenza di connessione a
-          // internet, dato che questo è il caso più probabile
+          // Se la risorsa non è stata trovata è perché l'utente è offline
           if (!response.ok) {
             setOffline(true);
             setErrore("errore api meteo");
             throw new Error(`Errore HTTP! Stato: ${response.status}`);
           }
 
+          // Estrae il JSON
           const jsonData = await response.json();
           setDatiMeteo(jsonData)
         }
@@ -420,9 +422,11 @@ console.log(jsonData);
     chiamataAPI(city);
   }, [city]); // Questo useEffect viene chiamato solo quando viene modificato city 
     
-  // useEffect eseguito ad ogni chiamata (o meglio a ogni modifica di letturaAPI che avviene a ogni nuova chimata)
-  // Per ogni chiamata all'API ogni volta che finisce chiamo la funzione callback per inviare a theme la condizione meteo 
-  // questo lofaccio per la modifica dello sfondo 
+  // useEffect eseguito a ogni chiamata (o meglio alla di "letturaAPI" che avviene a ogni nuova chimata).
+  // Ogni volta che finisce una chiamata API chiama la funzione "callback" per inviare a "theme" 
+  // la condizione meteo, che viene usata per modificare lo sfondo.
+  // Le informazioni meteo di interesse alla callback sono se piove o nevica e con che intensità, così
+  // da poter scegliere quale sfondo applicare e che intensità fornire al vento
   useEffect(()=>{
     if(letturaAPI && !offline && !badSearch) {  
       // Viene estratto il valore mediano di weather_code e interpretato per capire l'intensità della pioggia (valore positivo) o  della neve ()valore negativo
