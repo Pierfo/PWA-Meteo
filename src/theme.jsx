@@ -2,8 +2,8 @@ import './service-worker-registration.js'
 import Input from './input.jsx'
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import RainBackground from './provasfondopioggia.jsx'
-import SnowBackground from './nevebackground.jsx'
+import RainBackground from './rainyBackground.jsx'
+import SnowBackground from './snowyBackground.jsx'
 import { createTheme } from '@mui/material/styles';
 import { useState, useEffect } from 'react';
 import useMediaQuery from '@mui/material/useMediaQuery';

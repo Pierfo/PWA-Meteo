@@ -3,8 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Box, useTheme } from '@mui/material';
 
 
-const RainBackground = ({wind = 0}) => {
-  //array di gocce
+const SnowBackground = ({wind = 0}) => {
+  //array 
   const [drops, setDrops] = useState([]);
   const theme = useTheme();
 
@@ -23,7 +23,6 @@ const RainBackground = ({wind = 0}) => {
     };
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, []);  
 
   useEffect(() => {
@@ -40,10 +39,9 @@ const RainBackground = ({wind = 0}) => {
       newDrops.push({
         id: i,
         left: -wind + Math.random() * (100+wind),
-        delay: Math.random() * 2,
-        duration: 1 + Math.random() * 2,
-        width: 2 + Math.random() * 1.5,
-        height: 10 + Math.random() * 10,
+        delay: Math.random() * 5,
+        duration: 5 + Math.random() * 5,
+        size: 2 + Math.random() * 4,
       });
     }
   
@@ -99,8 +97,8 @@ const RainBackground = ({wind = 0}) => {
           style={{
             rotate: `${wind*-1}deg`,
             left: `${drop.left}%`,
-            width: `${drop.width}px`,
-            height: `${drop.height}px`,
+            width: `${drop.size}px`,
+            height: `${drop.size}px`,
             animationDelay: `${drop.delay}s`,
             animationDuration: `${drop.duration}s`,
             }}
@@ -111,4 +109,4 @@ const RainBackground = ({wind = 0}) => {
   );
 };
 
-export default RainBackground;
+export default SnowBackground;

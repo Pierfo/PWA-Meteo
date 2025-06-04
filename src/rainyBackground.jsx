@@ -3,49 +3,54 @@ import React, { useEffect, useState } from "react";
 import { Box, useTheme } from '@mui/material';
 
 
-const SnowBackground = ({wind = 0}) => {
-  //array 
+const RainBackground = ({wind = 0}) => {
+  // Array di gocce
   const [drops, setDrops] = useState([]);
+  // Prendo i valori del tema (utilizzato per determinare il colore delle gocce)
   const theme = useTheme();
 
-  //fatto per un saso particolare in cui l'app viene avviata con una grandezza e poi la cambia 
-  //quindi usata per modificare dinamicamente la densita delle gocce in base alla larghezza della finestra
+  // Variabile creata per un caso particolare in cui l'app viene avviata con una larghezza dello shermo che poi viene cambiata 
+  // Quindi usata per modificare dinamicamente la densita delle gocce in base alla larghezza della finestra
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
+
+  // useEffect eseguito solo all'avvio per creare l'evento che gestisce la quantita di gocce al cambio della grandezza della finestra
   useEffect(() => {
     const handleResize = () => {
       setSize({
         width: window.innerWidth,
         height: window.innerHeight,
       });
-    };
+    };handleResize
 
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
   }, []);  
 
+  // useeffect eseguito a ogni momifica della grandezza dello schermo, usato per modificare la quantita di gocce dinamicamente al ridimensionamento dello shermo
   useEffect(() => {
-    const width = window.innerWidth;
-    console.log(width);
-    
+    const width = window.innerWidth;   
     const density = 0.1; // gocce per pixel
+    // Intero usato per le iterazioni del for
     const numDrops = Math.floor(width * density);
   
-    //creo l'array di gocce che poi sarausato nel map
+    // Creo l'array di gocce che poi sarà usato nel map
     const newDrops = [];
   
+    // Creo le gocce ognuna con dimensioni spaziali e temporali diverse
     for (let i = 0; i < numDrops; i++) {
       newDrops.push({
         id: i,
         left: -wind + Math.random() * (100+wind),
-        delay: Math.random() * 5,
-        duration: 5 + Math.random() * 5,
-        size: 2 + Math.random() * 4,
+        delay: Math.random() * 2,
+        duration: 1 + Math.random() * 2,
+        width: 2 + Math.random() * 1.5,
+        height: 10 + Math.random() * 10,
       });
     }
-  
+    console.log("grandezza array", newDrops.length);
+    // Salvataggio dell'array nello useState
     setDrops(newDrops);
   }, [size]);
 
@@ -63,6 +68,7 @@ const SnowBackground = ({wind = 0}) => {
           z-index: -1;
         }
 
+        /*css animazioni gocce*/
         .raindrop {
           position: absolute;
           top: -10%;
@@ -89,17 +95,18 @@ const SnowBackground = ({wind = 0}) => {
         }
       `}</style>
 
-      {/* Rain drops */}
       <div className="rain-container">
+        {/* creazione delle gocce con map */}
         {drops.map((drop) => (
           <div
           key={drop.id}
           className="raindrop"
           style={{
+            // passaggio attributi dall'array randomico
             rotate: `${wind*-1}deg`,
             left: `${drop.left}%`,
-            width: `${drop.size}px`,
-            height: `${drop.size}px`,
+            width: `${drop.width}px`,
+            height: `${drop.height}px`,
             animationDelay: `${drop.delay}s`,
             animationDuration: `${drop.duration}s`,
             }}
@@ -110,4 +117,4 @@ const SnowBackground = ({wind = 0}) => {
   );
 };
 
-export default SnowBackground;
+export default RainBackground;
