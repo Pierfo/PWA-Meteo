@@ -33,6 +33,7 @@ self.addEventListener("install", (e) => {
 
 // In fase di attivazione, il service worker elimina tutte le cache relative alle versioni precedenti dello stesso
 self.addEventListener("activate", (e) => {
+    // In questo caso, il waitUntil mette in coda tutte le successive fetch finché la promessa non si conclude
     e.waitUntil(
         // Ottengo i nomi di tutte le cache attive al momento
         caches.keys().then((otherCaches) => {
@@ -54,10 +55,10 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
     // Avvia la pulizia della cache, se è passato sufficiente tempo
     if((Date.now()-lastUpdate) > (expirationMinutes * 60 * 1000)) {
+        // In questa situazione, il waitUntil si assicura che la promessa si concluda, anche nel caso in cui l'app 
+        // venga chiusa
         e.waitUntil(
-            updateCache().then(() => {
-                console.log("has cleaned cache");
-            })
+            cleanCache()
         )
         lastUpdate = Date.now();
     }
@@ -65,12 +66,16 @@ self.addEventListener("fetch", (e) => {
     e.respondWith(
         new Promise ((resolve, reject) => {
             caches.open(cacheNames[1]).then((timeCache) => {
+                // Verifica se è stato memorizzato nella cache secondaria l'istante di salvataggio della risorsa richiesta
                 timeCache.match(e.request).then((res) => {
                     let expired = false;
                     
+                    // Se l'istante di salvataggio è stato trovato
                     if(res != undefined) {
                         const time_cached = parseInt(res.statusText);
 
+                        // Se è passato sufficiente tempo, la risorsa è considerata come obsoleta e quindi il service
+                        // worker risponde alla fetch con la risorsa presa dal web
                         if((Date.now() - time_cached) > (expirationMinutes * 60 * 1000)) {
                             console.log("Timeout");
                             expired = true;
@@ -78,13 +83,18 @@ self.addEventListener("fetch", (e) => {
                         }
                     }
 
+                    // Se la risorsa non è obsoleta
                     if(!expired) {
                         caches.open(cacheNames[0]).then((cache) => {
                             cache.match(e.request).then(cached => {
+                                // Se la risorsa non è stata trovata nella cache principale, il service worker 
+                                // risponde alla fetch con la risorsa presa dal web
                                 if(cached === undefined) {
                                     resolve(fetchFromWebWrapper(e.request))
                                 }
-                            
+                                
+                                // Se la risorsa è presente in cache, allora il service worker risponde con 
+                                // quest'ultima
                                 else {
                                     console.log(`Fetching from cache ${e.request.url}`);
                                 
@@ -99,26 +109,29 @@ self.addEventListener("fetch", (e) => {
     )
 })
 
-async function isOutdatedWrapper(cache, key) {
-    return await isOutdated(cache, key);
-}
-
+// Attende che la risorsa sia presa dal web e salvata in cache
 async function fetchFromWebWrapper(request) {
     return await fetchFromWeb(request);
 }
 
-function updateCache() {
+// Crea una promise che si avvera con la pulizia della cache
+function cleanCache() {
     return new Promise((resolve, reject) => {
         caches.open(cacheNames[1]).then((timeCache) => {
             caches.open(cacheNames[0]).then((cache) => {
+                // Crea un array con tutte le chiavi salvate nella cache secondaria
                 timeCache.keys().then((keys) => {
                     resolve(
                         Promise.all(
                             keys.map((key) => {
-                                isOutdatedWrapper(timeCache, key).then(() => {
+                                isOutdated(timeCache, key).then(() => {
+                                    // Se la risorsa è scaduta, crea una promessa che si avvera con la sua rimozione 
+                                    // dalla cache principale e con la rimozione del relativo istante di salvataggio
+                                    // dalla cache secondaria
                                     console.log(`REMOVING ${key.url}`)
                                     return Promise.all([cache.delete(key), timeCache.delete(key)]);
                                 }).catch(() => {
+                                    // Se la risorsa non è scaduta, restituisce una promessa vuota
                                     return new Promise((resolve, reject) => {
                                         resolve();
                                     })
@@ -132,9 +145,12 @@ function updateCache() {
     })
 }
 
+// Ispeziona la cache passata per parametro e crea una promise che si conclude con esito positivo se la risorsa 
+// (identificata da "key") è scaduta; in caso contrario si conclude con esito negativo
 function isOutdated(cache, key) {
     return new Promise((resolve, reject) => {
         cache.match(key).then((time) => {
+            // La chiave non è stata trovata
             if(time === undefined) {
                 return;
             }
@@ -143,10 +159,12 @@ function isOutdated(cache, key) {
 
             const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
 
+            // La risorsa è scaduta
             if(result) {
                 resolve();
             }
             
+            // La risorsa non è scaduta
             else {
                 reject();
             }
@@ -154,25 +172,35 @@ function isOutdated(cache, key) {
     })
 }
 
+// Crea una promise che si avvera con l'acquisizione della risorsa dal web e il suo salvataggio in cache. Se la 
+// fetch fallisce, restituisce una risposta vuota con stato 404
 function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
         fetch(request).then((res) => {
             console.log(`Fetching from the web ${request.url}`);
             
+            // Crea un clone della risorsa
             const resClone = res.clone();
 
+            // Inserisce la risorsa in cache
             caches.open(cacheNames[0]).then((cache) => {cache.put(request, res)});
             
+            // Se la risorsa richiesta è un JSON contenente i dati meteo, salva l'istante attuale nella cache secondaria
             if(request.url.includes("https://api.open-meteo.com/v1/forecast") || request.url.includes("https://pierfo.github.io/Dummy_data/openmeteo")) {
                 caches.open(cacheNames[1]).then((cache) => {
+                    // Il motivo per cui l'istante attuale è salvato nel campo "statusText" anziché nel corpo della 
+                    // Response è per semplicità di lettura: leggere il corpo di una Response richiede di implementare 
+                    // uno Stream Reader, invece con questa soluzione è sufficiente leggere Response.statusText
                     cache.put(request, new Response(null, {status: 200, statusText: Date.now().toString()}));
                 })
             }
 
+            // Restituisce il clone della risorsa
             resolve(resClone);
         }).catch((err) => {
             console.log(`Fetching error, returning void response`);
 
+            // La risorsa non è stata trovata: restituisce una risposta vuota con stato 404
             resolve(new Response(null, {status: "404", statusText: "Offline"}))
         })
     })
