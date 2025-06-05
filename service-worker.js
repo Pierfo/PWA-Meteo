@@ -55,6 +55,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
     // Avvia la pulizia della cache, se è passato sufficiente tempo
     if((Date.now()-lastUpdate) > (expirationMinutes * 60 * 1000)) {
+        console.log("cleaning cache");
         // In questa situazione, il waitUntil si assicura che la promessa si concluda, anche nel caso in cui l'app 
         // venga chiusa
         e.waitUntil(
