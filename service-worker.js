@@ -129,7 +129,6 @@ function cleanCache() {
                                     const timeInt = parseInt(time.statusText);
                                     
                                     const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
-                                    console.log(result);
 
                                     // Se la risorsa è scaduta, crea una promessa che si avvera con la sua rimozione 
                                     // dalla cache principale e con la rimozione del relativo istante di salvataggio
