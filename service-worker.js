@@ -127,6 +127,7 @@ function cleanCache() {
                             keys.map((key) => {
                                 cache.match(key).then((time) => {
                                     const timeInt = parseInt(time.statusText);
+                                    console.log("ciao");
 
                                     const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
 
