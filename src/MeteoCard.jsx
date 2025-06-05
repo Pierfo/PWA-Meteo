@@ -1,3 +1,18 @@
+/**
+ * Gestisce le chiamate alle API e la visualizzazione dei risultati nelle Card. Fornisce, inoltre, la possibilità
+ * di salvare una determinata città come preferita.
+ * 
+ * Il layout e le dimensioni delle Card variano a seconda delle dimensioni dello schermo: per schermi di larghezza
+ * inferiore ai 600px le Card mostreranno nome e numero del giorno, temperatura media della giornata e un'icona che
+ * rappresenta la condizione meteo media della giornata, mentre, per schermi di larghezza superiore ai 600px, viene
+ * mostrata anche una descrizione testuale del meteo del giorno.
+ * 
+ * Le Card presentano anche un pulsante che permette di mostrare/nascondere una tabella che riporta temperatura e
+ * condizione atmosferica di ogni ora della giornata. Anche il layout di questa varia a seconda della larghezza
+ * dello schermo: se è minore di 600px allora la condizione atmosferica è rappresentata da una sola icona, mentre
+ * se è maggiore di 600px allora viene anche inserita la descrizione testuale del meteo.
+ */
+
 import { useState, useEffect } from 'react';
 import React from 'react';
 import {median, max, min} from 'mathjs';
@@ -271,8 +286,9 @@ function TabellaGiorniGrande({jsonpassato}) {
 }
 
 // Component principale
-// city prop che indica la cittaà che l'utentne sta cercado
-// callback prop per fare il callback, utilizzato per impostare lo sfondo hce cambia in base alle condizioni meteo del giorno 
+// city: prop che indica la città che l'utente sta cercando
+// callback: prop per fare la callback, utilizzato per impostare lo sfondo che cambia in base alle condizioni meteo 
+// del giorno attuale
 function MeteoCard({city , callBack}){
     
   // Dichiarazioni degli useState
@@ -457,16 +473,18 @@ function MeteoCard({city , callBack}){
 
 console.log("FAX");
 
-  // Funzione per comunicare quale Card è stata espansa
-  // Usate nell'onclick del bottone della card 
+  // Funzione per comunicare quale Card è stata espansa. Salva l'identificatore della card che è stata espansa 
+  // nell'hook "expanded"
+  // La funzione è usata nell'onclick del bottone della card 
   const handleExpandClick = i => {
     setExpanded(expanded === i ? -1 : i);
   };
 
-  // Array usato per il map delle card e per assegnarli un id essenziale per l'espanzione 
+  // Array ausiliario 
   const f = [1,2,3,4,5,6,7];
 
-  
+  // Trova l'ora corrente: serve nella tabella meteo relativa a oggi per tagliare i risultati in modo tale che siano
+  // rimosse le informazioni meteo relative alle ore già passate
   const dayNow = (new Date()).getHours();
   
   // Component per la creazione delle card piccole, per quando la larghezza dello schermo è minore di 600px
@@ -474,11 +492,12 @@ console.log("FAX");
   function SmallCard() {
     return(
       <>
-      {/* Operatore ternatio per gli skeleton per comunicare che la chimata API è in corso ma non ancora terminata */}
+      {/* Operatore ternario che, a seconda che le chiamate API abbiano terminato o meno, decide se caricare l'intestazione o gli Skeleton */}
       <Box sx={{marginTop: 3}}>
         {letturaAPI ? (
           <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+          {/* Pulsante per salvare la città cercata come preferita */}
           <FormControlLabel sx={{ml: 1}} control={
             <Checkbox checked={favourite} onChange={changeFavourite} icon={<FavoriteBorder />} checkedIcon={<Favorite />}/>
           }/>
@@ -502,36 +521,40 @@ console.log("FAX");
           display: 'box',
         }}
       >
-        {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
+        {/* Operatore ternario che, a seconda che le chiamate API abbiano terminato o meno, decide se caricare le Card o gli Skeleton */}
         {letturaAPI ? (
           f.map((g, i) =>(        
+            // A ciascuna card viene assegnato un identificatore da 0 a 6, così MeteoCard può capire quale Card 
+            // è stata espansa guardando il valore dell'hook "expanded"
             <Card key={g} sx={{ width: 350, margin: "auto", mt: 4 }}>
               <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <Box>
                   <Typography variant="h5">{getGiornoDellaSettimana(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
                   <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
                 </Box>
+                {/* Temperatura media della giornata */}
                 <Typography variant="h4">
                   {median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
                 </Typography>
               </CardContent>
             <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
+              {/* Inserisce l'opportuna icona a seconda della condizione meteo media della giornata */}
               <Box>
                 {GetWeatherIcon(median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
               </Box>
+              {/* Pulsante per mostrare/nascondere la tabella */}
               <Button
                 onClick={() => handleExpandClick(i)}
                 aria-expanded={expanded === i}
                 aria-label="show more"
               >
-                {/* <ExpandMoreIcon sx={{rotate: "180deg"}} /> */}
                 {expanded === i ? <ExpandMoreIcon sx={{rotate: "180deg", transform: 'scale(1.3)'}}/> : <ExpandMoreIcon sx={{rotate: "0deg", transform: 'scale(1.3)'}} size={100} />}
-                {/* see more */}
               </Button>
             </CardActions>
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
               <Box height={300} overflow={'scroll'}>
                 <CardContent>
+                  {/* Mostra la tabella piccola*/}
                   <TabellaGiorniPiccola jsonpassato={tagliojsondati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
                 </CardContent>
               </Box>
@@ -560,10 +583,11 @@ console.log("FAX");
     return(
       <>
       <Box sx={{marginTop: 3}}>
-        {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
+        {/* Operatore ternario che, a seconda che le chiamate API abbiano terminato o meno, decide se caricare l'intestazione o gli Skeleton */}
         {letturaAPI ? (
           <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <Typography sx={{textAlign: "center"}} variant="h5">Dati meteo relativi alla città {city}</Typography>
+          {/* Pulsante per salvare la città cercata come preferita */}
           <FormControlLabel sx={{ml: 1}} control={
             <Checkbox checked={favourite} onChange={changeFavourite} icon={<FavoriteBorder />} checkedIcon={<Favorite />}/>
           }/>
@@ -587,37 +611,41 @@ console.log("FAX");
           display: 'box',
         }}
       >
-        {/* Operatore ternatio per gli skeleton per comunicare che la chimata API  è in corso ma non ancora terminata */}
+        {/* Operatore ternario che, a seconda che le chiamate API abbiano terminato o meno, decide se caricare le Card o gli Skeleton */}
         {letturaAPI ? (
-          f.map((g, i) =>(        
+          f.map((g, i) =>( 
+            // A ciascuna card viene assegnato un identificatore da 0 a 6, così MeteoCard può capire quale Card 
+            // è stata espansa guardando il valore dell'hook "expanded"       
             <Card key={g} sx={{ width: 550, margin: "auto", mt: 4 }}>
               <CardContent sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <Box>
                   <Typography variant="h5">{getGiornoDellaSettimana(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
                   <Typography variant="h6" color="text.seconi*24+1ry">{getDay(datiMeteo.hourly.time[i*24+1 +1])}</Typography>
                 </Box>
+                {/* Temperatura media della giornata */}
                 <Typography variant="h4">
                   {median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.temperature_2m)}  (°C)
                 </Typography>
               </CardContent>
             <CardActions disableSpacing sx={{ display: "flex", justifyContent: "space-between", px: 2 }}>
+              {/* Inserisce l'opportuna icona e descrizione testuale a seconda della condizione meteo media della giornata */}
               <Box sx={{display: 'flex'}}>
                 {GetWeatherIcon(median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}
                 <Typography sx={{margin: 'auto', ml: 1}} variant='h6'>{getWeatherDescription(median(tagliojsondati(datiMeteo, i*24+1,(i+1)*24).hourly.weather_code),50)}</Typography>
               </Box>
+              {/* Pulsante per mostrare/nascondere la tabella */}
               <Button
                 onClick={() => handleExpandClick(i)}
                 aria-expanded={expanded === i}
                 aria-label="show more"
               >
-                {/* <ExpandMoreIcon sx={{rotate: "180deg"}} /> */}
                 {expanded === i ? <ExpandMoreIcon sx={{rotate: "180deg", transform: 'scale(1.3)'}}/> : <ExpandMoreIcon sx={{rotate: "0deg", transform: 'scale(1.3)'}} size={100} />}
-                {/* see more */}
               </Button>
             </CardActions>
             <Collapse in={expanded === i} timeout="auto" unmountOnExit>
               <Box height={400} overflow={'scroll'}>
                 <CardContent>
+                  {/* Mostra la tabella grande*/}
                   <TabellaGiorniGrande jsonpassato={tagliojsondati(datiMeteo, i === 0 ? dayNow : i*24+1,(i+1)*24)}/>
                 </CardContent>
               </Box>

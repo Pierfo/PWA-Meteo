@@ -55,6 +55,7 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
     // Avvia la pulizia della cache, se è passato sufficiente tempo
     if((Date.now()-lastUpdate) > (expirationMinutes * 60 * 1000)) {
+        console.log("cleaning cache");
         // In questa situazione, il waitUntil si assicura che la promessa si concluda, anche nel caso in cui l'app 
         // venga chiusa
         e.waitUntil(
@@ -124,45 +125,31 @@ function cleanCache() {
                     resolve(
                         Promise.all(
                             keys.map((key) => {
-                                isOutdated(timeCache, key).then(() => {
+                                timeCache.match(key).then((time) => {
+                                    const timeInt = parseInt(time.statusText);
+                                    
+                                    const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
+
                                     // Se la risorsa è scaduta, crea una promessa che si avvera con la sua rimozione 
                                     // dalla cache principale e con la rimozione del relativo istante di salvataggio
                                     // dalla cache secondaria
-                                    console.log(`REMOVING ${key.url}`)
-                                    return Promise.all([cache.delete(key), timeCache.delete(key)]);
-                                }).catch(() => {
+                                    if(result) {
+                                        console.log(`REMOVING ${key.url}`)
+                                        return Promise.all([cache.delete(key), timeCache.delete(key)]);
+                                    }
+
                                     // Se la risorsa non è scaduta, restituisce una promessa vuota
-                                    return new Promise((resolve, reject) => {
-                                        resolve();
-                                    })
+                                    else {
+                                        return new Promise((resolve, reject) => {
+                                            resolve();
+                                        })
+                                    }
                                 })
                             })
                         )
                     )
                 })
             })
-        })
-    })
-}
-
-// Ispeziona la cache passata per parametro e crea una promise che si conclude con esito positivo se la risorsa 
-// (identificata da "key") è scaduta; in caso contrario si conclude con esito negativo
-function isOutdated(cache, key) {
-    return new Promise((resolve, reject) => {
-        cache.match(key).then((time) => {
-            const timeInt = parseInt(time.statusText);
-
-            const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
-
-            // La risorsa è scaduta
-            if(result) {
-                resolve();
-            }
-            
-            // La risorsa non è scaduta
-            else {
-                reject();
-            }
         })
     })
 }
