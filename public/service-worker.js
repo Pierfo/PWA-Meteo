@@ -3,7 +3,7 @@
  * 
  * Il service worker adotta un approccio cache-first: ogni volta che l'app richiede una risorsa, prima si verifica 
  * se è disponibile in cache e poi, in caso negativo, ottiene la risorsa dal web. Questo approccio permette di
- * ottenere massime prestazioni però presenta dei problemi: 
+ * ottenere massime prestazioni, però presenta dei problemi: 
  * 
  * 1) non permette di ricevere dati aggiornati: se l'utente cerca una città allora il relativo JSON è memorizzato in cache;
  *      poi, a qualunque ricerca successiva di quella stessa città, il service worker continuerà a riproporre il JSON
@@ -11,20 +11,24 @@
  * 2) può causare un'eccessiva occupazione di memoria: a ogni ricerca i dati meteo sono salvati in memoria per poi 
  *      non essere più cancellati
  * 
- * Per risolvere il primo problema si adotta la seguente strategia: ogni volta che un JSON del meteo viene salvato 
+ * Per risolvere il primo problema si adotta la seguente strategia: ogni volta che un JSON dei dati meteo viene salvato 
  * in cache, si inserisce in una seconda cache l'istante temporale in cui è stato effettuato il salvataggio. Poi, se
  * il JSON viene chiesto nuovamente, si confronta l'istante attuale con l'istante di salvataggio e, se la loro 
  * differenza supera una certa soglia, si considera il JSON come obsoleto e lo si sostituisce con una nuova versione
  * presa dal web.
  * Per risolvere il secondo problema, invece, si effettua una pulizia periodica della cache, in cui sono eliminati
- * tutti i JSON del meteo che verrebbero considerati obsoleti secondo il criteri odescritto prima. Tutte le altre
+ * tutti i JSON del meteo che verrebbero considerati obsoleti secondo il criterio descritto prima. Tutte le altre
  * risorse (componenti dell'app e JSON restituiti da openstreetmap) sono mantenuti in quanto non si prevede che 
  * possano cambiare nel tempo.
  */
 
-const cacheNames = ["PWA-Meteo_v40", "PWA-Meteo_time-cached_v38"]; // I nomi delle cache: la prima contiene le risorse e la seconda contiene gli istanti temporali in cui il dato è salvato
-const expirationMinutes = 60; // Il numero di minuti oltre il quale il JSON dei dati meteo viene considerato obsoleto e quindi sostituito
-let lastUpdate = 0; // Conterrà l'istante temporale in cui la cache è stata ripulita per l'ultima volta
+// I nomi delle cache: la prima contiene le risorse e la seconda contiene gli istanti temporali in cui i
+// JSON dei dati meteo sono salvati
+const cacheNames = ["PWA-Meteo_v41", "PWA-Meteo_time-cached_v39"];
+// Il numero di minuti oltre il quale il JSON dei dati meteo viene considerato obsoleto e quindi sostituito
+const expirationMinutes = 60; 
+// Conterrà l'istante temporale in cui la cache è stata ripulita per l'ultima volta
+let lastUpdate = 0; 
 
 // In fase di installazione, il service worker apre le cache di cui farà utilizzo
 self.addEventListener("install", (e) => {
@@ -33,9 +37,9 @@ self.addEventListener("install", (e) => {
 
 // In fase di attivazione, il service worker elimina tutte le cache relative alle versioni precedenti dello stesso
 self.addEventListener("activate", (e) => {
-    // In questo caso, il waitUntil mette in coda tutte le successive fetch finché la promessa non si conclude
+    // In questo caso, il waitUntil metterà in coda tutte le successive fetch finché la promessa non si conclude
     e.waitUntil(
-        // Ottengo i nomi di tutte le cache attive al momento
+        // Ottengo i nomi di tutte le cache aperte al momento
         caches.keys().then((otherCaches) => {
             // La funzione Promise.all() richiede come parametro un array di Promises e restituisce un'unica Promise
             // che si avvera all'avverarsi di tutte le Promise contenute nell'array
@@ -51,11 +55,10 @@ self.addEventListener("activate", (e) => {
     )
 })
 
-// 
 self.addEventListener("fetch", (e) => {
     // Avvia la pulizia della cache, se è passato sufficiente tempo
     if((Date.now()-lastUpdate) > (expirationMinutes * 60 * 1000)) {
-        console.log("cleaning cache");
+        console.log("Service worker: avvio pulizia della cache");
         // In questa situazione, il waitUntil si assicura che la promessa si concluda, anche nel caso in cui l'app 
         // venga chiusa
         e.waitUntil(
@@ -78,7 +81,7 @@ self.addEventListener("fetch", (e) => {
                         // Se è passato sufficiente tempo, la risorsa è considerata come obsoleta e quindi il service
                         // worker risponde alla fetch con la risorsa presa dal web
                         if((Date.now() - time_cached) > (expirationMinutes * 60 * 1000)) {
-                            console.log("Timeout");
+                            console.log("Service worker: risorsa obsoleta");
                             expired = true;
                             resolve(fetchFromWebWrapper(e.request));
                         }
@@ -97,7 +100,7 @@ self.addEventListener("fetch", (e) => {
                                 // Se la risorsa è presente in cache, allora il service worker risponde con 
                                 // quest'ultima
                                 else {
-                                    console.log(`Fetching from cache ${e.request.url}`);
+                                    console.log(`Service worker: acquisizione dalla cache di ${e.request.url}`);
                                 
                                     resolve(cached);
                                 }
@@ -131,10 +134,10 @@ function cleanCache() {
                                     const result = (Date.now() - timeInt) > (expirationMinutes * 60 * 1000)
 
                                     // Se la risorsa è scaduta, crea una promessa che si avvera con la sua rimozione 
-                                    // dalla cache principale e con la rimozione del relativo istante di salvataggio
+                                    // dalla cache principale e la rimozione del relativo istante di salvataggio
                                     // dalla cache secondaria
                                     if(result) {
-                                        console.log(`REMOVING ${key.url}`)
+                                        console.log(`Service worker: rimozione dalla cache di ${key.url}`)
                                         return Promise.all([cache.delete(key), timeCache.delete(key)]);
                                     }
 
@@ -159,9 +162,10 @@ function cleanCache() {
 function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
         fetch(request).then((res) => {
-            console.log(`Fetching from the web ${request.url}`);
+            console.log(`Service worker: acquisizione dal web di ${request.url}`);
             
-            // Crea un clone della risorsa
+            // Crea un clone della risorsa, necessario perché se una risorsa è usata per essere salvata in cache allora
+            // non può anche essere usata per essere restituita dalla promise
             const resClone = res.clone();
 
             // Inserisce la risorsa in cache
@@ -180,7 +184,7 @@ function fetchFromWeb(request) {
             // Restituisce il clone della risorsa
             resolve(resClone);
         }).catch((err) => {
-            console.log(`Fetching error, returning void response`);
+            console.log(`Service worker: nessun risultato trovato per ${request.url}`);
 
             // La risorsa non è stata trovata: restituisce una risposta vuota con stato 404
             resolve(new Response(null, {status: "404", statusText: "Offline"}))

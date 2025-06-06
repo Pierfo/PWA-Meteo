@@ -1,22 +1,30 @@
+/**
+ * Creazione dello fondo animato relativo alla neve.
+ * 
+ * Crea con javascript un array di fiocchi di neve con grandezza e tempo di caduta randomica.
+ * Con il css crea e anima i fiocchi di neve utilizzando keyframe e animazioni infinite, prendendo com parametri 
+ * quelli creati nell'array. Infine crea il component "react"
+ */
+
 import { Translate } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { Box, useTheme } from '@mui/material';
 
-
 const SnowBackground = ({wind = 0}) => {
   // Array di fiocchi di neve
   const [drops, setDrops] = useState([]);
-  // Prendo i valori del tema (utilizzato per determinare il colore delle gocce)
+  // Prende i valori del tema (utilizzato per determinare il colore dei fiocchi di neve)
   const theme = useTheme();
 
-  // Variabile creata per un caso particolare in cui l'app viene avviata con una larghezza dello shermo che poi viene cambiata 
-  // Quindi usata per modificare dinamicamente la densita dei fiocchi di neve in base alla larghezza della finestra
+  // Variabile creata per monitorare variazioni nelle dimensioni dello schermo. In particolare, viene usata per 
+  // modificare dinamicamente la densità dei fiocchi di neve in base alla larghezza della finestra.
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
 
-  // useEffect eseguito solo all'avvio per creare l'evento che gestisce la quantita di fiocchi di neve al cambio della grandezza della finestra
+  // useEffect eseguito solo all'avvio per creare l'evento che gestisce la quantità di fiocchi di neve al cambio 
+  // della grandezza della finestra
   useEffect(() => {
     const handleResize = () => {
       setSize({
@@ -28,17 +36,18 @@ const SnowBackground = ({wind = 0}) => {
     window.addEventListener("resize", handleResize);
   }, []);  
 
-  // useeffect eseguito a ogni momifica della grandezza dello schermo, usato per modificare la quantita di fiocchi di neve dinamicamente al ridimensionamento dello shermo
+  // useeffect eseguito a ogni modifica della grandezza dello schermo, usato per modificare dinamicamente la 
+  // quantità di fiocchi di neve al ridimensionamento dello shermo
   useEffect(() => {
     const width = window.innerWidth; 
     const density = 0.1; // fiocchi di neve per pixel
-    // Intero usato per le iterazioni del for
+    // Intero usato per le iterazioni del for loop
     const numDrops = Math.floor(width * density);
   
-    // Creo l'array di fiocchi di neve che poi sarà usato nel map
+    // Crea l'array di fiocchi di neve che poi sarà usato nel map
     const newDrops = [];
 
-    // Creo i fiocchi di neve ognuno con dimensioni spaziali e temporali diverse
+    // Crea i fiocchi di neve ognuno con dimensioni spaziali e temporali diverse
     for (let i = 0; i < numDrops; i++) {
       newDrops.push({
         id: i,
@@ -93,6 +102,7 @@ const SnowBackground = ({wind = 0}) => {
       `}</style>
 
       <div className="rain-container">
+        {/* Creazione dei fiocchi di neve con map */}
         {drops.map((drop) => (
           <div
           key={drop.id}

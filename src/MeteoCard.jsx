@@ -2,6 +2,9 @@
  * Gestisce le chiamate alle API e la visualizzazione dei risultati nelle Card. Fornisce, inoltre, la possibilità
  * di salvare una determinata città come preferita.
  * 
+ * Per ottenere i dati meteo interroga prima la API OpenStreetMap e poi OpenMeteo, se però la città cercata termina 
+ * con la flag "-p" allora la richiesta è reindirizzata al server placeholder.
+ * 
  * Il layout e le dimensioni delle Card variano a seconda delle dimensioni dello schermo: per schermi di larghezza
  * inferiore ai 600px le Card mostreranno nome e numero del giorno, temperatura media della giornata e un'icona che
  * rappresenta la condizione meteo media della giornata, mentre, per schermi di larghezza superiore ai 600px, viene
@@ -10,7 +13,8 @@
  * Le Card presentano anche un pulsante che permette di mostrare/nascondere una tabella che riporta temperatura e
  * condizione atmosferica di ogni ora della giornata. Anche il layout di questa varia a seconda della larghezza
  * dello schermo: se è minore di 600px allora la condizione atmosferica è rappresentata da una sola icona, mentre
- * se è maggiore di 600px allora viene anche inserita la descrizione testuale del meteo.
+ * se è maggiore di 600px allora viene anche inserita la descrizione testuale del meteo. Per quanto riguarda la Card
+ * del giorno attuale, sono rimosse tutte le righe relative a ore già passate.
  */
 
 import { useState, useEffect } from 'react';
@@ -66,9 +70,9 @@ import {
 } from "react-icons/wi";
 
 // Funzione che fornisce una descrizione testuale del valore restituito dall'API openmeteo.
-// Ha come parametro il codice formito da openmeteo e restituisce il significato in italiano del del codice.
-// Es prende in input 0 e restituisce cielo sereno, i significati sono stati presi dalla documentazione.
-// Link documentazione: https://open-meteo.com/en/docs?hourly=temperature_2m,weather_code.
+// Ha come parametro il codice formito da openmeteo e restituisce il significato in italiano del codice (ad esempio
+// prende in input 0 e restituisce cielo sereno), i significati sono stati presi dalla documentazione
+// (https://open-meteo.com/en/docs?hourly=temperature_2m,weather_code).
 function getWeatherDescription(weatherCode) {
   switch (weatherCode) {
     case 0: return "Cielo sereno";
@@ -104,7 +108,7 @@ function getWeatherDescription(weatherCode) {
 }
 
 // In base al risultato meteo di oggi, determina la potenza del vento nello sfondo animato.
-// Valori positivi riguardano la pioggia, valori negativi la neve.
+// Valori positivi riguardano la pioggia, valori negativi la neve. 0 vuol dire nessuno sfondo animato.
 function getWeatherIntensity(weatherCode) {
   let intensity = 0;
 
@@ -160,9 +164,8 @@ function getWeatherIntensity(weatherCode) {
 }
 
 // Funzione che restituisce un componente icona in base al codice meteo.
-// Prende in input il codice formito da openmeteo e la grandezza dell'icona e restituisce una icona.
+// Prende in input il codice formito da openmeteo e la grandezza dell'icona e restituisce un'icona
 // presa da react icon/wi (https://react-icons.github.io/react-icons/icons/wi/).
-// Es prende in input 0 e restituisce l'icona del sole essendo il cielo esereno.
 function GetWeatherIcon(weatherCode, size = 32) {
   switch (weatherCode) {
     case 0: 
@@ -197,11 +200,11 @@ function GetWeatherIcon(weatherCode, size = 32) {
   }
 }
   
-// Funzione che, ricevuta in input una data, restituisce il numoro di giorno, mese e anno.
+// Funzione che, ricevuta in input una data, restituisce il numero di giorno, mese e anno.
 function getDay(dataOraStringa){
   const dataOggetto = new Date(dataOraStringa);
   const anno = dataOggetto.getFullYear();
-  const mese = (dataOggetto.getMonth() + 1).toString().padStart(2, '0'); // Mese è base 0
+  const mese = (dataOggetto.getMonth() + 1).toString().padStart(2, '0'); // Mese è a base 0
   const giorno = dataOggetto.getDate().toString().padStart(2, '0');
   return `${giorno}-${mese}-${anno}`;
 }
@@ -213,7 +216,7 @@ function getGiornoDellaSettimana(data) {
   return giorniSettimana[dataOggetto.getDay()];
 }
   
-// Prende il JSON proveniente da opnemeteo (passato per parametro) e crea un nuovo JSON
+// Prende il JSON proveniente da OpenMeteo (passato per parametro) e crea un nuovo JSON
 // contenente gli elementi dei campi "hourly":"time", "hourly":"temperature_2m" e 
 // "hourly":"weather_code" compresi fra gli indici "inizio" e "fine".
 function tagliojsondati(jsonOriginale, inizio, fine) {
@@ -224,9 +227,9 @@ function tagliojsondati(jsonOriginale, inizio, fine) {
   return jsonTagliato;
 }
   
-// Component per creare la tabella piccola (usata quando lo schermo ha larghezza inferiore a 600px)
-// partendo dal json
-// La tabella piccola è piu stretta e non mostra la descrizione testuale delle precipitazioni ma solo le icone
+// Component per creare la tabella piccola (usata quando lo schermo ha larghezza inferiore a 600px),
+// partendo dal json.
+// La tabella piccola è piu stretta e non mostra la descrizione testuale delle precipitazioni ma solo le icone.
 function TabellaGiorniPiccola({jsonpassato}) {
   return(
     <>
@@ -255,9 +258,9 @@ function TabellaGiorniPiccola({jsonpassato}) {
   );
 }
   
-// Component per creare la tabella grande (usata quando la largheza dello schermo supera i 600px)
-// partendo da un json 
-// La tabella grande riporta anche la descrizione testuale del tempo
+// Component per creare la tabella grande (usata quando la larghezza dello schermo supera i 600px),
+// partendo dal json. 
+// La tabella grande riporta anche la descrizione testuale del tempo.
 function TabellaGiorniGrande({jsonpassato}) {
   return(
     <>
@@ -285,21 +288,30 @@ function TabellaGiorniGrande({jsonpassato}) {
   );
 }
 
-// Component principale
+// Component principale.
 // city: prop che indica la città che l'utente sta cercando
-// callback: prop per fare la callback, utilizzato per impostare lo sfondo che cambia in base alle condizioni meteo 
+// callback: prop per effettuare la callback, utilizzato per impostare lo sfondo che cambia in base alle condizioni meteo 
 // del giorno attuale
 function MeteoCard({city , callBack}){
     
-  // Dichiarazioni degli useState
-  const [errore, setErrore] = useState(""); // Errore riscontrato durante la chiamata API
-  const [letturaAPI , setLetturaAPI] = useState(false); // False se la API non ha ancora letto, true se la API ha finito di leggere, usato per gli skeleton
-  const [datiMeteo , setDatiMeteo] = useState({}); // Dati restituiti dalla API, qui viene salvato il json dopo aver fatto la chimata API
-  const [expanded, setExpanded] = useState(-1); // Variabile usata per l'espansione delle card, assume un valore da 0 a 6 che indica quale delle sette card è stata espansa, -1 se nessuna è espanda. Facendo cosi se ne puo espandere solamente una alla volta
-  const [offline, setOffline] = useState(false); // Variabile usata per registrare se l'utente è offline
-  const [badSearch, setBadSearch] = useState(false); // Assume valore false se la ricerca completa con successo, true se invece la ricerca fallisce perché la città inserita non esiste
-  const [favourite, setFavourite] = useState(false); // Varaibile usata per verificare se la città cercata è stata salvata come preferita
-  const matches = useMediaQuery('(min-width:600px)'); // Media query per monitorare la larghezza dello schermo, serve per capire se usare la Card grande o quella piccola
+  // Errore riscontrato durante la chiamata API
+  const [errore, setErrore] = useState(""); 
+  // True se si ha finito di eseguire le chiamate alle API, false altrimenti; usato per gli skeleton
+  const [letturaAPI , setLetturaAPI] = useState(false); 
+  // Dati restituiti dalla API, qui viene salvato il json dopo aver fatto la chimata API
+  const [datiMeteo , setDatiMeteo] = useState({}); 
+  // Variabile usata per l'espansione delle card, assume un valore da 0 a 6 che indica quale delle sette card è 
+  // stata espansa, -1 se nessuna è espanda. Facendo cosi se ne puo espandere solamente una alla volta
+  const [expanded, setExpanded] = useState(-1); 
+  // Variabile usata per registrare se l'utente è offline
+  const [offline, setOffline] = useState(false); 
+  // Assume valore false se la ricerca completa con successo, true se invece la ricerca fallisce perché la città 
+  // inserita non è stata trovata
+  const [badSearch, setBadSearch] = useState(false); 
+  // Varaibile usata per verificare se la città cercata è stata salvata come preferita
+  const [favourite, setFavourite] = useState(false); 
+  // Media query per monitorare la larghezza dello schermo, serve per capire se usare la Card grande o quella piccola
+  const matches = useMediaQuery('(min-width:600px)'); 
 
   // Useffect per le chiamate API, viene eseguito ogni volta che city viene modificata
   useEffect(() => {
@@ -436,23 +448,24 @@ function MeteoCard({city , callBack}){
     chiamataAPI(city);
   }, [city]); // Questo useEffect viene chiamato solo quando viene modificato city 
     
-  // useEffect eseguito a ogni chiamata (o meglio alla di "letturaAPI" che avviene a ogni nuova chimata).
+  // useEffect eseguito a ogni chiamata (o meglio alla modifica di "letturaAPI" che avviene a ogni nuova chimata).
   // Ogni volta che finisce una chiamata API chiama la funzione "callback" per inviare a "theme" 
   // la condizione meteo, che viene usata per modificare lo sfondo.
   // Le informazioni meteo di interesse alla callback sono se piove o nevica e con che intensità, così
   // da poter scegliere quale sfondo applicare e che intensità fornire al vento
   useEffect(()=>{
     if(letturaAPI && !offline && !badSearch) {  
-      // Viene estratto il valore mediano di weather_code e interpretato per capire l'intensità della pioggia (valore positivo) o  della neve ()valore negativo
+      // Viene estratto il valore mediano di weather_code e interpretato per capire l'intensità della pioggia (valore positivo) 
+      // o della neve (valore negativo)
       callBack(getWeatherIntensity(median(tagliojsondati(datiMeteo, 1,24).hourly.weather_code)));
     }
     else{
-      // Altrimenti vinelimpostato a 0 (corrispone a nessuno sfondo)
+      // Altrimenti vine impostato a 0 (corrispone a nessuno sfondo)
       callBack(0);
     }
-  }, [letturaAPI])// useEffect che viene eseguito a ogni modifica di lettudaletturaAPI
+  }, [letturaAPI])// useEffect che viene eseguito a ogni modifica di letturaAPI
   
-  // Funzione per segnalare all'utente gli arrori durante le chiamate API 
+  // Funzione per segnalare all'utente gli errori durante le chiamate API 
   if (errore != "") {
     if(offline) {
       return(
@@ -474,8 +487,8 @@ function MeteoCard({city , callBack}){
 console.log("FAX");
 
   // Funzione per comunicare quale Card è stata espansa. Salva l'identificatore della card che è stata espansa 
-  // nell'hook "expanded"
-  // La funzione è usata nell'onclick del bottone della card 
+  // nell'hook "expanded".
+  // La funzione è usata nell'onclick del pulsante della card 
   const handleExpandClick = i => {
     setExpanded(expanded === i ? -1 : i);
   };
@@ -483,12 +496,12 @@ console.log("FAX");
   // Array ausiliario 
   const f = [1,2,3,4,5,6,7];
 
-  // Trova l'ora corrente: serve nella tabella meteo relativa a oggi per tagliare i risultati in modo tale che siano
+  // Trova l'ora corrente: serve nella tabella meteo relativa a oggi per tagliare i risultati, in modo tale che siano
   // rimosse le informazioni meteo relative alle ore già passate
   const dayNow = (new Date()).getHours();
   
   // Component per la creazione delle card piccole, per quando la larghezza dello schermo è minore di 600px
-  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per salvare la citta come preferita 
+  // Oltre alle card è anche riportata la citta che è stata cercata e il relativo checkbox per salvare la citta come preferita 
   function SmallCard() {
     return(
       <>
@@ -548,6 +561,7 @@ console.log("FAX");
                 aria-expanded={expanded === i}
                 aria-label="show more"
               >
+                {/* Ruota il pulsante per mostrare la tabella a seconda che la Card sia stata espansa o meno */}
                 {expanded === i ? <ExpandMoreIcon sx={{rotate: "180deg", transform: 'scale(1.3)'}}/> : <ExpandMoreIcon sx={{rotate: "0deg", transform: 'scale(1.3)'}} size={100} />}
               </Button>
             </CardActions>
@@ -577,8 +591,8 @@ console.log("FAX");
     );
   }
 
-  // Component per la creazione delle Card grandi, per quando la larghezza dello schermo è minore di 600px
-  // Oltre alle card è anche contenuta la citta che è stata cercata e il relativo checkbox per salvare la citta come preferita 
+  // Component per la creazione delle Card grandi, per quando la larghezza dello schermo è maggiore di 600px
+  // Oltre alle card è anche riportata la citta che è stata cercata e il relativo checkbox per salvare la citta come preferita 
   function BigCard() {
     return(
       <>
@@ -639,6 +653,7 @@ console.log("FAX");
                 aria-expanded={expanded === i}
                 aria-label="show more"
               >
+                {/* Ruota il pulsante per mostrare la tabella a seconda che la Card sia stata espansa o meno */}
                 {expanded === i ? <ExpandMoreIcon sx={{rotate: "180deg", transform: 'scale(1.3)'}}/> : <ExpandMoreIcon sx={{rotate: "0deg", transform: 'scale(1.3)'}} size={100} />}
               </Button>
             </CardActions>

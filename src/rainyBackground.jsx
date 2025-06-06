@@ -1,22 +1,30 @@
+/**
+ * Creazione dello fondo animato relativo alla pioggia.
+ * 
+ * Crea con javascript un array di gocce con grandezza e tempo di caduta randomica.
+ * Con il css crea e anima le gocce utilizzando keyframe e animazioni infinite, prendendo com parametri 
+ * quelli creati nell'array. Infine crea il component "react"
+ */
+
 import { Translate } from "@mui/icons-material";
 import React, { useEffect, useState } from "react";
 import { Box, useTheme } from '@mui/material';
 
-
 const RainBackground = ({wind = 0}) => {
   // Array di gocce
   const [drops, setDrops] = useState([]);
-  // Prendo i valori del tema (utilizzato per determinare il colore delle gocce)
+  // Prende i valori del tema (utilizzato per determinare il colore delle gocce)
   const theme = useTheme();
 
-  // Variabile creata per un caso particolare in cui l'app viene avviata con una larghezza dello shermo che poi viene cambiata 
-  // Quindi usata per modificare dinamicamente la densita delle gocce in base alla larghezza della finestra
+  // Variabile creata per monitorare variazioni nelle dimensioni dello schermo. In particolare, viene usata per 
+  // modificare dinamicamente la densità delle gocce in base alla larghezza della finestra.
   const [size, setSize] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
 
-  // useEffect eseguito solo all'avvio per creare l'evento che gestisce la quantita di gocce al cambio della grandezza della finestra
+  // useEffect eseguito solo all'avvio per creare l'evento che gestisce la quantità di gocce al cambio della 
+  // grandezza della finestra
   useEffect(() => {
     const handleResize = () => {
       setSize({
@@ -28,17 +36,18 @@ const RainBackground = ({wind = 0}) => {
     window.addEventListener("resize", handleResize);
   }, []);  
 
-  // useeffect eseguito a ogni momifica della grandezza dello schermo, usato per modificare la quantita di gocce dinamicamente al ridimensionamento dello shermo
+  // useEffect eseguito a ogni modifica della grandezza dello schermo, usato per modificare dinamicamente la 
+  // quantità di gocce al ridimensionamento dello shermo
   useEffect(() => {
     const width = window.innerWidth;   
     const density = 0.1; // gocce per pixel
-    // Intero usato per le iterazioni del for
+    // Intero usato per le iterazioni del for loop
     const numDrops = Math.floor(width * density);
   
-    // Creo l'array di gocce che poi sarà usato nel map
+    // Crea l'array di gocce che poi sarà usato nel map
     const newDrops = [];
   
-    // Creo le gocce ognuna con dimensioni spaziali e temporali diverse
+    // Crea le gocce ognuna con dimensioni spaziali e temporali diverse
     for (let i = 0; i < numDrops; i++) {
       newDrops.push({
         id: i,
@@ -95,7 +104,7 @@ const RainBackground = ({wind = 0}) => {
       `}</style>
 
       <div className="rain-container">
-        {/* creazione delle gocce con map */}
+        {/* Creazione delle gocce con map */}
         {drops.map((drop) => (
           <div
           key={drop.id}

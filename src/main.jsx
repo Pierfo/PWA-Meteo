@@ -1,3 +1,7 @@
+/**
+ * Avvia il rendering dell'app e la registrazione del service worker
+ */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './service-worker-registration.js'
