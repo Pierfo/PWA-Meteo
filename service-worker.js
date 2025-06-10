@@ -39,19 +39,22 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
     // In questo caso, il waitUntil metterà in coda tutte le successive fetch finché la promessa non si conclude
     e.waitUntil(
-        // Ottengo i nomi di tutte le cache aperte al momento
-        caches.keys().then((otherCaches) => {
-            // La funzione Promise.all() richiede come parametro un array di Promises e restituisce un'unica Promise
-            // che si avvera all'avverarsi di tutte le Promise contenute nell'array
-            return Promise.all(
-                otherCaches.map(cache => {
-                    if(!(cache in cacheNames)) {
-                        // Elimino qualunque cache il cui nome non è presente in cacheNames
-                        return caches.delete(cache);
-                    }
-                })
-            )
-        })
+        Promise.all([
+            // Ottengo i nomi di tutte le cache aperte al momento
+            caches.keys().then((otherCaches) => {
+                // La funzione Promise.all() richiede come parametro un array di Promises e restituisce un'unica Promise
+                // che si avvera all'avverarsi di tutte le Promise contenute nell'array
+                return Promise.all(
+                    otherCaches.map(cache => {
+                        if(!(cache in cacheNames)) {
+                            // Elimino qualunque cache il cui nome non è presente in cacheNames
+                            return caches.delete(cache);
+                        }
+                    })
+                )
+            }), 
+            clients.claim()]
+        )
     )
 })
 
