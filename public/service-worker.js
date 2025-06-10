@@ -30,7 +30,11 @@ const expirationMinutes = 60;
 // Conterrà l'istante temporale in cui la cache è stata ripulita per l'ultima volta
 let lastUpdate = 0; 
 
-// In fase di installazione, il service worker apre le cache di cui farà utilizzo
+// In fase di installazione, il service worker apre le cache di cui farà utilizzo.
+//
+// Durante l'installazione, non viene inserito alcun asset in cache: ciò è dovuto dal fatto che non è possibile 
+// sapere a priori quale sarà l'URL dei vari componenti dell'app, dato che ciascuno di questi subisce hashing
+// in fase di compilazione
 self.addEventListener("install", (e) => {
     e.waitUntil(caches.open(cacheNames));
 });
@@ -39,19 +43,23 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
     // In questo caso, il waitUntil metterà in coda tutte le successive fetch finché la promessa non si conclude
     e.waitUntil(
-        // Ottengo i nomi di tutte le cache aperte al momento
-        caches.keys().then((otherCaches) => {
-            // La funzione Promise.all() richiede come parametro un array di Promises e restituisce un'unica Promise
-            // che si avvera all'avverarsi di tutte le Promise contenute nell'array
-            return Promise.all(
-                otherCaches.map(cache => {
-                    if(!(cache in cacheNames)) {
-                        // Elimino qualunque cache il cui nome non è presente in cacheNames
-                        return caches.delete(cache);
-                    }
-                })
-            )
-        })
+        // La funzione Promise.all() richiede come parametro un array di Promises e restituisce un'unica Promise
+        // che si avvera all'avverarsi di tutte le Promise contenute nell'array
+        Promise.all([
+            // Ottiene i nomi di tutte le cache aperte al momento
+            caches.keys().then((otherCaches) => {
+                return Promise.all(
+                    otherCaches.map(cache => {
+                        if(!(cache in cacheNames)) {
+                            // Elimino qualunque cache il cui nome non è presente in cacheNames
+                            return caches.delete(cache);
+                        }
+                    })
+                )
+            }), 
+            // Ottine il controllo sui client
+            clients.claim()]
+        )
     )
 })
 

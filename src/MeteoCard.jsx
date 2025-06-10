@@ -331,6 +331,7 @@ function MeteoCard({city , callBack}){
     setLetturaAPI(false);
     setOffline(false); 
     setBadSearch(false);
+    setDatiMeteo({});
 
     // Esegue le chiamate API per la città cercata. È stato necessario creare la funzione come "async"
     // per poter usare la keyword "await"
@@ -362,7 +363,6 @@ function MeteoCard({city , callBack}){
         
           // Se la città cercata non esiste allora la fetch ha succeso ma si verifica questa condizione
           if (!(data && data.length > 0)) {
-            setErrore("Nessun risultato trovato per la città");
             setBadSearch(true);
             throw new Error("API coordinate non ha funzionato citta passata:" , city , "fine errore");
           }
@@ -387,7 +387,6 @@ function MeteoCard({city , callBack}){
           // internet, dato che questo è il caso più probabile 
           if (!response.ok) {
             setOffline(true);
-            setErrore("errore api meteo");
             throw new Error(`Errore HTTP! Stato: ${response.status}`);
           }
 
@@ -404,8 +403,7 @@ function MeteoCard({city , callBack}){
           // Se la richiesta ha fallito è perché l'utente è offline
           if(!contents.ok) {
             setOffline(true);
-            setErrore("Offline");
-            throw new Error(`Errore HTTP! Stato: ${response.status}`);
+            throw new Error(`Errore HTTP! Stato: ${contents.status}`);
           }
 
           const contentsJSON = await contents.json();
@@ -413,7 +411,6 @@ function MeteoCard({city , callBack}){
           // Se la città cercata non è inclusa nel server placeholder allora la ricerca fallisce
           if(!contentsJSON.includes(`${citta.substring(0, citta.lastIndexOf(" "))}.json`)) {
             setBadSearch(true);
-            setErrore("Città non salvata nel server placeholder");
             throw new Error(`Città non salvata nel server placeholder`);
           }
           
@@ -427,7 +424,6 @@ function MeteoCard({city , callBack}){
           // Se la risorsa non è stata trovata è perché l'utente è offline
           if (!response.ok) {
             setOffline(true);
-            setErrore("errore api meteo");
             throw new Error(`Errore HTTP! Stato: ${response.status}`);
           }
 
@@ -454,7 +450,8 @@ function MeteoCard({city , callBack}){
   // Le informazioni meteo di interesse alla callback sono se piove o nevica e con che intensità, così
   // da poter scegliere quale sfondo applicare e che intensità fornire al vento
   useEffect(()=>{
-    if(letturaAPI && !offline && !badSearch) {  
+    if(letturaAPI && errore === "") { 
+      console.log(datiMeteo); 
       // Viene estratto il valore mediano di weather_code e interpretato per capire l'intensità della pioggia (valore positivo) 
       // o della neve (valore negativo)
       callBack(getWeatherIntensity(median(tagliojsondati(datiMeteo, 1,24).hourly.weather_code)));
@@ -467,6 +464,7 @@ function MeteoCard({city , callBack}){
   
   // Funzione per segnalare all'utente gli errori durante le chiamate API 
   if (errore != "") {
+    // Messaggio di errore in caso l'utente sia offline
     if(offline) {
       return(
         <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3}}>
@@ -476,9 +474,20 @@ function MeteoCard({city , callBack}){
       );
     }
     
+    // Messaggio di errore nel caso la città non sia atata trovata
+    else if(badSearch) {
+      return(
+        <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3}}>
+          <Typography sx={{textAlign: "center", mr: "17px"}} variant="h5">Nessun risultato trovato per "{city}"</Typography>
+          <MdDoNotDisturb size={30} sx={{ml: "10px"}} />
+        </Box>
+      ); 
+    }
+
+    // Messaggio di errore generico
     return(
       <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3}}>
-        <Typography sx={{textAlign: "center", mr: "17px"}} variant="h5">Nessun risultato trovato per "{city}"</Typography>
+        <Typography sx={{textAlign: "center", mr: "17px"}} variant="h5">Si è verificato un errore</Typography>
         <MdDoNotDisturb size={30} sx={{ml: "10px"}} />
       </Box>
     ); 
