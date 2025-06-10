@@ -340,7 +340,7 @@ function MeteoCard({city , callBack}){
         // Per capire se inoltrare la richiesta al server placeholder oppure all'API openstreetmap
         let placeholderSearch = false;
 
-        if(city.endsWith("-p")) {
+        if(city.endsWith(" -p")) {
           placeholderSearch = true;
         }
         
