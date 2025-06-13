@@ -41,6 +41,8 @@ function Input({callBack}) {
     const [citta, setCitta] = useState([]); 
     // Serve per quando l'utente seleziona un opzione dal menù senza aver digitato niente sulla barra di ricerca: senza questo allora il nome della città comparirebbe nella barra di ricerca
     const [reset, setReset] = useState(false); 
+    // Serve perché il contenuto della barra di ricerca non sia cancellato quando si sta tentando di ricaricare lo stato
+    let dont_delete = false;
 
     // Avvia il caricamento dei dati meteo relativi alla città salvata come preferita, se presente
     function loadFavourite() {
@@ -135,6 +137,7 @@ function Input({callBack}) {
     // Se si sta avviando l'app ricarica lo stato, se, invece, si sta ricaricando la pagina, carica la città preferita
     useEffect(() => {
         if(isAtStartup()) {
+            dont_delete = true;
             reloadState();
         }
         
@@ -172,7 +175,12 @@ function Input({callBack}) {
 
     // Svuota il contenuto della barra di ricerca quando l'utente ha selezionato una città del menù senza aver digitato niente
     useEffect(() => {
-        modifyText("");        
+        if(!dont_delete) {
+            modifyText("")
+        }
+        else {
+            dont_delete = false;
+        }      
     }, [reset])
         
     return (

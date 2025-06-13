@@ -1,4 +1,4 @@
-# Progressive Web App del Meteo
+# PWA-Meteo
 
 Progetto di __Pietro Puozzo__, __Pier Francsco Uliana__ ed __Enoc Ke__.
 
