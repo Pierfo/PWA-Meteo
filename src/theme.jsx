@@ -3,11 +3,13 @@
  * (attive o non attive). Crea inoltre due switch per permettere all'utente di esprimere le proprie preferenze
  * sul tema e sullo sfondo animato, salvando tali preferenze in localStorage.
  * 
- * Gli sfondi animati sono invocati in base alla preferenza dell'utente e alla condizione meteo del giorno 
- * (ricevuta trmite call back). In particolare il programma ha bisogno di conoscere il tipo di condizione meteo 
- * (per decidere se inserire la pioggia, la neve o nessuno sfondo) e la sua intensità (per decidere l'intensità del
- * parametro "vento": precipitazioni lievi, come "pioggia lieve" o "lieve nevicata", hanno vento di intensità 0 mentre 
- * precipitazioni intense, come "temporale" o "tempesta di neve", hanno vento di intensità massima).
+ * Come accennato prima, l'app dispone di sfondi animati, in particolare è in grado di generare un'animazione 
+ * della pioggia per quando piove e una della neve per quando nevica. Gli sfondi sono invocati in base alla 
+ * preferenza dell'utente e alla condizione meteo del giorno (ricevuta tramite call back). Per funzionare,
+ * il programma ha bisogno di conoscere il tipo di condizione meteo (per decidere se inserire la pioggia, la neve 
+ * o nessuno sfondo) e la sua intensità (per decidere l'intensità del parametro "vento": precipitazioni lievi, come 
+ * "pioggia lieve" o "lieve nevicata", hanno vento di intensità 0 mentre precipitazioni intense, come "temporale" o 
+ * "tempesta di neve", hanno vento di intensità massima).
  * 
  * Tema e sfondo sono aggiornati dinamicamente. 
  */
@@ -88,7 +90,7 @@ export default function Temax (){
             }}
             >
             <LightModeIcon color={!darkMode ? 'primary' : 'white'} />
-            {/* switch per la scelta del tipo di tema */}
+            {/* switch per la scelta del tipo di tema, situato in alto a sinistra */}
             <Switch
               checked={darkMode}
               onChange={() => {
@@ -112,7 +114,7 @@ export default function Temax (){
             }}
             >
             <MotionPhotosOffIcon color={animation ? 'with' : 'primary'}/>
-            {/* Switch per la scelta di avere o meno lo sfondo animato */}
+            {/* Switch per la scelta di avere o meno lo sfondo animato, situato in alto a destra */}
             <Switch
               checked={animation}
               onChange={() => {

@@ -451,7 +451,6 @@ function MeteoCard({city , callBack}){
   // da poter scegliere quale sfondo applicare e che intensità fornire al vento
   useEffect(()=>{
     if(letturaAPI && errore === "") { 
-      console.log(datiMeteo); 
       // Viene estratto il valore mediano di weather_code e interpretato per capire l'intensità della pioggia (valore positivo) 
       // o della neve (valore negativo)
       callBack(getWeatherIntensity(median(tagliojsondati(datiMeteo, 1,24).hourly.weather_code)));
@@ -493,7 +492,6 @@ function MeteoCard({city , callBack}){
     ); 
   }
 
-console.log("FAX");
 
   // Funzione per comunicare quale Card è stata espansa. Salva l'identificatore della card che è stata espansa 
   // nell'hook "expanded".

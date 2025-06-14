@@ -66,7 +66,6 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
     // Avvia la pulizia della cache, se è passato sufficiente tempo
     if((Date.now()-lastUpdate) > (expirationMinutes * 60 * 1000)) {
-        console.log("Service worker: avvio pulizia della cache");
         // In questa situazione, il waitUntil si assicura che la promessa si concluda, anche nel caso in cui l'app 
         // venga chiusa
         e.waitUntil(
@@ -89,7 +88,6 @@ self.addEventListener("fetch", (e) => {
                         // Se è passato sufficiente tempo, la risorsa è considerata come obsoleta e quindi il service
                         // worker risponde alla fetch con la risorsa presa dal web
                         if((Date.now() - time_cached) > (expirationMinutes * 60 * 1000)) {
-                            console.log("Service worker: risorsa obsoleta");
                             expired = true;
                             resolve(fetchFromWebWrapper(e.request));
                         }
@@ -108,8 +106,6 @@ self.addEventListener("fetch", (e) => {
                                 // Se la risorsa è presente in cache, allora il service worker risponde con 
                                 // quest'ultima
                                 else {
-                                    console.log(`Service worker: acquisizione dalla cache di ${e.request.url}`);
-                                
                                     resolve(cached);
                                 }
                             })
@@ -145,7 +141,6 @@ function cleanCache() {
                                     // dalla cache principale e la rimozione del relativo istante di salvataggio
                                     // dalla cache secondaria
                                     if(result) {
-                                        console.log(`Service worker: rimozione dalla cache di ${key.url}`)
                                         return Promise.all([cache.delete(key), timeCache.delete(key)]);
                                     }
 
@@ -170,8 +165,6 @@ function cleanCache() {
 function fetchFromWeb(request) {
     return new Promise((resolve, reject) => {
         fetch(request).then((res) => {
-            console.log(`Service worker: acquisizione dal web di ${request.url}`);
-            
             // Crea un clone della risorsa, necessario perché se una risorsa è usata per essere salvata in cache allora
             // non può anche essere usata per essere restituita dalla promise
             const resClone = res.clone();
@@ -192,8 +185,6 @@ function fetchFromWeb(request) {
             // Restituisce il clone della risorsa
             resolve(resClone);
         }).catch((err) => {
-            console.log(`Service worker: nessun risultato trovato per ${request.url}`);
-
             // La risorsa non è stata trovata: restituisce una risposta vuota con stato 404
             resolve(new Response(null, {status: "404", statusText: "Offline"}))
         })
