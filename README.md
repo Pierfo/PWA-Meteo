@@ -2,11 +2,11 @@
 
 Progetto di __Pietro Puozzo__, __Pier Francsco Uliana__ ed __Enoc Ke__.
 
-Live al sito https://pierfo.github.io/PWA-Meteo
+Live al sito https://pierfo.github.io/PWA-Meteo (l'installazione delle web app è supportata solo su Google Chrome, Brave e Microsoft Edge)
 
 L'app è stata sviluppata col framework __react__ https://react.dev/
 
-I file sorgente si trovano nella cartella `/src/` mentre il codice del service worker è collocato in `/public/service-worker.js`.
+I file sorgente si trovano nella cartella `/src/` mentre il codice del service worker è collocato in `/public/service-worker.js`. Report e documentazione sono salvati in `/docs/`.
 
 Per ottenere i dati meteo, l'app fa uso dell'API __Open-meteo__ https://open-meteo.com/. Questa richiede che il nome della città sia prima tradotto nelle sue coordinate geografiche, operazione eseguita mediante l'API __openStreetMap__ https://www.openstreetmap.org/
 
