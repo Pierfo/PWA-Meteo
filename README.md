@@ -2,7 +2,7 @@
 
 Progetto di __Pietro Puozzo__, __Pier Francsco Uliana__ ed __Enoc Ke__.
 
-Live al sito https://pierfo.github.io/PWA-Meteo (l'installazione delle web app è supportata solo su Google Chrome, Brave e Microsoft Edge)
+Live al sito https://pierfo.github.io/PWA-Meteo (l'installazione delle web app è supportata solo su Google Chrome, Brave e Microsoft Edge). Si consiglia di usare Google Chrome in quanto supporta tutte le tecnologie usate dall'app.
 
 L'app è stata sviluppata col framework __react__ https://react.dev/
 
